@@ -1,5 +1,5 @@
 {
-  "name": "link",
+  "name": "video_streaming_app",
   "version": "1.0.0",
   "scripts": {
     "android": "expo run:android",

@@ -15,6 +15,8 @@ import FollowFocusedIcon from '../../assets/icons/tabIcons/inline-following.svg'
 import ProfileIcon from '../../assets/icons/tabIcons/profile.svg';
 import ProfileFocusedIcon from '../../assets/icons/tabIcons/inline-profile.svg';
 import AddIcon from '../../assets/icons/tabIcons/add.svg';
+import ShortsStack from './ShortsStack';
+import FollowStack from './FollowStack';
 
 export type MainTabParamList = {
   HomeStack: undefined;
@@ -36,28 +38,28 @@ const TabList = [
   },
   {
     name: 'ShortsStack',
-    component: () => <Text>Shorts</Text>, // replace later with real stack
+    component: ShortsStack,
     title: 'Shorts',
     activeIcon: ShortsFocusedIcon,
     inactiveIcon: ShortsIcon,
   },
   {
     name: 'AddStack',
-    component: () => <Text>Add</Text>, // replace with real upload screen
+    component: () => <Text>Add</Text>,
     title: 'Add',
     activeIcon: AddIcon,
-    inactiveIcon: AddIcon, // same icon for add (common pattern)
+    inactiveIcon: AddIcon,
   },
   {
     name: 'FollowStack',
-    component: () => <Text>Following</Text>, // replace later
+    component: FollowStack,
     title: 'Following',
     activeIcon: FollowFocusedIcon,
     inactiveIcon: FollowIcon,
   },
   {
     name: 'ProfileStack',
-    component: () => <Text>Profile</Text>, // replace later
+    component: () => <Text>Profile</Text>,
     title: 'Profile',
     activeIcon: ProfileFocusedIcon,
     inactiveIcon: ProfileIcon,

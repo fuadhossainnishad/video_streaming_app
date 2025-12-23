@@ -8,7 +8,7 @@ export default function Creator() {
                 <View className=" items-center gap-4">
                     <Image
                         source={require('../../assets/poster/channel.png')}
-                        className="w-14 h-14 rounded-full"
+                        className="w-14 h-14 rounded-xl"
                         resizeMode="cover"
                     />
                     <View>
