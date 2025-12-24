@@ -16,7 +16,7 @@ export default function AuthStack({ onFinish }: { onFinish: () => void }) {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Onboarding">
-        {(props) => <HomeScreen {...props} onFinish={onFinish} />}
+        {(props) => <OnboardingScreen {...props} onFinish={onFinish} />}
       </Stack.Screen>
       <Stack.Screen name="Auth" component={AuthScreen} options={{ headerShown: false }} />
       <Stack.Screen name="VerifyOtp" component={VerifyOtpScreen} options={{ headerShown: false }} />

@@ -37,7 +37,6 @@ export default function HomeScreen2() {
       end={{ x: 1, y: 1 }}
       // locations={[.3, .5, .7, 1]}
       style={styles.gradient}>
-
       <View className="gap-y-4">
         <View style={styles.headerContainer}>
           <Logo height={60} width={60} />
@@ -55,9 +54,7 @@ export default function HomeScreen2() {
         </View>
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContainer}
-        >
-
+          contentContainerStyle={styles.scrollContainer}>
           <View className="">
             <Image
               source={require('../../../assets/poster/hero.png')}
@@ -87,7 +84,7 @@ export default function HomeScreen2() {
           <TopCreator />
           <VideoRender />
           <VideoRender />
-        </ScrollView >
+        </ScrollView>
       </View>
     </LinearGradient>
   );
@@ -96,7 +93,6 @@ export default function HomeScreen2() {
 const styles = StyleSheet.create({
   scrollContainer: {
     gap: 12,
-
   },
   gradient: {
     flex: 1,
@@ -108,7 +104,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
-    marginTop: 16,
+    marginTop: 26,
   },
   headerRight: {
     flexDirection: 'row',

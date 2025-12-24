@@ -59,7 +59,7 @@ const TabList = [
   },
   {
     name: 'ProfileStack',
-    component: () => <Text>Profile</Text>,
+    component: FollowStack,
     title: 'Profile',
     activeIcon: ProfileFocusedIcon,
     inactiveIcon: ProfileIcon,
@@ -78,12 +78,31 @@ export default function MainTabs() {
         return {
           headerShown: false,
           tabBarShowLabel: false,
-          tabBarStyle: shouldHideTabBar ? { display: 'none' } : styles.tabBarStyle,
+          tabBarStyle: shouldHideTabBar
+            ? { display: 'none' }
+            : {
+                // // height:100,
+                borderRadius: 20,
+                // gap: 2,
+                // backgroundColor: 'none',
+                // // backgroundColor: '#1D35571A',
+                margin: 20,
+                // marginTop:40,
+                // alignItems: 'center',
+                paddingTop: 34,
+                backgroundColor: '#1D35578A',
+                borderTopWidth: 0,
+                position: 'absolute',
+                alignItems: 'center',
+                left: 50,
+                right: 50,
+                bottom: 20,
+                height: 62,
+              },
           tabBarItemStyle: styles.tabBarItemStyle,
           // tabBarIconStyle: styles.tabBarIconStyle,
         };
-      }}
-    >
+      }}>
       {TabList.map((tab) => (
         <Tab.Screen
           key={tab.name}
@@ -108,7 +127,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 'auto',
     height: 'auto',
-    backgroundColor: '#1D35571A',
+    backgroundColor: '#1D3557',
     borderRadius: 20,
     alignItems: 'center',
     shadowColor: '#000',
@@ -120,7 +139,6 @@ const styles = StyleSheet.create({
     // display: 'flex',
     // flexDirection: 'row',
     // justifyContent: 'flex-start',
-
   },
 
   tabBarItemStyle: {
