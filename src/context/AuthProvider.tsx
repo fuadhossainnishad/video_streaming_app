@@ -4,9 +4,9 @@ import { AuthContextType, AuthProviderProps } from "@/interface/commonInterface"
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthProvider = ({children}:AuthProviderProps) => {
+export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    
+
 
     return (
         <AuthContext.Provider value={{
@@ -20,8 +20,8 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
 }
 
 export const useAuth = () => {
-    const context= useContext(AuthContext);
-    if(!context) throw new Error("useAuth must be used within an AuthProvider");
+    const context = useContext(AuthContext);
+    if (!context) throw new Error("useAuth must be used within an AuthProvider");
 
     return context;
 }
