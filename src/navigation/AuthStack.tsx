@@ -8,6 +8,7 @@ import SendOtpScreen from '@/screens/Auth/sendOtp.screen';
 import resetPasswordScreen from '@/screens/Auth/resetPassword.screen';
 import { useAuth } from '@/context/AuthProvider';
 import HomeScreen from '@/screens/Home/Home.screen';
+import ProfileScreen from '@/screens/Profile/Profile.screen';
 // import HomeStack from './HomeStack';
 
 const Stack = createNativeStackNavigator();
@@ -18,6 +19,7 @@ export default function AuthStack({ onFinish }: { onFinish: () => void }) {
       <Stack.Screen name="Onboarding">
         {(props) => <OnboardingScreen {...props} onFinish={onFinish} />}
       </Stack.Screen>
+      {/* <Stack.Screen name="Onboarding" component={ProfileScreen} options={{ headerShown: false }} /> */}
       <Stack.Screen name="Auth" component={AuthScreen} options={{ headerShown: false }} />
       <Stack.Screen name="VerifyOtp" component={VerifyOtpScreen} options={{ headerShown: false }} />
       <Stack.Screen

@@ -31,7 +31,7 @@ export default function FollowScreen() {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.channelScrollContent}>
           {channels.map((channel) => (
-            <TouchableOpacity key={channel.id} onPress={()=>{naviagtion.navigate('ChannelOverview')}}>
+            <TouchableOpacity key={channel.id} onPress={() => { naviagtion.navigate('ChannelOverview') }}>
               <View style={styles.channelContainer} className="items-center gap-2">
                 <Image source={channel.image} className="h-10 w-10 rounded-xl" resizeMode="cover" />
                 <Text numberOfLines={2} ellipsizeMode="tail" style={styles.channelName}>

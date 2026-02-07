@@ -7,6 +7,7 @@ import DiscoverCreatorScreen from '@/screens/Home/DiscoverCreator.screen';
 import ShortsScreen from '@/screens/Shorts/Shorts.screen';
 import FollowScreen from '@/screens/Follow/Follow.screen';
 import ChannelOverviewScreen from '@/screens/Follow/ChannelOverview.screen';
+import ProfileScreen from '@/screens/Profile/Profile.screen';
 // import OnboardingScreen from '../screens/Onboarding/onboarding.screen';
 // import AuthScreen from '@/screens/Auth/login.screen';
 // import VerifyOtpScreen from '@/screens/Auth/verifyOtp.screen';
@@ -16,7 +17,7 @@ import ChannelOverviewScreen from '@/screens/Follow/ChannelOverview.screen';
 
 const Stack = createNativeStackNavigator();
 export type ProfileParamalist = {
-  Follow: undefined;
+  Profile: undefined;
   ChannelOverview: undefined;
 };
 export default function ProfileStack() {
@@ -25,7 +26,7 @@ export default function ProfileStack() {
       {/* <Stack.Screen name="Onboarding">
         {(props) => <OnboardingScreen {...props} onFinish={onFinish} />}
       </Stack.Screen> */}
-      <Stack.Screen name="Profile" component={FollowScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
       <Stack.Screen
         name="ChannelOverview"
         component={ChannelOverviewScreen}

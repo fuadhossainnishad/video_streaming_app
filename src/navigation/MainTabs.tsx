@@ -17,6 +17,7 @@ import ProfileFocusedIcon from '../../assets/icons/tabIcons/inline-profile.svg';
 import AddIcon from '../../assets/icons/tabIcons/add.svg';
 import ShortsStack from './ShortsStack';
 import FollowStack from './FollowStack';
+import ProfileStack from './ProfileStack';
 
 export type MainTabParamList = {
   HomeStack: undefined;
@@ -59,7 +60,7 @@ const TabList = [
   },
   {
     name: 'ProfileStack',
-    component: FollowStack,
+    component: ProfileStack,
     title: 'Profile',
     activeIcon: ProfileFocusedIcon,
     inactiveIcon: ProfileIcon,
@@ -81,24 +82,24 @@ export default function MainTabs() {
           tabBarStyle: shouldHideTabBar
             ? { display: 'none' }
             : {
-                // // height:100,
-                borderRadius: 20,
-                // gap: 2,
-                // backgroundColor: 'none',
-                // // backgroundColor: '#1D35571A',
-                margin: 20,
-                // marginTop:40,
-                // alignItems: 'center',
-                paddingTop: 34,
-                backgroundColor: '#1D35578A',
-                borderTopWidth: 0,
-                position: 'absolute',
-                alignItems: 'center',
-                left: 50,
-                right: 50,
-                bottom: 20,
-                height: 62,
-              },
+              // // height:100,
+              borderRadius: 20,
+              // gap: 2,
+              // backgroundColor: 'none',
+              // // backgroundColor: '#1D35571A',
+              margin: 20,
+              // marginTop:40,
+              // alignItems: 'center',
+              paddingTop: 34,
+              backgroundColor: '#1D35578A',
+              borderTopWidth: 0,
+              position: 'absolute',
+              alignItems: 'center',
+              left: 50,
+              right: 50,
+              bottom: 20,
+              height: 62,
+            },
           tabBarItemStyle: styles.tabBarItemStyle,
           // tabBarIconStyle: styles.tabBarIconStyle,
         };
