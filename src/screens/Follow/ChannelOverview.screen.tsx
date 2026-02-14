@@ -1,54 +1,41 @@
 import AppHeader from '@/components/AppHeader';
 import { FollowParamalist } from '@/navigation/FollowStack';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
-import { View, ScrollView, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
 import VideoIcon from '../../../assets/icons/video.svg';
 import ShortsIcon from '../../../assets/icons/shorts.svg';
 import PostIcon from '../../../assets/icons/post.svg';
-import VideoRender from '@/components/VideoRender';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import VideoCardComponent from '@/components/VideoCompo';
+import ShortsCardComponent from '@/components/ShortsCompo';
+import PostCardComponent from '@/components/PostCompo';
 
 type Props = NativeStackNavigationProp<FollowParamalist, 'ChannelOverview'>;
 
 export default function ChannelProfileScreen() {
   const navigation = useNavigation<Props>();
+  const route = useRoute<any>();
+  const { channelId } = route.params;
   const [activeTab, setActiveTab] = useState<'videos' | 'shorts' | 'posts'>('videos');
 
   const renderContent = () => {
     switch (activeTab) {
       case 'videos':
         return (
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.scrollContainer}>
-            <VideoRender />
-            <VideoRender />
-            <VideoRender />
-            <VideoRender />
-            {/* Add more or fetch dynamically */}
-          </ScrollView>
+          <VideoCardComponent />
         );
 
       case 'shorts':
         return (
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.scrollContainer}>
-            {/* <ShortsRender /> */}
-            <Text style={styles.placeholderText}>Shorts content coming soon...</Text>
-          </ScrollView>
+          <ShortsCardComponent />
         );
 
       case 'posts':
         return (
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.scrollContainer}>
-            {/* <PostsRender /> */}
-            <Text style={styles.placeholderText}>Posts content coming soon...</Text>
-          </ScrollView>
+          <PostCardComponent />
         );
 
       default:
@@ -57,7 +44,9 @@ export default function ChannelProfileScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView
+      edges={['top', 'bottom']}
+      style={styles.container}>
       {/* Header */}
       <AppHeader title="Channel Overview" onPress={() => navigation.goBack()} />
 
@@ -123,18 +112,18 @@ export default function ChannelProfileScreen() {
 
       {/* Content based on selected tab */}
       {renderContent()}
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 16,
     backgroundColor: '#17191A',
   },
   profileSection: {
     flexDirection: 'row',
-    paddingHorizontal: 16,
     paddingVertical: 12,
     alignItems: 'center',
     gap: 12,
@@ -173,7 +162,6 @@ const styles = StyleSheet.create({
   bio: {
     fontSize: 14,
     color: '#E7E7E7CC',
-    paddingHorizontal: 16,
     paddingBottom: 16,
     lineHeight: 20,
   },
@@ -181,7 +169,6 @@ const styles = StyleSheet.create({
     color: '#9BD71B',
   },
   followButtonContainer: {
-    marginHorizontal: 16,
     marginBottom: 16,
     borderRadius: 12,
     overflow: 'hidden',
@@ -197,7 +184,6 @@ const styles = StyleSheet.create({
   },
   tabsContainer: {
     flexDirection: 'row',
-    paddingHorizontal: 16,
     paddingVertical: 8,
     gap: 8,
   },
@@ -221,7 +207,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   scrollContainer: {
-    paddingHorizontal: 16,
     paddingBottom: 24,
     gap: 16,
   },

@@ -1,59 +1,138 @@
-import React from 'react';
-import { View, StyleSheet, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, StyleSheet, Text, ScrollView, ActivityIndicator, TouchableOpacity, RefreshControl } from 'react-native';
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import VideoRender from '@/components/VideoRender';
 import { FollowParamalist } from '@/navigation/FollowStack';
 import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import FollowChannel from './components/FollowChannel';
+import { getAllVideos } from '@/domain/video/api/video.service';
+import { VideoData } from '@/shared/types/video.types';
 
 type Props = NativeStackNavigationProp<FollowParamalist, 'Follow'>;
 
 export default function FollowScreen() {
-  const naviagtion = useNavigation<Props>();
-  const channels = [
-    { id: '1', name: 'CatWorld TV', image: require('../../../assets/poster/channel.png') },
-    { id: '2', name: 'Doggy Vlogs', image: require('../../../assets/poster/channel.png') },
-    { id: '3', name: 'Funny Pets Daily', image: require('../../../assets/poster/channel.png') },
-    { id: '4', name: 'Pet Adventures', image: require('../../../assets/poster/channel.png') },
-    { id: '1', name: 'CatWorld TV', image: require('../../../assets/poster/channel.png') },
-    { id: '2', name: 'Doggy Vlogs', image: require('../../../assets/poster/channel.png') },
-    { id: '3', name: 'Funny Pets Daily', image: require('../../../assets/poster/channel.png') },
-    { id: '4', name: 'Pet Adventures', image: require('../../../assets/poster/channel.png') },
-  ];
+  const navigation = useNavigation<Props>();
 
+  const [videos, setVideos] = useState<VideoData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  console.log("videos:", videos)
+
+  const fetchVideos = useCallback(async (isRefresh = false) => {
+    try {
+      if (isRefresh) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
+      setError(null);
+
+      const result = await getAllVideos({ page: 1, limit: 10 });
+      setVideos(result.videos);
+    } catch (err: any) {
+      console.error('Error fetching videos:', err);
+      setError(err.message || 'Failed to load videos');
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchVideos();
+  }, [fetchVideos]);
+
+  const handleRefresh = useCallback(() => {
+    fetchVideos(true);
+  }, [fetchVideos]);
+
+  const handleVideoPress = useCallback(
+    (videoId: string) => {
+      navigation.navigate('VideoPlayer', { videoId: videoId });
+    },
+    [navigation]
+  );
+
+  const handleVideoMenu = useCallback((videoId: string) => {
+    console.log('Menu pressed for video:', videoId);
+    // TODO: Implement menu actions (Share, Save, Report, etc.)
+  }, []);
+
+
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <View className="flex-1 justify-center items-center py-20">
+          <ActivityIndicator size="large" color="#9BD71B" />
+          <Text className="text-gray-400 mt-4">Loading videos...</Text>
+        </View>
+      );
+    }
+
+    if (error) {
+      return (
+        <View className="flex-1 justify-center items-center py-20">
+          <Text className="text-red-400 text-center mb-4">{error}</Text>
+          <TouchableOpacity
+            onPress={() => fetchVideos()}
+            className="bg-[#9BD71B] px-6 py-3 rounded-xl"
+          >
+            <Text className="text-black font-semibold">Retry</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+
+    if (videos.length === 0) {
+      return (
+        <View className="flex-1 justify-center items-center py-20">
+          <Text className="text-gray-400 text-center">
+            No videos available at the moment
+          </Text>
+        </View>
+      );
+    }
+
+    return (
+      <>
+        {videos.map((video) => (
+          <VideoRender
+            key={video.id}
+            videoData={video}
+            onPress={() => handleVideoPress(video.id)}
+            onMenuPress={() => handleVideoMenu(video.id)}
+          />
+        ))}
+      </>
+    );
+  };
   return (
-    <View className="flex-1 bg-[#17191A]">
+    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-[#17191A]">
       <Text className="mt-6 px-4 pb-4 text-3xl font-bold text-white">Following</Text>
-
       <View className="">
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.channelScrollContent}>
-          {channels.map((channel) => (
-            <TouchableOpacity key={channel.id} onPress={() => { naviagtion.navigate('ChannelOverview') }}>
-              <View style={styles.channelContainer} className="items-center gap-2">
-                <Image source={channel.image} className="h-10 w-10 rounded-xl" resizeMode="cover" />
-                <Text numberOfLines={2} ellipsizeMode="tail" style={styles.channelName}>
-                  {channel.name}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+        <FollowChannel />
       </View>
 
       <Text className="mt-4 px-4 pb-4 text-xl font-bold text-white">Most Relevant</Text>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContainer}>
-        <VideoRender />
-        <VideoRender />
-        <VideoRender />
-        <VideoRender />
+        contentContainerStyle={styles.scrollContainer}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor="#9BD71B"
+            colors={['#9BD71B']}
+          />
+        }
+      >
+        {renderContent()}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 

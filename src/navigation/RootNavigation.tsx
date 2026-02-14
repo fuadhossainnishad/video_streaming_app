@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthProvider';
 import AuthStack from './AuthStack';
-import MainTabs from './MainTabs';
+import AppTabs from './AppTabs';
 
 const RootNavigation = () => {
   const { isAuthenticated } = useAuth();
@@ -11,7 +11,7 @@ const RootNavigation = () => {
     return <AuthStack onFinish={() => setShowOnboarding(false)} />;
   }
 
-  return isAuthenticated ? <MainTabs /> : <AuthStack onFinish={() => setShowOnboarding(false)} />;
+  return isAuthenticated ? <AppTabs /> : <AuthStack onFinish={() => setShowOnboarding(false)} />;
 };
 
 export default RootNavigation;

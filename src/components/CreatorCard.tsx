@@ -1,26 +1,20 @@
 // components/CreatorCard.tsx
 import React from 'react';
-import { View, Text, TouchableOpacity, Image, ImageSourcePropType } from 'react-native';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 type CreatorCardProps = {
-  avatar?: ImageSourcePropType; // require() or { uri: ... }
+  avatar: string
   name: string;
   followers: string;
-  bio?: string; // Not used in this compact version, but kept for future
   onFollow?: () => void;
 };
 
 export default function CreatorCard({ avatar, name, followers, onFollow }: CreatorCardProps) {
   return (
-    <View className="flex-row items-center justify-between rounded-2xl bg-white/30 px-4 py-2 backdrop-blur-lg">
+    <View className="flex-row items-center justify-between rounded-2xl bg-white/15 p-2 backdrop-blur-lg">
       <View className="flex-1 flex-row items-center gap-4">
-        {avatar ? (
-          <Image source={avatar} className="h-14 w-14 rounded-xl" resizeMode="cover" />
-        ) : (
-          <View className="h-14 w-14 rounded-xl bg-gray-400/50" />
-        )}
-
+        <Image source={{ uri: avatar }} className="h-14 w-14 rounded-xl" resizeMode="cover" />
         <View className="justify-center">
           <Text className="text-lg font-semibold text-white">{name}</Text>
           <Text className="text-sm text-white/60">{followers} Followers</Text>

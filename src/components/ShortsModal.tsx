@@ -1,14 +1,19 @@
 import { Image, Text, View, TouchableOpacity } from 'react-native';
 import ViewIcon from '../../assets/icons/view.svg';
+import { ShortData } from '@/shared/types/shorts.types';
 
-export default function ShortsModal() {
+export interface ShortsModalProps {
+    short: ShortData
+    onPress: () => void;
+}
+export default function ShortsModal({ short, onPress }: ShortsModalProps) {
     return (
-        <TouchableOpacity>
+        <TouchableOpacity onPress={onPress}>
             <View className="overflow-hidden rounded-3xl bg-[#FFFFFF1A]">
                 <View className="relative">
                     {/* Video Thumbnail */}
                     <Image
-                        source={require('../../assets/poster/videoCover.png')}
+                        source={{ uri: short.videoUrl! }}
                         className="h-80 w-full rounded-2xl"
                         resizeMode="cover"
                     />
@@ -18,7 +23,7 @@ export default function ShortsModal() {
                         {/* Left: Channel Avatar */}
                         <TouchableOpacity>
                             <Image
-                                source={require('../../assets/poster/channel.png')}
+                                source={{ uri: short.channelIcon }}
                                 className="h-12 w-12 rounded-xl"
                                 resizeMode="cover"
                             />
@@ -27,7 +32,7 @@ export default function ShortsModal() {
                         {/* Right: View Count Badge */}
                         <View className="flex-row items-center rounded-xl bg-white/30 px-3 py-1.5 backdrop-blur-sm">
                             <ViewIcon height={20} width={20} />
-                            <Text className="ml-1.5 text-base font-semibold text-white">111k</Text>
+                            <Text className="ml-1.5 text-base font-semibold text-white">{short.views?.toLocaleString()} views</Text>
                         </View>
                     </View>
                 </View>

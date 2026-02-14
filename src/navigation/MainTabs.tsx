@@ -1,7 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import HomeStack from './HomeStack'; // your actual stack
 
@@ -18,11 +18,14 @@ import AddIcon from '../../assets/icons/tabIcons/add.svg';
 import ShortsStack from './ShortsStack';
 import FollowStack from './FollowStack';
 import ProfileStack from './ProfileStack';
+import AddTabs from './AddTabs';
+import { ShowTabBar } from '@/shared/config/tabVisibility.config';
+import { useAppMode } from '@/context/ModeProvider';
 
 export type MainTabParamList = {
   HomeStack: undefined;
   ShortsStack: undefined;
-  AddStack: undefined;
+  AddTabs: undefined;
   FollowStack: undefined;
   ProfileStack: undefined;
 };
@@ -45,9 +48,10 @@ const TabList = [
     inactiveIcon: ShortsIcon,
   },
   {
-    name: 'AddStack',
-    component: () => <Text>Add</Text>,
+    name: 'AddTabs',
+    component: AddTabs,
     title: 'Add',
+    isSwitch: true,
     activeIcon: AddIcon,
     inactiveIcon: AddIcon,
   },
@@ -68,13 +72,14 @@ const TabList = [
 ];
 
 export default function MainTabs() {
+  const { setMode } = useAppMode()
   return (
     <Tab.Navigator
       screenOptions={({ route }) => {
         const routeName = getFocusedRouteNameFromRoute(route) ?? '';
-        const hiddenRoutes: string[] = []; // add any screens where tab bar should hide
+        // const hiddenRoutes: string[] = shouldHideTabBar(routeName,route.name);
 
-        const shouldHideTabBar = hiddenRoutes.includes(routeName);
+        const shouldHideTabBar = ShowTabBar(routeName, route.name);
 
         return {
           headerShown: false,
@@ -109,6 +114,16 @@ export default function MainTabs() {
           key={tab.name}
           name={tab.name as keyof MainTabParamList}
           component={tab.component}
+          listeners={
+            tab.isSwitch
+              ? {
+                tabPress: e => {
+                  e.preventDefault();
+                  setMode('creator');
+                },
+              }
+              : undefined
+          }
           options={{
             title: tab.title,
             tabBarIcon: ({ focused, color }) => {

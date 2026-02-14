@@ -1,9 +1,10 @@
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import AppHeader from '../../components/AppHeader';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { HomeParamalist } from '@/navigation/HomeStack';
 import { useNavigation } from '@react-navigation/native';
 import NotificationModal from '../../components/NotoficationModal';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type Props = NativeStackNavigationProp<HomeParamalist, 'Notification'>;
 
@@ -11,7 +12,7 @@ export default function NotificationScreen() {
   const navigation = useNavigation<Props>();
   return (
 
-    <View className="bg-black flex-1">
+    <SafeAreaView className="bg-black flex-1 px-4 gap-4">
       <AppHeader title="Notifications" onPress={() => navigation.goBack()} />
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -35,14 +36,13 @@ export default function NotificationScreen() {
         />
       </ScrollView>
 
-    </View >
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   scrollViewContent: {
-    paddingRight: 16,
     backgroundColor: 'black',
-    gap: 12
+    gap: 8
   },
 });

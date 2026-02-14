@@ -1,19 +1,22 @@
 import { Image, Text, View, TouchableOpacity, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { ChannelData } from '@/shared/types/channel.types';
 
-export default function Creator() {
+export default function Creator({ channelData, onPress }: { channelData: ChannelData, onPress?: () => void }) {
     return (
-        <TouchableOpacity>
+        <TouchableOpacity
+            onPress={onPress}
+        >
             <View className=" items-center justify-between p-4 bg-[#FFFFFF0F] rounded-2xl">
                 <View className=" items-center gap-4">
                     <Image
-                        source={require('../../assets/poster/channel.png')}
+                        source={{ uri: channelData.avatar! }}
                         className="w-14 h-14 rounded-xl"
                         resizeMode="cover"
                     />
                     <View>
                         <Text className="text-white text-lg font-semibold">
-                            CatWorld TV
+                            {channelData.name}
                         </Text>
                         <Text className="text-gray-400 text-sm mt-1">
                             111K Followers

@@ -1,55 +1,123 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import NotificationScreen from '@/screens/Notification/Notification.screen';
-import HomeScreen2 from '@/screens/Home/Home.screen2';
-import SearchScreen from '@/screens/Home/Search.screen';
-import DiscoverCreatorScreen from '@/screens/Home/DiscoverCreator.screen';
-import ShortsScreen from '@/screens/Shorts/Shorts.screen';
-import FollowScreen from '@/screens/Follow/Follow.screen';
 import ChannelOverviewScreen from '@/screens/Follow/ChannelOverview.screen';
 import ProfileScreen from '@/screens/Profile/Profile.screen';
-// import OnboardingScreen from '../screens/Onboarding/onboarding.screen';
-// import AuthScreen from '@/screens/Auth/login.screen';
-// import VerifyOtpScreen from '@/screens/Auth/verifyOtp.screen';
-// import VerifyOtp2Screen from '@/screens/Auth/verifyOtp2.screen';
-// import SendOtpScreen from '@/screens/Auth/sendOtp.screen';
-// import resetPasswordScreen from '@/screens/Auth/resetPassword.screen';
+import PrivacyPolicyScreen from '@/screens/Profile/PrivacyPolicy.screen copy';
+import TermsAndConditionScreen from '@/screens/Profile/TermsAndCondition.screen';
+import AboutUsScreen from '@/screens/Profile/AboutUs.screen';
+import SettingsStack from './SettingsStack';
+import DownloadScreen from '@/screens/Profile/Download.screen';
+import HistoryScreen from '@/screens/Profile/History.screen';
+import CouponScreen from '@/screens/Profile/Coupon.screen';
+import EditProfileScreen from '@/screens/Profile/EditProfile.screen';
+import FollowingScreen from '@/screens/Profile/Following.screen';
+import { ShortData } from '@/shared/types/shorts.types';
+import ShortsScreen from '@/screens/Shorts/Shorts.screen';
+import ShortsViewScreen from '@/screens/Shorts/ShortsView.screen';
+import VideoPlayerScreen from '@/screens/Video/VideoPlayer.screen';
+import SavedScreen from '@/screens/Profile/Saved.screen';
+
 
 const Stack = createNativeStackNavigator();
 export type ProfileParamalist = {
   Profile: undefined;
-  ChannelOverview: undefined;
+  EditProfile: {
+    username: string,
+    email: string,
+    avatar: string,
+  }
+  PivacyPolicy: undefined
+  TermsAndConditions: undefined
+  AboutUs: undefined
+  Settings: undefined
+  Saved: undefined
+  Download: undefined
+  History: undefined
+  Coupon: undefined
+  Following: undefined
+  ChannelOverview: { channelId: string };
+  VideoPlayer: { videoId: string };
+  Shorts: { short: ShortData };
+  ShortsView: { shortId: string };
 };
 export default function ProfileStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {/* <Stack.Screen name="Onboarding">
-        {(props) => <OnboardingScreen {...props} onFinish={onFinish} />}
-      </Stack.Screen> */}
       <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
+      <Stack.Screen
+        name="EditProfile"
+        component={EditProfileScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ViewChannel"
+        component={ChannelOverviewScreen}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen
         name="ChannelOverview"
         component={ChannelOverviewScreen}
         options={{ headerShown: false }}
       />
-      {/* <Stack.Screen name="Search" component={SearchScreen} options={{ headerShown: false }} /> */}
-      {/* <Stack.Screen
-        name="DiscoverCreator"
-        component={DiscoverCreatorScreen}
-        options={{ headerShown: false }}
-      /> */}
-      {/* <Stack.Screen name="VerifyOtp" component={VerifyOtpScreen} options={{ headerShown: false }} />
       <Stack.Screen
-        name="VerifyOtp2"
-        component={VerifyOtp2Screen}
+        name="Following"
+        component={FollowingScreen}
         options={{ headerShown: false }}
       />
-      <Stack.Screen name="SendOtp" component={SendOtpScreen} options={{ headerShown: false }} />
       <Stack.Screen
-        name="ResetPassword"
-        component={resetPasswordScreen}
+        name="PivacyPolicy"
+        component={PrivacyPolicyScreen}
         options={{ headerShown: false }}
-      /> */}
+      />
+      <Stack.Screen
+        name="TermsAndConditions"
+        component={TermsAndConditionScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="AboutUs"
+        component={AboutUsScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Settings"
+        component={SettingsStack}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Saved"
+        component={SavedScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Download"
+        component={DownloadScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="History"
+        component={HistoryScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Coupon"
+        component={CouponScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="VideoPlayer"
+        component={VideoPlayerScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Shorts"
+        component={ShortsScreen}
+        options={{ headerShown: false }} />
+      <Stack.Screen
+        name="ShortsView"
+        component={ShortsViewScreen}
+        options={{ headerShown: false }} />
+
     </Stack.Navigator>
   );
 }

@@ -4,6 +4,8 @@ import NotificationScreen from '@/screens/Notification/Notification.screen';
 import HomeScreen2 from '@/screens/Home/Home.screen2';
 import SearchScreen from '@/screens/Home/Search.screen';
 import DiscoverCreatorScreen from '@/screens/Home/DiscoverCreator.screen';
+import VideoPlayerScreen from '@/screens/Video/VideoPlayer.screen';
+import ChannelProfileScreen from '@/screens/Follow/ChannelOverview.screen';
 // import OnboardingScreen from '../screens/Onboarding/onboarding.screen';
 // import AuthScreen from '@/screens/Auth/login.screen';
 // import VerifyOtpScreen from '@/screens/Auth/verifyOtp.screen';
@@ -17,6 +19,8 @@ export type HomeParamalist = {
   Home: undefined;
   Search: undefined;
   DiscoverCreator: undefined;
+  VideoPlayer: { videoId: string };
+  ChannelOverview: { channelId: string };
 };
 export default function HomeStack() {
   return (
@@ -36,18 +40,16 @@ export default function HomeStack() {
         component={DiscoverCreatorScreen}
         options={{ headerShown: false }}
       />
-      {/* <Stack.Screen name="VerifyOtp" component={VerifyOtpScreen} options={{ headerShown: false }} />
       <Stack.Screen
-        name="VerifyOtp2"
-        component={VerifyOtp2Screen}
+        name="VideoPlayer"
+        component={VideoPlayerScreen}
         options={{ headerShown: false }}
       />
-      <Stack.Screen name="SendOtp" component={SendOtpScreen} options={{ headerShown: false }} />
       <Stack.Screen
-        name="ResetPassword"
-        component={resetPasswordScreen}
+        name="ChannelOverview"
+        component={ChannelProfileScreen}
         options={{ headerShown: false }}
-      /> */}
+      />
     </Stack.Navigator>
   );
 }

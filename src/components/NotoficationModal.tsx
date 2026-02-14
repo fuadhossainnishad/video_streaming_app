@@ -29,25 +29,24 @@ export default function NotificationModal({
             <View className="">
                 <Image
                     source={channelAvatar}
-                    className="w-12 h-12 rounded-full"
+                    className="w-12 h-12 rounded-xl"
                     resizeMode="cover"
                 />
             </View>
 
             <View className="flex-1">
-                <Text className="text-white text-base leading-6">
-                    <Text className="font-semibold">{channelName}</Text>
-                    <Text className="text-gray-300"> {action} </Text>
-                    <Text className="font-medium text-white">{videoTitle}</Text>
-                </Text>
+                <View className="text-white text-base leading-6 flex-col gap-1">
+                    <Text className="text-white font-semibold text-base">{channelName}</Text>
+                    <Text className="font-medium text-white/70  text-sm text-wrap">Uploaded: {videoTitle}</Text>
+                </View>
                 <View className='flex-row items-center gap-2'>
                     <TimeIcon height={24} width={24} />
-                    <Text className="text-white text-sm mt-1">{timeAgo}</Text>
+                    <Text className="text-white text-sm">{timeAgo}</Text>
                 </View>
             </View>
 
             {thumbnail && (
-                <View className='rounded-lg flex-1 h-8'>
+                <View className='rounded-lg flex-1 h-24'>
                     <Image
                         source={thumbnail}
                         className="h-full w-full rounded-lg"

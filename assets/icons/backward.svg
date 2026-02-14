@@ -1,0 +1,11 @@
+<svg width="51" height="51" viewBox="0 0 51 51" fill="none" xmlns="http://www.w3.org/2000/svg">
+<foreignObject x="-11.4545" y="-11.4545" width="73.3091" height="73.309"><div xmlns="http://www.w3.org/1999/xhtml" style="backdrop-filter:blur(5.73px);clip-path:url(#bgblur_0_75_16061_clip_path);height:100%;width:100%"></div></foreignObject><g data-figma-bg-blur-radius="11.4545">
+<rect width="50.4" height="50.4" rx="13.7455" transform="matrix(-1 0 0 1 50.4 0)" fill="black" fill-opacity="0.1"/>
+<path d="M25.857 24.1986L33.6831 19.8508C33.9885 19.6812 34.3638 19.902 34.3638 20.2513V30.1485C34.3638 30.4979 33.9885 30.7187 33.6831 30.549L25.857 26.2012C25.0715 25.7648 25.0715 24.635 25.857 24.1986Z" stroke="white" stroke-width="1.14545" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M20.6182 30.9272L20.6182 19.4727" stroke="white" stroke-width="1.14545" stroke-linecap="round"/>
+<path d="M16.0364 30.9272L16.0364 19.4727" stroke="white" stroke-width="1.14545" stroke-linecap="round"/>
+</g>
+<defs>
+<clipPath id="bgblur_0_75_16061_clip_path" transform="translate(11.4545 11.4545)"><rect width="50.4" height="50.4" rx="13.7455" transform="matrix(-1 0 0 1 50.4 0)"/>
+</clipPath></defs>
+</svg>

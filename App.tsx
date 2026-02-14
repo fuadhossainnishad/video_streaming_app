@@ -9,6 +9,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import RootNavigation from './src/navigation/RootNavigation';
 import Toast from 'react-native-toast-message';
 import SplashScreenComponent from '@/screens/splash.screen';
+import { AppModeProvider } from './src/context/ModeProvider';
 
 export default function App() {
   const [appReady, setAppReady] = useState(false);
@@ -35,13 +36,15 @@ export default function App() {
   return (
     <FontLoader>
       <NavigationContainer>
-        <AuthProvider>
-          <GestureHandlerRootView style={{ flex: 1 }}>
-            <View style={{ flex: 1 }}>
-              <RootNavigation />
-            </View>
-          </GestureHandlerRootView>
-        </AuthProvider>
+        <AppModeProvider>
+          <AuthProvider>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+              <View style={{ flex: 1 }}>
+                <RootNavigation />
+              </View>
+            </GestureHandlerRootView>
+          </AuthProvider>
+        </AppModeProvider>
       </NavigationContainer>
       <Toast />
     </FontLoader>
