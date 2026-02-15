@@ -1,32 +1,30 @@
 // shared/types/upload.types.ts
 
-export interface VideoUploadFormData {
+export interface ShortUploadFormData {
   title: string;
   description: string;
   hashtags: string[];
-  links: string[];
+  // links: string[];
   category: string;
   language: string;
   visibility: 'public' | 'private' | 'unlisted';
   video: File | null;
-  thumbnail: File | null;
   taggedPeople?: string[];
   channelId: string
 }
 
-export interface VideoUploadResponse {
+export interface ShortUploadResponse {
   status: 'success' | 'error';
   message: string;
   data: {
-    videoId: string;
+    shortId: string;
     transcodeJobId: string;
-    video: {
+    short: {
       title: string;
       description: string;
-      thumbnail: string;
       videoUrl: string;
       hashtags: string[];
-      links: string[];
+      // links: string[];
       owner: string;
       channel: string;
       totalViews: number;

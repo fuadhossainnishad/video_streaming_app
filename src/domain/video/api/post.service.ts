@@ -1,6 +1,6 @@
 // domain/video/api/post.service.ts
 import { axiosClient } from '@/shared/config/axios.config';
-import { mockPostResponse } from '@/shared/mock/post.mock';
+import { GET_ALL_POST } from '@/shared/constants/api.constants';
 import { ApiPostResponse, PostUI } from '@/shared/types/post.types';
 import { transformPostsData } from '@/shared/utils/post.utils';
 
@@ -20,7 +20,7 @@ export const getSavedPosts = async (
   limit: number = 10
 ): Promise<GetPostsResult> => {
   try {
-    const { data } = await axiosClient.get('/post/all', {
+    const { data } = await axiosClient.get(GET_ALL_POST, {
       // params: { page, limit },
     });
 

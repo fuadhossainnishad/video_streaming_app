@@ -11,7 +11,7 @@ export const transformShort = (apiShort: ApiShort): ShortData => {
         id: apiShort._id,
         title: apiShort.title,
         description: apiShort.description,
-        videoUrl: apiShort.streamingUrl!,
+        videoUrl: apiShort.streamingUrl || apiShort.videoUrl,
         hashtags: apiShort.hashtags,
         ownerName: apiShort.owner.username,
         ownerAvatar: apiShort.owner.avatar,
@@ -33,11 +33,10 @@ export const transformShort = (apiShort: ApiShort): ShortData => {
  * Also filter only published + completed
  */
 export const transformShorts = (apiShorts: ApiShort[]): ShortData[] => {
-    return apiShorts
-        .filter(
-            short =>
-                short.visibility === "public" &&
-                short.transcodeStatus === "COMPLETE"
-        )
-        .map(transformShort);
+    return apiShorts.map(transformShort);
 };
+// .filter(
+//     short =>
+//         short.visibility === "public" &&
+//         short.transcodeStatus === "COMPLETE"
+// )

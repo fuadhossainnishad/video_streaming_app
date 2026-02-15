@@ -1,7 +1,9 @@
 // domain/short/api/short.service.ts
 
+import { axiosClient } from "@/shared/config/axios.config";
+import { GET_ALL_SHORT } from "@/shared/constants/api.constants";
 import { mockShortsResponse } from "@/shared/mock/shorts.mock";
-import { ApiShortPagination, ShortData } from "@/shared/types/shorts.types";
+import { ApiShortPagination, ApiShortResponse, ShortData } from "@/shared/types/shorts.types";
 import { transformShort, transformShorts } from "@/shared/utils/shorts.utils";
 
 // import { GET_SHORTS } from "@/shared/constants/api.constants";
@@ -16,18 +18,18 @@ export const getShorts = async (
     limit: number = 10
 ): Promise<GetShortsResult> => {
     try {
-        // const { data } = await axiosClient.get<ApiShortResponse>(
-        //   GET_SHORTS,
-        //   { params: { page, limit } }
-        // );
+        const { data } = await axiosClient.get<ApiShortResponse>(
+            GET_ALL_SHORT,
+            // { params: { page, limit } }
+        );
 
         // MOCK RESPONSE (remove when API ready)
-        const data = mockShortsResponse
+        // const data = mockShortsResponse
 
         if (data.status !== "success") {
             throw new Error("Failed to fetch shorts");
         }
-
+        console.log('shorts data:', data.data)
         const transformed = transformShorts(data.data.shorts);
 
         return {

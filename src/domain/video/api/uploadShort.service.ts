@@ -1,6 +1,6 @@
 // domain/video/api/upload.service.ts
 import { axiosClient } from '@/shared/config/axios.config';
-import { VideoUploadFormData, VideoUploadResponse } from '@/shared/types/upload.type';
+import { ShortUploadFormData, ShortUploadResponse } from '@/shared/types/uploadShort.type';
 
 /**
  * Upload a new video with FormData
@@ -8,9 +8,10 @@ import { VideoUploadFormData, VideoUploadResponse } from '@/shared/types/upload.
  * @param formData - Video upload form data
  * @returns Promise with upload response
  */
-export const uploadVideo = async (formData: VideoUploadFormData): Promise<VideoUploadResponse> => {
-  const token =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5OGNlNWZjODI3ZWQ0ZDgyZTQ4ZjU2NSIsImlhdCI6MTc3MTA2MTM4OCwiZXhwIjoxNzcxNjY2MTg4fQ.HD8bXkCiA1AGN90xviEK0FTvGAisxTumYAIIWMoxvmw';
+export const uploadShort = async (formData: ShortUploadFormData): Promise<ShortUploadResponse> => {
+  // const token =
+  //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5OGNlNWZjODI3ZWQ0ZDgyZTQ4ZjU2NSIsImlhdCI6MTc3MTA2MTM4OCwiZXhwIjoxNzcxNjY2MTg4fQ.HD8bXkCiA1AGN90xviEK0FTvGAisxTumYAIIWMoxvmw';
+
   try {
     const data = new FormData();
 
@@ -26,20 +27,15 @@ export const uploadVideo = async (formData: VideoUploadFormData): Promise<VideoU
       data.append('video', formData.video as any);
     }
 
-    // Append thumbnail file
-    if (formData.thumbnail) {
-      data.append('thumbnail', formData.thumbnail as any);
-    }
-
     // Append hashtags array
     formData.hashtags.forEach((hashtag, index) => {
       data.append(`hashtags[${index}]`, hashtag);
     });
 
     // Append links array
-    formData.links.forEach((link, index) => {
-      data.append(`links[${index}]`, link);
-    });
+    // formData.links.forEach((link, index) => {
+    //   data.append(`links[${index}]`, link);
+    // });
 
     // Append tagged people if exists
     if (formData.taggedPeople && formData.taggedPeople.length > 0) {
@@ -47,13 +43,14 @@ export const uploadVideo = async (formData: VideoUploadFormData): Promise<VideoU
         data.append(`taggedPeople[${index}]`, personId);
       });
     }
-
+    console.log("shortdata:", formData)
     // Auth token is automatically added by axios interceptor
-    const response = await axiosClient.post<VideoUploadResponse>('/video/create', data, {
+    const response = await axiosClient.post<ShortUploadResponse>('/shorts/create', data, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${token}`,
+        // Authorization: `Bearer ${token}`,
       },
+
       // Track upload progress
       onUploadProgress: (progressEvent) => {
         const percentCompleted = Math.round(
@@ -67,7 +64,7 @@ export const uploadVideo = async (formData: VideoUploadFormData): Promise<VideoU
   } catch (error: any) {
     console.error('Error uploading video:', error);
     throw {
-      message: error.response?.data?.message || 'Failed to upload video',
+      message: error.response?.data?.message || 'Failed to upload short',
       statusCode: error.response?.status || 500,
     };
   }

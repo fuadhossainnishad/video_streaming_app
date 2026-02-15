@@ -26,7 +26,6 @@ import { chartData } from './data';
 import ChannelStatsCard from '@/components/ChannelStatsCard';
 import { CreatorHomeParamalist } from '@/navigation/creator/CreatorHomeStack';
 
-
 type Props = NativeStackNavigationProp<CreatorHomeParamalist, 'CreatorHome'>;
 
 export default function CreatorHomeScreen() {
@@ -36,7 +35,7 @@ export default function CreatorHomeScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  console.log("videos:", videos)
+  console.log('videos:', videos);
 
   const fetchVideos = useCallback(async (isRefresh = false) => {
     try {
@@ -88,22 +87,21 @@ export default function CreatorHomeScreen() {
   const renderContent = () => {
     if (loading) {
       return (
-        <View className="flex-1 justify-center items-center py-20">
+        <View className="flex-1 items-center justify-center py-20">
           <ActivityIndicator size="large" color="#9BD71B" />
-          <Text className="text-gray-400 mt-4">Loading videos...</Text>
+          <Text className="mt-4 text-gray-400">Loading videos...</Text>
         </View>
       );
     }
 
     if (error) {
       return (
-        <View className="flex-1 justify-center items-center py-20">
-          <Text className="text-red-400 text-center mb-4">{error}</Text>
+        <View className="flex-1 items-center justify-center py-20">
+          <Text className="mb-4 text-center text-red-400">{error}</Text>
           <TouchableOpacity
             onPress={() => fetchVideos()}
-            className="bg-[#9BD71B] px-6 py-3 rounded-xl"
-          >
-            <Text className="text-black font-semibold">Retry</Text>
+            className="rounded-xl bg-[#9BD71B] px-6 py-3">
+            <Text className="font-semibold text-black">Retry</Text>
           </TouchableOpacity>
         </View>
       );
@@ -111,10 +109,8 @@ export default function CreatorHomeScreen() {
 
     if (videos.length === 0) {
       return (
-        <View className="flex-1 justify-center items-center py-20">
-          <Text className="text-gray-400 text-center">
-            No videos available at the moment
-          </Text>
+        <View className="flex-1 items-center justify-center py-20">
+          <Text className="text-center text-gray-400">No videos available at the moment</Text>
         </View>
       );
     }
@@ -138,8 +134,7 @@ export default function CreatorHomeScreen() {
       colors={['#46464640', '#17191A', '#17191A', '#17191A', '#17191A']}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      style={styles.gradient}
-    >
+      style={styles.gradient}>
       <SafeAreaView style={styles.container}>
         <View className="gap-y-4">
           {/* Header */}
@@ -147,14 +142,16 @@ export default function CreatorHomeScreen() {
             <Logo height={80} width={80} />
             <View style={styles.headerRight}>
               <TouchableOpacity
-                onPress={() => { }}
+                onPress={() => {}}
                 style={styles.buttonContent}
-                className="border border-[#9BD71B]/50 px-5 py-3.5 rounded-2xl"
-              >
+                className="rounded-2xl border border-[#9BD71B]/50 px-5 py-3.5">
                 <StarIcon height={20} width={20} />
                 <Text style={styles.buttonText}>Go Pro</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => { navigation.navigate('CreatorNotification') }}>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('CreatorNotification');
+                }}>
                 <NotificationIcon height={50} width={50} />
               </TouchableOpacity>
             </View>
@@ -171,12 +168,10 @@ export default function CreatorHomeScreen() {
                 tintColor="#9BD71B"
                 colors={['#9BD71B']}
               />
-            }
-          >
+            }>
             <ChannelStatsCard />
 
             <BarChart data={chartData} year="2024" />
-
 
             {/* Video Feed */}
             {renderContent()}

@@ -19,9 +19,9 @@ import CreatePostScreen from '@/screens/creator/Hub/CreatePost.screen';
 const Stack = createNativeStackNavigator();
 export type HubParamalist = {
   Hub: undefined;
-  CreateVideo: undefined
-  CreateShorts: undefined
-  CreatePost: undefined
+  CreateVideo: undefined;
+  CreateShorts: undefined;
+  CreatePost: undefined;
   ChannelOverview: { channelId: string };
   VideoPlayer: { videoId: string };
   Shorts: { short: ShortData };
@@ -34,9 +34,21 @@ export default function HubStack() {
         {(props) => <OnboardingScreen {...props} onFinish={onFinish} />}
       </Stack.Screen> */}
       <Stack.Screen name="Hub" component={HubScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="CreateVideo" component={CreateVideoScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="CreateShorts" component={CreateShortsScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="CreatePost" component={CreatePostScreen} options={{ headerShown: false }} />
+      <Stack.Screen
+        name="CreateVideo"
+        component={CreateVideoScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="CreateShorts"
+        component={CreateShortsScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="CreatePost"
+        component={CreatePostScreen}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen
         name="ChannelOverview"
         component={ChannelProfileScreen}
@@ -47,14 +59,12 @@ export default function HubStack() {
         component={VideoPlayerScreen}
         options={{ headerShown: false }}
       />
-      <Stack.Screen
-        name="Shorts"
-        component={ShortsScreen}
-        options={{ headerShown: false }} />
+      <Stack.Screen name="Shorts" component={ShortsScreen} options={{ headerShown: false }} />
       <Stack.Screen
         name="ShortsView"
         component={ShortsViewScreen}
-        options={{ headerShown: false }} />
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 }

@@ -8,15 +8,11 @@ import { VideoData } from '../shared/types/video.types';
 
 export interface VideoRenderProps {
   onPress: () => void;
-  videoData?: VideoData
+  videoData?: VideoData;
   onMenuPress?: () => void;
 }
 
-export default function VideoRender({
-  onPress,
-  videoData,
-  onMenuPress,
-}: VideoRenderProps) {
+export default function VideoRender({ onPress, videoData, onMenuPress }: VideoRenderProps) {
   if (!videoData) {
     return null;
   }
@@ -43,17 +39,14 @@ export default function VideoRender({
 
           {/* Duration Badge */}
           <View className="absolute bottom-2 right-2 rounded-xl bg-black/60 px-2 py-1.5">
-            <Text className="text-sm font-semibold text-white">
-              {displayDuration}
-            </Text>
+            <Text className="text-sm font-semibold text-white">{displayDuration}</Text>
           </View>
 
           {/* Three Dot Menu */}
           <View className="absolute right-2 top-3">
             <TouchableOpacity
               onPress={handleMenuPress}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            >
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
               <ThreeDotIcon height={50} width={50} />
             </TouchableOpacity>
           </View>
@@ -70,10 +63,7 @@ export default function VideoRender({
 
           {/* Video Details */}
           <View className="flex-1 gap-1">
-            <Text
-              className="text-base font-semibold leading-5 text-white"
-              numberOfLines={2}
-            >
+            <Text className="text-base font-semibold leading-5 text-white" numberOfLines={2}>
               {videoData.title}
             </Text>
 
@@ -85,16 +75,12 @@ export default function VideoRender({
               <View className="flex-row items-center gap-4">
                 <View className="flex-row items-center gap-1">
                   <ViewIcon height={20} width={20} />
-                  <Text className="text-xs text-gray-400">
-                    {videoData.views}
-                  </Text>
+                  <Text className="text-xs text-gray-400">{videoData.views}</Text>
                 </View>
 
                 <View className="flex-row items-center gap-1">
                   <TimeIcon height={20} width={20} />
-                  <Text className="text-xs text-gray-400">
-                    {videoData.timeAgo}
-                  </Text>
+                  <Text className="text-xs text-gray-400">{videoData.timeAgo}</Text>
                 </View>
               </View>
             </View>

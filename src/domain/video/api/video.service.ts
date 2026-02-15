@@ -1,3 +1,5 @@
+import { axiosClient } from "@/shared/config/axios.config";
+import { GET_ALL_VIDEOS, GET_VIDEO_BY_ID } from "@/shared/constants/api.constants";
 import { mockVideoByIdResponse, mockVideoResponse } from "@/shared/mock/video.mock";
 import { VideoData } from "@/shared/types/video.types";
 import { transformVideoData, transformVideosData } from "@/shared/utils/video.utils";
@@ -30,11 +32,11 @@ export const getAllVideos = async (
 ): Promise<GetVideosResult> => {
     try {
         console.log("all videos:")
-        // const { data } = await axiosClient.get(GET_ALL_VIDEOS, {
-        //     params,
-        // });
+        const { data } = await axiosClient.get(GET_ALL_VIDEOS, {
+            params,
+        });
 
-        const data = mockVideoResponse
+        // const data = mockVideoResponse
         console.log("all videos:", data)
 
         if (data.status !== 'success' || !data.data.videos) {
@@ -63,9 +65,9 @@ export const getAllVideos = async (
  */
 export const getVideoById = async (videoId: string): Promise<VideoData> => {
     try {
-        // const { data } = await axiosClient.get(GET_VIDEO_BY_ID(videoId));
+        const { data } = await axiosClient.get(GET_VIDEO_BY_ID(videoId));
         console.log("all videos:")
-        const data = mockVideoByIdResponse
+        // const data = mockVideoByIdResponse
         console.log("all videos:", data)
         if (!data.data || !data.data.video) {
             throw new Error('Video not found');

@@ -1,6 +1,8 @@
 import { axiosClient } from "@/shared/config/axios.config";
+import { GET_ALL_CHANNEL } from "@/shared/constants/api.constants";
 import { mockChannelDetailsResponse, mockMychannelResponse, mockTopChannelsResponse } from "@/shared/mock/channel.mock";
 import {
+    ApiAllChannelsResponse,
     ApiChannelByIdResponse,
     ChannelData,
     ChannelDetailsData,
@@ -15,10 +17,9 @@ import {
  */
 export const getAllChannels = async (): Promise<ChannelData[]> => {
     try {
-        // const { data } =
-        //     await axiosInstance.get<ApiAllChannelsResponse>("/channel");
+        const { data } = await axiosClient.get<ApiAllChannelsResponse>(GET_ALL_CHANNEL);
 
-        const data = mockTopChannelsResponse
+        // const data = mockTopChannelsResponse
 
 
         if (data.status !== "success" || !data.data) {

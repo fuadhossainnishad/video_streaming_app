@@ -72,7 +72,7 @@ const TabList = [
 ];
 
 export default function MainTabs() {
-  const { setMode } = useAppMode()
+  const { setMode } = useAppMode();
   return (
     <Tab.Navigator
       screenOptions={({ route }) => {
@@ -87,24 +87,24 @@ export default function MainTabs() {
           tabBarStyle: shouldHideTabBar
             ? { display: 'none' }
             : {
-              // // height:100,
-              borderRadius: 20,
-              // gap: 2,
-              // backgroundColor: 'none',
-              // // backgroundColor: '#1D35571A',
-              margin: 20,
-              // marginTop:40,
-              // alignItems: 'center',
-              paddingTop: 34,
-              backgroundColor: '#1D35578A',
-              borderTopWidth: 0,
-              position: 'absolute',
-              alignItems: 'center',
-              left: 50,
-              right: 50,
-              bottom: 20,
-              height: 62,
-            },
+                // // height:100,
+                borderRadius: 20,
+                // gap: 2,
+                // backgroundColor: 'none',
+                // // backgroundColor: '#1D35571A',
+                margin: 20,
+                // marginTop:40,
+                // alignItems: 'center',
+                paddingTop: 34,
+                backgroundColor: '#1D35578A',
+                borderTopWidth: 0,
+                position: 'absolute',
+                alignItems: 'center',
+                left: 50,
+                right: 50,
+                bottom: 20,
+                height: 62,
+              },
           tabBarItemStyle: styles.tabBarItemStyle,
           // tabBarIconStyle: styles.tabBarIconStyle,
         };
@@ -117,11 +117,11 @@ export default function MainTabs() {
           listeners={
             tab.isSwitch
               ? {
-                tabPress: e => {
-                  e.preventDefault();
-                  setMode('creator');
-                },
-              }
+                  tabPress: (e) => {
+                    e.preventDefault();
+                    setMode('creator');
+                  },
+                }
               : undefined
           }
           options={{

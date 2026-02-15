@@ -1,33 +1,33 @@
 // presentation/Add/hooks/useVideoUpload.ts
 import { useState, useCallback } from 'react';
-import * as ImagePicker from 'expo-image-picker';
+// import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import { Asset } from 'expo-asset';
 
-import { uploadVideo } from '@/domain/video/api/upload.service';
-import { FilePickerResult, VideoUploadFormData } from '../types/upload.type';
+import { FilePickerResult } from '../types/upload.type';
+import { ShortUploadFormData } from '../types/uploadShort.type';
+import { uploadShort } from '@/domain/video/api/uploadShort.service';
 
 // EMULATOR FALLBACK - Replace these with your actual asset paths
 const FALLBACK_THUMBNAIL = require('../../../assets/poster/hero.png');
 const FALLBACK_VIDEO = require('../../../assets/videos/sampleVideo.mp4');
 
-export const useVideoUpload = () => {
-    const [formData, setFormData] = useState<VideoUploadFormData>({
+export const useShortUpload = () => {
+    const [formData, setFormData] = useState<ShortUploadFormData>({
         title: '',
         description: '',
         hashtags: [],
-        links: [],
+        // links: [],
         category: 'Education',
         language: 'en',
         visibility: 'public',
         video: null,
-        thumbnail: null,
         taggedPeople: [],
         channelId: '699057df1c97f013438b1f9c'
     });
 
     const [videoFile, setVideoFile] = useState<FilePickerResult | null>(null);
-    const [thumbnailFile, setThumbnailFile] = useState<FilePickerResult | null>(null);
+    // const [thumbnailFile, setThumbnailFile] = useState<FilePickerResult | null>(null);
     const [uploading, setUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -55,67 +55,67 @@ export const useVideoUpload = () => {
     };
 
     // Pick thumbnail image
-    const pickThumbnail = useCallback(async () => {
-        try {
-            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-            if (status !== 'granted') {
-                console.log('Permission denied, using fallback thumbnail');
-                // Use fallback thumbnail
-                const fallback = await loadFallbackAsset(
-                    FALLBACK_THUMBNAIL,
-                    'thumbnail.jpg',
-                    'image/jpeg'
-                );
-                setThumbnailFile(fallback);
-                setFormData(prev => ({ ...prev, thumbnail: fallback as any }));
-                setErrors(prev => ({ ...prev, thumbnail: '' }));
-                return;
-            }
+    // const pickThumbnail = useCallback(async () => {
+    //     try {
+    //         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    //         if (status !== 'granted') {
+    //             console.log('Permission denied, using fallback thumbnail');
+    //             // Use fallback thumbnail
+    //             const fallback = await loadFallbackAsset(
+    //                 FALLBACK_THUMBNAIL,
+    //                 'thumbnail.jpg',
+    //                 'image/jpeg'
+    //             );
+    //             setThumbnailFile(fallback);
+    //             setFormData(prev => ({ ...prev, thumbnail: fallback as any }));
+    //             setErrors(prev => ({ ...prev, thumbnail: '' }));
+    //             return;
+    //         }
 
-            const result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                allowsEditing: true,
-                aspect: [16, 9],
-                quality: 0.8,
-            });
+    //         const result = await ImagePicker.launchImageLibraryAsync({
+    //             mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    //             allowsEditing: true,
+    //             aspect: [16, 9],
+    //             quality: 0.8,
+    //         });
 
-            if (!result.canceled && result.assets[0]) {
-                const asset = result.assets[0];
-                const file: FilePickerResult = {
-                    uri: asset.uri,
-                    name: asset.fileName || 'thumbnail.jpg',
-                    type: 'image/jpeg',
-                    size: asset.fileSize || 0,
-                };
+    //         if (!result.canceled && result.assets[0]) {
+    //             const asset = result.assets[0];
+    //             const file: FilePickerResult = {
+    //                 uri: asset.uri,
+    //                 name: asset.fileName || 'thumbnail.jpg',
+    //                 type: 'image/jpeg',
+    //                 size: asset.fileSize || 0,
+    //             };
 
-                setThumbnailFile(file);
-                setFormData(prev => ({ ...prev, thumbnail: file as any }));
-                setErrors(prev => ({ ...prev, thumbnail: '' }));
-            } else {
-                // User cancelled, use fallback
-                console.log('User cancelled, using fallback thumbnail');
-                const fallback = await loadFallbackAsset(
-                    FALLBACK_THUMBNAIL,
-                    'thumbnail.jpg',
-                    'image/jpeg'
-                );
-                setThumbnailFile(fallback);
-                setFormData(prev => ({ ...prev, thumbnail: fallback as any }));
-                setErrors(prev => ({ ...prev, thumbnail: '' }));
-            }
-        } catch (error) {
-            console.error('Error picking thumbnail:', error);
-            // Use fallback on error
-            const fallback = await loadFallbackAsset(
-                FALLBACK_THUMBNAIL,
-                'thumbnail.jpg',
-                'image/jpeg'
-            );
-            setThumbnailFile(fallback);
-            setFormData(prev => ({ ...prev, thumbnail: fallback as any }));
-            setErrors(prev => ({ ...prev, thumbnail: '' }));
-        }
-    }, []);
+    //             setThumbnailFile(file);
+    //             setFormData(prev => ({ ...prev, thumbnail: file as any }));
+    //             setErrors(prev => ({ ...prev, thumbnail: '' }));
+    //         } else {
+    //             // User cancelled, use fallback
+    //             console.log('User cancelled, using fallback thumbnail');
+    //             const fallback = await loadFallbackAsset(
+    //                 FALLBACK_THUMBNAIL,
+    //                 'thumbnail.jpg',
+    //                 'image/jpeg'
+    //             );
+    //             setThumbnailFile(fallback);
+    //             setFormData(prev => ({ ...prev, thumbnail: fallback as any }));
+    //             setErrors(prev => ({ ...prev, thumbnail: '' }));
+    //         }
+    //     } catch (error) {
+    //         console.error('Error picking thumbnail:', error);
+    //         // Use fallback on error
+    //         const fallback = await loadFallbackAsset(
+    //             FALLBACK_THUMBNAIL,
+    //             'thumbnail.jpg',
+    //             'image/jpeg'
+    //         );
+    //         setThumbnailFile(fallback);
+    //         setFormData(prev => ({ ...prev, thumbnail: fallback as any }));
+    //         setErrors(prev => ({ ...prev, thumbnail: '' }));
+    //     }
+    // }, []);
 
     // Pick video file
     const pickVideo = useCallback(async () => {
@@ -166,7 +166,7 @@ export const useVideoUpload = () => {
 
     // Update form field
     const updateField = useCallback(
-        (field: keyof VideoUploadFormData, value: any) => {
+        (field: keyof ShortUploadFormData, value: any) => {
             setFormData(prev => ({ ...prev, [field]: value }));
             setErrors(prev => ({ ...prev, [field]: '' }));
         },
@@ -193,23 +193,23 @@ export const useVideoUpload = () => {
     }, []);
 
     // Add link
-    const addLink = useCallback((link: string) => {
-        const cleanLink = link.trim();
-        if (cleanLink) {
-            setFormData(prev => ({
-                ...prev,
-                links: [...prev.links, cleanLink],
-            }));
-        }
-    }, []);
+    // const addLink = useCallback((link: string) => {
+    //     const cleanLink = link.trim();
+    //     if (cleanLink) {
+    //         setFormData(prev => ({
+    //             ...prev,
+    //             links: [...prev.links, cleanLink],
+    //         }));
+    //     }
+    // }, []);
 
     // Remove link
-    const removeLink = useCallback((index: number) => {
-        setFormData(prev => ({
-            ...prev,
-            links: prev.links.filter((_, i) => i !== index),
-        }));
-    }, []);
+    // const removeLink = useCallback((index: number) => {
+    //     setFormData(prev => ({
+    //         ...prev,
+    //         links: prev.links.filter((_, i) => i !== index),
+    //     }));
+    // }, []);
 
     // Auto-load fallback files for testing (call this from screen)
     const loadTestFiles = useCallback(async () => {
@@ -222,7 +222,7 @@ export const useVideoUpload = () => {
                 'thumbnail.jpg',
                 'image/jpeg'
             );
-            setThumbnailFile(thumbnail);
+            // setThumbnailFile(thumbnail);
             setFormData(prev => ({ ...prev, thumbnail: thumbnail as any }));
 
             // Load fallback video
@@ -258,13 +258,13 @@ export const useVideoUpload = () => {
             newErrors.video = 'Video is required';
         }
 
-        if (!thumbnailFile) {
-            newErrors.thumbnail = 'Thumbnail is required';
-        }
+        // if (!thumbnailFile) {
+        //     newErrors.thumbnail = 'Thumbnail is required';
+        // }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
-    }, [formData, videoFile, thumbnailFile]);
+    }, [formData, videoFile]);
 
     // Submit form
     const submitUpload = useCallback(async () => {
@@ -276,7 +276,7 @@ export const useVideoUpload = () => {
             setUploading(true);
             setUploadProgress(0);
 
-            const response = await uploadVideo(formData);
+            const response = await uploadShort(formData);
 
             setUploadProgress(100);
             return response;
@@ -294,17 +294,16 @@ export const useVideoUpload = () => {
             title: '',
             description: '',
             hashtags: [],
-            links: [],
+            // links: [],
             category: 'Education',
             language: 'en',
             visibility: 'public',
             video: null,
-            thumbnail: null,
             taggedPeople: [],
-            channelId: ''
+            channelId: '699057df1c97f013438b1f9c'
         });
         setVideoFile(null);
-        setThumbnailFile(null);
+        // setThumbnailFile(null);
         setErrors({});
         setUploadProgress(0);
     }, []);
@@ -312,17 +311,17 @@ export const useVideoUpload = () => {
     return {
         formData,
         videoFile,
-        thumbnailFile,
+        // thumbnailFile,
         uploading,
         uploadProgress,
         errors,
-        pickThumbnail,
+        // pickThumbnail,
         pickVideo,
         updateField,
         addHashtag,
         removeHashtag,
-        addLink,
-        removeLink,
+        // addLink,
+        // removeLink,
         submitUpload,
         resetForm,
         loadTestFiles, // NEW: For testing in emulator

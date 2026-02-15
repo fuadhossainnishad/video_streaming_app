@@ -2,145 +2,148 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import EditProfileComponent from './components/EditCreatorProfile.component';
-import ArrowIcon from '../../../../assets/icons/leftArrow2.svg'
+import ArrowIcon from '../../../../assets/icons/leftArrow2.svg';
 import { ProfileParamalist } from '@/navigation/ProfileStack';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import StarIcon from '../../../../assets/icons/star.svg';
 import SettingsIcon from '../../../../assets/icons/settings.svg';
 import NotificationIcon from '../../../../assets/icons/notification.svg';
-import LogoutIcon from '../../../../assets/icons/logout.svg'
+import LogoutIcon from '../../../../assets/icons/logout.svg';
 import { CreatorProfileParamalist } from '@/navigation/creator/CreatorProfileStack';
 import EditCreatorProfileComponent from './components/EditCreatorProfile.component';
 type Props = NativeStackNavigationProp<CreatorProfileParamalist, 'CreatorProfile'>;
 
 export default function CreatorProfileScreen() {
-    const navigation = useNavigation<Props>();
+  const navigation = useNavigation<Props>();
 
-    return (
-        <SafeAreaView
-            edges={['top']}
-            className='bg-black p-4 '
-            style={styles.container}
-        >
-            <ScrollView
+  return (
+    <SafeAreaView edges={['top']} className="bg-black p-4 " style={styles.container}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.containerScroll}>
+        <View className="flex-row items-center justify-between">
+          <Text className="text-3xl font-bold text-white">Profile</Text>
+          <View style={styles.headerRight}>
+            <TouchableOpacity
+              onPress={() => {}}
+              style={styles.buttonContent}
+              className="rounded-2xl border border-[#9BD71B]/50 px-5 py-3.5">
+              <StarIcon height={20} width={20} />
+              <Text style={styles.buttonText}>Go Pro</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('Settings');
+              }}>
+              <SettingsIcon height={50} width={50} />
+            </TouchableOpacity>
+          </View>
+        </View>
 
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.containerScroll}
+        <EditCreatorProfileComponent
+          viewChannel={() => navigation.navigate('ChannelOverview', { channelId: '123' })}
+        />
+        <View className=" gap-2">
+          {/* Settings */}
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('Following');
+            }}
+            className="flex-row items-center gap-4 rounded-2xl bg-white/20 p-2 pr-4">
+            <NotificationIcon height={40} width={40} />
+            <Text className="flex-1 text-lg text-white">Bank Details</Text>
+            <ArrowIcon height={24} width={24} />
+          </TouchableOpacity>
 
-            >
-                <View className='flex-row items-center justify-between'>
-                    <Text className="text-3xl font-bold text-white">Profile</Text>
-                    <View style={styles.headerRight}>
-                        <TouchableOpacity
-                            onPress={() => { }}
-                            style={styles.buttonContent}
-                            className='border border-[#9BD71B]/50 px-5 py-3.5 rounded-2xl'
-                        >
-                            <StarIcon height={20} width={20} />
-                            <Text style={styles.buttonText}>Go Pro</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={() => { navigation.navigate('Settings') }}
-                        >
-                            <SettingsIcon height={50} width={50} />
-                        </TouchableOpacity>
-                    </View>
-                </View>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('Download');
+            }}
+            className="flex-row items-center gap-4 rounded-2xl bg-white/20 p-2 pr-4">
+            <NotificationIcon height={40} width={40} />
+            <Text className="flex-1 text-lg text-white">Withdraws</Text>
+            <ArrowIcon height={24} width={24} />
+          </TouchableOpacity>
 
-                <EditCreatorProfileComponent
-                    viewChannel={() => navigation.navigate('ChannelOverview', { channelId: '123' })}
-                />
-                <View className=" gap-2">
-                    {/* Settings */}
-                    <TouchableOpacity
-                        onPress={() => { navigation.navigate('Following') }}
-                        className='flex-row items-center gap-4 p-2 pr-4 bg-white/20 rounded-2xl'>
-                        <NotificationIcon height={40} width={40} />
-                        <Text className="text-lg text-white flex-1">Following</Text>
-                        <ArrowIcon height={24} width={24} />
-                    </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('Coupon');
+            }}
+            className="flex-row items-center gap-4 rounded-2xl bg-white/20 p-2 pr-4">
+            <NotificationIcon height={40} width={40} />
+            <Text className="flex-1 text-lg text-white">Coupon Cards</Text>
+            <ArrowIcon height={24} width={24} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('PivacyPolicy');
+            }}
+            className="mt-5 flex-row items-center gap-4 rounded-2xl bg-white/20 p-2 pr-4">
+            <NotificationIcon height={40} width={40} />
+            <Text className="flex-1 text-lg text-white">Privacy Policy</Text>
+            <ArrowIcon height={24} width={24} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('TermsAndConditions');
+            }}
+            className="flex-row items-center gap-4 rounded-2xl bg-white/20 p-2 pr-4">
+            <NotificationIcon height={40} width={40} />
+            <Text className="flex-1 text-lg text-white">Terms & Conditions</Text>
+            <ArrowIcon height={24} width={24} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('AboutUs');
+            }}
+            className="flex-row items-center gap-4 rounded-2xl bg-white/20 p-2 pr-4">
+            <NotificationIcon height={40} width={40} />
+            <Text className="flex-1 text-lg text-white">About Us</Text>
+            <ArrowIcon height={24} width={24} />
+          </TouchableOpacity>
+        </View>
 
-
-                    <TouchableOpacity
-                        onPress={() => { navigation.navigate('Download') }}
-                        className='flex-row items-center gap-4 p-2 pr-4 bg-white/20 rounded-2xl'>
-                        <NotificationIcon height={40} width={40} />
-                        <Text className="text-lg text-white flex-1">Downloads</Text>
-                        <ArrowIcon height={24} width={24} />
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        onPress={() => { navigation.navigate('Coupon') }}
-                        className='flex-row items-center gap-4 p-2 pr-4 bg-white/20 rounded-2xl'>
-                        <NotificationIcon height={40} width={40} />
-                        <Text className="text-lg text-white flex-1">Coupon Cards</Text>
-                        <ArrowIcon height={24} width={24} />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => { navigation.navigate('PivacyPolicy') }}
-                        className='mt-5 flex-row items-center gap-4 p-2 pr-4 bg-white/20 rounded-2xl'>
-                        <NotificationIcon height={40} width={40} />
-                        <Text className="text-lg text-white flex-1">Privacy Policy</Text>
-                        <ArrowIcon height={24} width={24} />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => { navigation.navigate('TermsAndConditions') }}
-                        className='flex-row items-center gap-4 p-2 pr-4 bg-white/20 rounded-2xl'>
-                        <NotificationIcon height={40} width={40} />
-                        <Text className="text-lg text-white flex-1">Terms & Conditions</Text>
-                        <ArrowIcon height={24} width={24} />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => { navigation.navigate('AboutUs') }}
-                        className='flex-row items-center gap-4 p-2 pr-4 bg-white/20 rounded-2xl'>
-                        <NotificationIcon height={40} width={40} />
-                        <Text className="text-lg text-white flex-1">About Us</Text>
-                        <ArrowIcon height={24} width={24} />
-                    </TouchableOpacity>
-                </View>
-
-                <TouchableOpacity
-                    className='flex-row items-center gap-3 border border-[#EE3A3A] rounded-full px-6 py-2'
-                    style={{ alignSelf: 'center' }}
-                >
-                    <LogoutIcon height={16} width={16} color="#EE3A3A" />
-                    <Text className="text-lg font-bold text-[#EE3A3A]">Log Out</Text>
-                </TouchableOpacity>
-            </ScrollView>
-        </SafeAreaView>
-    );
-};
+        <TouchableOpacity
+          className="flex-row items-center gap-3 rounded-full border border-[#EE3A3A] px-6 py-2"
+          style={{ alignSelf: 'center' }}>
+          <LogoutIcon height={16} width={16} color="#EE3A3A" />
+          <Text className="text-lg font-bold text-[#EE3A3A]">Log Out</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    containerScroll: {
-        paddingBottom: 100,
-        gap: 16
-    },
-    videoscroll: {
-        flexDirection: 'row-reverse',
-        gap: 10,
-        height: 200
-    },
-    headerRight: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 14,
-    },
-    buttonText: {
-        fontWeight: '500',
-        color: '#9BD71B',
-    },
-    buttonContent: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 6,
-        borderRadius: 18,
-        // paddingVertical: 8,
-        paddingHorizontal: 12,
-        backgroundColor: 'transparent',
-    },
+  container: {
+    flex: 1,
+  },
+  containerScroll: {
+    paddingBottom: 100,
+    gap: 16,
+  },
+  videoscroll: {
+    flexDirection: 'row-reverse',
+    gap: 10,
+    height: 200,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+  },
+  buttonText: {
+    fontWeight: '500',
+    color: '#9BD71B',
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    borderRadius: 18,
+    // paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: 'transparent',
+  },
 });
