@@ -1,31 +1,95 @@
-import axios, { AxiosError } from "axios";
-import appConfig from "./app.config";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+// shared/config/axios.config.ts
+import axios, { AxiosError } from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import appConfig from './app.config';
+import { REFRESH_TOKEN } from '../constants/api.constants';
+
+const TOKEN_KEY = '@auth_tokens';
 
 export const axiosClient = axios.create({
     baseURL: appConfig.base_url as string,
     timeout: 100000,
+    headers: {
+        'Content-Type': 'application/json',
+    },
+});
 
-})
-
+// Request interceptor - Add auth token
 axiosClient.interceptors.request.use(
-
     async (config) => {
-        // Add auth token if needed
-        const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5OGNlNWZjODI3ZWQ0ZDgyZTQ4ZjU2NSIsImlhdCI6MTc3MTA2MTM4OCwiZXhwIjoxNzcxNjY2MTg4fQ.HD8bXkCiA1AGN90xviEK0FTvGAisxTumYAIIWMoxvmw'
-        AsyncStorage.setItem('token', token)
-        const token2 = await AsyncStorage.getItem('token')
-        if (token) {
-            config.headers.Authorization = `Bearer ${token2}`;
+        try {
+            // Get token from storage
+            const tokensJson = await AsyncStorage.getItem(TOKEN_KEY);
+
+            if (tokensJson) {
+                const tokens = JSON.parse(tokensJson);
+                if (tokens.accessToken) {
+                    config.headers.Authorization = `Bearer ${tokens.accessToken}`;
+                }
+            }
+        } catch (error) {
+            console.error('Error loading token:', error);
         }
+
         return config;
     },
-    (error) => Promise.reject(error)
-)
+    (error) => {
+        return Promise.reject(error);
+    }
+);
 
+// Response interceptor - Handle token refresh and errors
 axiosClient.interceptors.response.use(
     (response) => response,
-    (error: AxiosError) => {
+    async (error: AxiosError) => {
+        const originalRequest = error.config as any;
+
+        // If 401 Unauthorized and haven't retried yet, try to refresh token
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
+
+            try {
+                const tokensJson = await AsyncStorage.getItem(TOKEN_KEY);
+
+                if (tokensJson) {
+                    const tokens = JSON.parse(tokensJson);
+
+                    // Attempt to refresh token
+                    const response = await axios.post(
+                        `${appConfig.base_url}/${REFRESH_TOKEN}`,
+                        {
+                            refresh_token: tokens.refreshToken,
+                        }
+                    );
+                    console.log('refresh token:', response)
+
+                    if (response.data.status === 'success') {
+                        // Save new tokens
+                        const newTokens = {
+                            accessToken: response.data.access_token,
+                            refreshToken: response.data.refresh_token,
+                        };
+
+                        await AsyncStorage.setItem(TOKEN_KEY, JSON.stringify(newTokens));
+
+                        // Update the failed request with new token
+                        originalRequest.headers.Authorization = `Bearer ${newTokens.accessToken}`;
+
+                        // Retry the original request
+                        return axiosClient(originalRequest);
+                    }
+                }
+            } catch (refreshError) {
+                // Token refresh failed - clear storage
+                console.error('Token refresh failed:', refreshError);
+                await AsyncStorage.multiRemove([TOKEN_KEY, '@user_data']);
+
+                // You might want to trigger navigation to login screen here
+                // Example: navigationRef.current?.reset({ index: 0, routes: [{ name: 'Auth' }] });
+            }
+        }
+
+        // Format error response
         const formattedError = {
             status: 'error',
             message:
@@ -40,4 +104,6 @@ axiosClient.interceptors.response.use(
     }
 );
 
-console.log("BASE URL:", appConfig.base_url!);
+console.log('BASE URL:', appConfig.base_url!);
+
+export default axiosClient;

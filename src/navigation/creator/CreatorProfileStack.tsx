@@ -16,15 +16,16 @@ import VideoPlayerScreen from '@/screens/Video/VideoPlayer.screen';
 import SavedScreen from '@/screens/Profile/Saved.screen';
 import CreatorProfileScreen from '@/screens/creator/CreatorProfile/CreatorProfile.screen';
 import EditCreatorProfileScreen from '@/screens/creator/CreatorProfile/EditCreatorProfile.screen';
+import { ChannelData } from '@/shared/types/channel.types';
+import CreateChannelScreen from '@/screens/creator/CreatorProfile/CreateChannel.screen';
 
 
 const Stack = createNativeStackNavigator();
 export type CreatorProfileParamalist = {
   CreatorProfile: undefined;
-  EditCreatorProfile: {
-    username: string,
-    email: string,
-    avatar: string,
+  CreateChannel: {
+    isEdit: boolean,
+    channelData?: ChannelData,
   }
   PivacyPolicy: undefined
   TermsAndConditions: undefined
@@ -45,8 +46,8 @@ export default function CreatorProfileStack() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="CeatorProfile" component={CreatorProfileScreen} options={{ headerShown: false }} />
       <Stack.Screen
-        name="EditCreatorProfile"
-        component={EditCreatorProfileScreen}
+        name="CreateChannel"
+        component={CreateChannelScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen

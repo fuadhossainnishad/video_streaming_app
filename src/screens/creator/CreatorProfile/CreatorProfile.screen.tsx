@@ -1,10 +1,8 @@
+// presentation/CreatorProfile/CreatorProfileScreen.tsx
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import EditProfileComponent from './components/EditCreatorProfile.component';
 import ArrowIcon from '../../../../assets/icons/leftArrow2.svg';
-import { ProfileParamalist } from '@/navigation/ProfileStack';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import StarIcon from '../../../../assets/icons/star.svg';
 import SettingsIcon from '../../../../assets/icons/settings.svg';
@@ -12,13 +10,39 @@ import NotificationIcon from '../../../../assets/icons/notification.svg';
 import LogoutIcon from '../../../../assets/icons/logout.svg';
 import { CreatorProfileParamalist } from '@/navigation/creator/CreatorProfileStack';
 import EditCreatorProfileComponent from './components/EditCreatorProfile.component';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useAuth } from '@/shared/hooks/useauth';
+
 type Props = NativeStackNavigationProp<CreatorProfileParamalist, 'CreatorProfile'>;
 
 export default function CreatorProfileScreen() {
   const navigation = useNavigation<Props>();
+  const { logout, loading } = useAuth();
+
+  const handleLogout = () => {
+    Alert.alert('Logout', 'Are you sure you want to logout?', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Logout',
+        style: 'destructive',
+        onPress: async () => {
+          const result = await logout();
+          if (result.success) {
+            // Navigation will be handled by AuthProvider
+            Alert.alert('Success', 'Logged out successfully');
+          } else {
+            Alert.alert('Error', result.error || 'Failed to logout');
+          }
+        },
+      },
+    ]);
+  };
 
   return (
-    <SafeAreaView edges={['top']} className="bg-black p-4 " style={styles.container}>
+    <SafeAreaView edges={['top']} className="bg-black p-4" style={styles.container}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.containerScroll}>
@@ -26,7 +50,7 @@ export default function CreatorProfileScreen() {
           <Text className="text-3xl font-bold text-white">Profile</Text>
           <View style={styles.headerRight}>
             <TouchableOpacity
-              onPress={() => {}}
+              onPress={() => { }}
               style={styles.buttonContent}
               className="rounded-2xl border border-[#9BD71B]/50 px-5 py-3.5">
               <StarIcon height={20} width={20} />
@@ -44,8 +68,9 @@ export default function CreatorProfileScreen() {
         <EditCreatorProfileComponent
           viewChannel={() => navigation.navigate('ChannelOverview', { channelId: '123' })}
         />
-        <View className=" gap-2">
-          {/* Settings */}
+
+        <View className="gap-2">
+          {/* Bank Details */}
           <TouchableOpacity
             onPress={() => {
               navigation.navigate('Following');
@@ -56,6 +81,7 @@ export default function CreatorProfileScreen() {
             <ArrowIcon height={24} width={24} />
           </TouchableOpacity>
 
+          {/* Withdraws */}
           <TouchableOpacity
             onPress={() => {
               navigation.navigate('Download');
@@ -66,6 +92,7 @@ export default function CreatorProfileScreen() {
             <ArrowIcon height={24} width={24} />
           </TouchableOpacity>
 
+          {/* Coupon Cards */}
           <TouchableOpacity
             onPress={() => {
               navigation.navigate('Coupon');
@@ -75,6 +102,8 @@ export default function CreatorProfileScreen() {
             <Text className="flex-1 text-lg text-white">Coupon Cards</Text>
             <ArrowIcon height={24} width={24} />
           </TouchableOpacity>
+
+          {/* Privacy Policy */}
           <TouchableOpacity
             onPress={() => {
               navigation.navigate('PivacyPolicy');
@@ -84,6 +113,8 @@ export default function CreatorProfileScreen() {
             <Text className="flex-1 text-lg text-white">Privacy Policy</Text>
             <ArrowIcon height={24} width={24} />
           </TouchableOpacity>
+
+          {/* Terms & Conditions */}
           <TouchableOpacity
             onPress={() => {
               navigation.navigate('TermsAndConditions');
@@ -93,6 +124,8 @@ export default function CreatorProfileScreen() {
             <Text className="flex-1 text-lg text-white">Terms & Conditions</Text>
             <ArrowIcon height={24} width={24} />
           </TouchableOpacity>
+
+          {/* About Us */}
           <TouchableOpacity
             onPress={() => {
               navigation.navigate('AboutUs');
@@ -104,11 +137,16 @@ export default function CreatorProfileScreen() {
           </TouchableOpacity>
         </View>
 
+        {/* Logout Button */}
         <TouchableOpacity
           className="flex-row items-center gap-3 rounded-full border border-[#EE3A3A] px-6 py-2"
-          style={{ alignSelf: 'center' }}>
+          style={{ alignSelf: 'center' }}
+          onPress={handleLogout}
+          disabled={loading}>
           <LogoutIcon height={16} width={16} color="#EE3A3A" />
-          <Text className="text-lg font-bold text-[#EE3A3A]">Log Out</Text>
+          <Text className="text-lg font-bold text-[#EE3A3A]">
+            {loading ? 'Logging out...' : 'Log Out'}
+          </Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -122,11 +160,6 @@ const styles = StyleSheet.create({
   containerScroll: {
     paddingBottom: 100,
     gap: 16,
-  },
-  videoscroll: {
-    flexDirection: 'row-reverse',
-    gap: 10,
-    height: 200,
   },
   headerRight: {
     flexDirection: 'row',
@@ -142,7 +175,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     borderRadius: 18,
-    // paddingVertical: 8,
     paddingHorizontal: 12,
     backgroundColor: 'transparent',
   },

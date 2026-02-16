@@ -21,7 +21,6 @@ import HashtagInput from './components/HashtagInput';
 // Icons
 import BackIcon from '../../../../assets/icons/arrow2.svg';
 import DeleteIcon from '../../../../assets/icons/delete.svg';
-import { useVideoUpload } from '@/shared/hooks/useVideoUpload';
 import { useShortUpload } from '@/shared/hooks/useShortUpload';
 
 // Hooks

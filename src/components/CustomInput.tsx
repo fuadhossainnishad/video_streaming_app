@@ -1,12 +1,16 @@
+// components/CustomInput.tsx
 import React from 'react';
-import { View, Text, TextInput } from 'react-native';
+import { View, Text, TextInput, TextInputProps } from 'react-native';
 
-interface CustomInputProps {
+interface CustomInputProps extends Omit<TextInputProps, 'onChange'> {
   label: string;
   placeholder: string;
   secure?: boolean;
   value: string;
   onChange: (text: string) => void;
+  editable?: boolean;
+  keyboardType?: TextInputProps['keyboardType'];
+  autoCapitalize?: TextInputProps['autoCapitalize'];
 }
 
 export default function CustomInput({
@@ -15,6 +19,10 @@ export default function CustomInput({
   secure = false,
   value,
   onChange,
+  editable = true,
+  keyboardType = 'default',
+  autoCapitalize = 'sentences',
+  ...rest
 }: CustomInputProps) {
   return (
     <View className="mt-3 w-full">
@@ -26,7 +34,13 @@ export default function CustomInput({
         secureTextEntry={secure}
         value={value}
         onChangeText={onChange}
-        className="rounded-xl border border-white/50 p-3 text-white"
+        editable={editable}
+        keyboardType={keyboardType}
+        autoCapitalize={autoCapitalize}
+        className={`rounded-xl border border-white/50 p-3 text-white ${
+          !editable ? 'opacity-50' : ''
+        }`}
+        {...rest}
       />
     </View>
   );

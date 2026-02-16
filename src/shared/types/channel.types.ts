@@ -54,6 +54,13 @@ export interface ChannelData {
     avatar: string;
 }
 
+export interface ICreateChannelApi {
+    channelName: string
+    description: string
+    channelIcon: File
+    link: string
+}
+
 export interface ChannelDetailsData extends ChannelData {
     description: string;
     ownerName: string;
