@@ -54,16 +54,12 @@ export default function ResetPasswordScreen({ navigation }: { navigation: Props 
         setEmail(storedEmail);
         setOtp(storedOtp);
       } else {
-        Alert.alert(
-          'Error',
-          'Session expired. Please start the password reset process again.',
-          [
-            {
-              text: 'OK',
-              onPress: () => navigation.navigate('SendOtp'),
-            },
-          ]
-        );
+        Alert.alert('Error', 'Session expired. Please start the password reset process again.', [
+          {
+            text: 'OK',
+            onPress: () => navigation.navigate('SendOtp'),
+          },
+        ]);
       }
     };
 

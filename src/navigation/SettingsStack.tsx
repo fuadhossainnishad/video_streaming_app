@@ -1,7 +1,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import SettingsScreen from '@/screens/Settings/Settings.screen';
 import ChangePasswordScreen from '@/screens/Settings/ChangePassword.screen';
+import SettingsScreen from '@/screens/Settings/Settngs.screen';
 
 const Stack = createNativeStackNavigator();
 export type SettingsParamalist = {
@@ -17,7 +17,6 @@ export default function SettingsStack() {
         component={ChangePasswordScreen}
         options={{ headerShown: false }}
       />
-
     </Stack.Navigator>
   );
 }

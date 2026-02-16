@@ -1,7 +1,7 @@
 // domain/short/api/short.service.ts
 
 import { axiosClient } from "@/shared/config/axios.config";
-import { GET_ALL_SHORT } from "@/shared/constants/api.constants";
+import { GET_ALL_SHORT, GET_SHORT_BY_ID } from "@/shared/constants/api.constants";
 import { mockShortsResponse } from "@/shared/mock/shorts.mock";
 import { ApiShortPagination, ApiShortResponse, ShortData } from "@/shared/types/shorts.types";
 import { transformShort, transformShorts } from "@/shared/utils/shorts.utils";
@@ -44,27 +44,26 @@ export const getShorts = async (
         };
     }
 };
+
 /**
- * Fetch a single short by ID
+ * Fetch a single short by ID from API
+ * GET /shorts/:id
  */
 export const getShortById = async (shortId: string): Promise<ShortData> => {
     try {
-        // const { data } = await axiosClient.get(GET_SHORT_BY_ID(shortId));
-        const allShorts = mockShortsResponse.data.shorts;
-
-        const foundShort = allShorts.find(
-            short => short._id === shortId
-        );
-
-        if (!foundShort) {
-            throw new Error("Short not found");
+        const { data } = await axiosClient.get(GET_SHORT_BY_ID(shortId));
+        console.log("getShortById:", data)
+        if (data.status !== 'success' || !data.data) {
+            throw new Error('Short not found');
         }
+        console.log("getShortById:", transformShort(data.data.short))
 
-        return transformShort(foundShort);
+        // Transform single short
+        return transformShort(data.data.short);
     } catch (error: any) {
-        console.error("Error fetching short:", error);
+        console.error('Error fetching short:', error);
         throw {
-            message: error.message || "Failed to fetch short",
+            message: error.message || 'Failed to fetch short',
             statusCode: error.statusCode || 500,
         };
     }

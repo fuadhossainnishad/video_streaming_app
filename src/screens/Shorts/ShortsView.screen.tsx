@@ -1,17 +1,17 @@
 // presentation/shorts/ShortsViewScreen.tsx
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, TouchableOpacity, Text, StatusBar, ActivityIndicator } from 'react-native';
+import { View, TouchableOpacity, Text, StatusBar, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Video } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Share from '../../../assets/icons/share.svg'
-import Saved from '../../../assets/icons/saved.svg'
-import Report from '../../../assets/icons/report.svg'
-import Like from '../../../assets/icons/like2.svg'
-import LikeInActive from '../../../assets/icons/like3.svg'
-import Dislike from '../../../assets/icons/dislike3.svg'
-import DislikeInActive from '../../../assets/icons/dislike2.svg'
+import Share from '../../../assets/icons/share.svg';
+import Saved from '../../../assets/icons/saved.svg';
+import Report from '../../../assets/icons/report.svg';
+import Like from '../../../assets/icons/like2.svg';
+import LikeInActive from '../../../assets/icons/like3.svg';
+import Dislike from '../../../assets/icons/dislike3.svg';
+import DislikeInActive from '../../../assets/icons/dislike2.svg';
 import ActionButton from './components/ActionButton';
 import VideoPlayer from './components/VideoPlayer';
 import BottomInfo from './components/BottomInfo';
@@ -29,58 +29,59 @@ export default function ShortsViewScreen() {
   const navigation = useNavigation<Props>();
   const route = useRoute<any>();
   const { shortId } = route.params;
+
   const videoRef = useRef<Video>(null);
-  const [likeCount, setLikeCount] = useState(16);
-  const [dislikeCount, setDislikeCount] = useState(16);
-  const [commentCount] = useState(16);
+  const [likeCount, setLikeCount] = useState(0);
+  const [dislikeCount, setDislikeCount] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [isDisliked, setIsDisliked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [videoProgress, setVideoProgress] = useState(0);
   const [videoDuration, setVideoDuration] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [shortData, setShortData] = useState<ShortData>();
-  console.log("videos:", shortData)
+  const [shortData, setShortData] = useState<ShortData | null>(null);
 
-  const fetchVideos = useCallback(async (isRefresh = false) => {
+  const fetchShort = useCallback(async () => {
     try {
-      if (isRefresh) {
-        setRefreshing(true);
-      } else {
-        setLoading(true);
-      }
+      setLoading(true);
       setError(null);
 
-      const result = await getShortById(shortId)
+      console.log('Fetching short with ID:', shortId);
+      const result = await getShortById(shortId);
+      console.log('Fetched short data:', result);
+
       setShortData(result);
+      setLikeCount(result.likes || 0);
+      setDislikeCount(result.dislikes || 0);
     } catch (err: any) {
-      console.error('Error fetching videos:', err);
-      setError(err.message || 'Failed to load videos');
+      console.error('Error fetching short:', err);
+      const errorMessage = err.message || 'Failed to load short';
+      setError(errorMessage);
+      Alert.alert('Error', errorMessage);
     } finally {
       setLoading(false);
-      setRefreshing(false);
     }
   }, [shortId]);
 
   useEffect(() => {
-    fetchVideos();
-  }, [fetchVideos]);
-
-  const handleRefresh = useCallback(() => {
-    fetchVideos(true);
-  }, [fetchVideos]);
+    if (shortId) {
+      fetchShort();
+    } else {
+      setError('No short ID provided');
+      setLoading(false);
+    }
+  }, [shortId, fetchShort]);
 
   const handleLike = () => {
     if (isLiked) {
-      setLikeCount(prev => prev - 1);
+      setLikeCount((prev) => prev - 1);
       setIsLiked(false);
     } else {
-      setLikeCount(prev => prev + 1);
+      setLikeCount((prev) => prev + 1);
       setIsLiked(true);
       if (isDisliked) {
-        setDislikeCount(prev => prev - 1);
+        setDislikeCount((prev) => prev - 1);
         setIsDisliked(false);
       }
     }
@@ -88,13 +89,13 @@ export default function ShortsViewScreen() {
 
   const handleDislike = () => {
     if (isDisliked) {
-      setDislikeCount(prev => prev - 1);
+      setDislikeCount((prev) => prev - 1);
       setIsDisliked(false);
     } else {
-      setDislikeCount(prev => prev + 1);
+      setDislikeCount((prev) => prev + 1);
       setIsDisliked(true);
       if (isLiked) {
-        setLikeCount(prev => prev - 1);
+        setLikeCount((prev) => prev - 1);
         setIsLiked(false);
       }
     }
@@ -107,20 +108,20 @@ export default function ShortsViewScreen() {
 
   const handleSeek = async (position: number) => {
     if (videoRef.current) {
-      await videoRef.current.setPositionAsync(position * 1000); // Convert to milliseconds
+      await videoRef.current.setPositionAsync(position * 1000);
     }
   };
 
   const skipBackward = async () => {
     if (videoRef.current) {
-      const newPosition = Math.max(0, videoProgress - 10); // Skip back 10 seconds
+      const newPosition = Math.max(0, videoProgress - 10);
       await videoRef.current.setPositionAsync(newPosition * 1000);
     }
   };
 
   const skipForward = async () => {
     if (videoRef.current && videoDuration) {
-      const newPosition = Math.min(videoDuration, videoProgress + 10); // Skip forward 10 seconds
+      const newPosition = Math.min(videoDuration, videoProgress + 10);
       await videoRef.current.setPositionAsync(newPosition * 1000);
     }
   };
@@ -128,33 +129,22 @@ export default function ShortsViewScreen() {
   const renderContent = () => {
     if (loading) {
       return (
-        <View className="flex-1 justify-center items-center py-20">
+        <View className="flex-1 items-center justify-center bg-black">
           <ActivityIndicator size="large" color="#9BD71B" />
-          <Text className="text-gray-400 mt-4">Loading videos...</Text>
+          <Text className="mt-4 text-gray-400">Loading short...</Text>
         </View>
       );
     }
 
-    if (error) {
+    if (error || !shortData) {
       return (
-        <View className="flex-1 justify-center items-center py-20">
-          <Text className="text-red-400 text-center mb-4">{error}</Text>
+        <View className="flex-1 items-center justify-center bg-black px-6">
+          <Text className="mb-4 text-center text-red-400">{error || 'Short not found'}</Text>
           <TouchableOpacity
-            onPress={() => fetchVideos()}
-            className="bg-[#9BD71B] px-6 py-3 rounded-xl"
-          >
-            <Text className="text-black font-semibold">Retry</Text>
+            onPress={() => navigation.goBack()}
+            className="rounded-xl bg-[#9BD71B] px-6 py-3">
+            <Text className="font-semibold text-black">Go Back</Text>
           </TouchableOpacity>
-        </View>
-      );
-    }
-
-    if (!shortData) {
-      return (
-        <View className="flex-1 justify-center items-center py-20">
-          <Text className="text-gray-400 text-center">
-            No shorts available at the moment
-          </Text>
         </View>
       );
     }
@@ -169,77 +159,73 @@ export default function ShortsViewScreen() {
           onSkipForward={skipForward}
         />
 
-        {/* Top Controls - Inside SafeArea */}
-        <SafeAreaView edges={['top']} className="absolute top-0 left-0 right-0">
-          <View className="flex-row justify-between items-center px-4">
-            {/* Back Button */}
+        {/* Top Controls */}
+        <SafeAreaView edges={['top']} className="absolute left-0 right-0 top-0">
+          <View className="flex-row items-center justify-between px-4">
             <TouchableOpacity
               onPress={() => navigation.goBack()}
-              className="w-14 h-14 rounded-2xl bg-black/40 justify-center items-center">
+              className="h-14 w-14 items-center justify-center rounded-2xl bg-black/40">
               <Ionicons name="chevron-back" size={24} color="white" />
             </TouchableOpacity>
 
-            {/* Search Button */}
-            <TouchableOpacity className="w-14 h-14 rounded-2xl bg-black/40 justify-center items-center">
+            <TouchableOpacity className="h-14 w-14 items-center justify-center rounded-2xl bg-black/40">
               <Ionicons name="search-outline" size={22} color="white" />
             </TouchableOpacity>
           </View>
         </SafeAreaView>
 
-        {/* Top Right Actions (Below SafeArea) */}
-        <SafeAreaView edges={['top']} className="absolute top-0 right-4">
-          <View className="gap-2 mt-20">
-            <TouchableOpacity className="flex-row justify-end items-center px-4 py-2 rounded-lg bg-black/50">
+        {/* Top Right Actions */}
+        <SafeAreaView edges={['top']} className="absolute right-4 top-0">
+          <View className="mt-20 gap-2">
+            <TouchableOpacity className="flex-row items-center justify-end rounded-lg bg-black/50 px-4 py-2">
               <Share height={24} width={24} />
-              <Text className="text-white text-base ml-1.5 font-medium">Share</Text>
+              <Text className="ml-1.5 text-base font-medium text-white">Share</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity className="flex-row justify-end items-center px-4 py-2 rounded-lg bg-black/50">
+            <TouchableOpacity className="flex-row items-center justify-end rounded-lg bg-black/50 px-4 py-2">
               <Saved height={24} width={24} />
-              <Text className="text-white text-base ml-1.5 font-medium">Save</Text>
+              <Text className="ml-1.5 text-base font-medium text-white">Save</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               onPress={() => navigation.navigate('Report')}
-              className="flex-row justify-end items-center px-4 py-2 rounded-lg bg-black/50">
+              className="flex-row items-center justify-end rounded-lg bg-black/50 px-4 py-2">
               <Report height={24} width={24} />
-              <Text className="text-white text-base ml-1.5 font-medium">Report</Text>
+              <Text className="ml-1.5 text-base font-medium text-white">Report</Text>
             </TouchableOpacity>
           </View>
         </SafeAreaView>
 
-        {/* Bottom Info Section - Inside SafeArea */}
-        <SafeAreaView edges={['bottom']} className="absolute bottom-0 left-0 right-16 p-6 py-4 bg-black/10 w-full gap-4">
+        {/* Bottom Info Section */}
+        <SafeAreaView
+          edges={['bottom']}
+          className="absolute bottom-0 left-0 right-16 w-full gap-4 bg-black/10 p-6 py-4">
           <View className="flex-row gap-3">
             <ActionButton
               Icon={isLiked ? Like : LikeInActive}
-              count={shortData.likes.toString()}
+              count={likeCount.toString()}
               isActive={isLiked}
               onPress={handleLike}
             />
             <ActionButton
               Icon={isDisliked ? Dislike : DislikeInActive}
-              count={shortData.dislikes.toString()}
+              count={dislikeCount.toString()}
               isActive={isDisliked}
               onPress={handleDislike}
             />
-            <ActionButton
-              Icon="chatbubble-outline"
-              count={shortData.comments.toString()}
-            />
+            <ActionButton Icon="chatbubble-outline" count={(shortData.comments || 0).toString()} />
           </View>
 
           <BottomInfo
-            username={shortData.ownerName}
+            username={shortData.ownerName!}
             avatar={shortData.ownerAvatar!}
             title={shortData.title}
             description={shortData.description}
             views={shortData.views}
             timeAgo={formatTimeAgo(shortData.createdAt)}
-            hashtags={shortData.hashtags}
+            hashtags={shortData.hashtags || []}
           />
 
-          {/* Seekable Progress Bar */}
           <View className="mt-2">
             <SeekableProgressBar
               progress={videoProgress}
@@ -254,11 +240,8 @@ export default function ShortsViewScreen() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <View
-
-        className="flex-1 bg-black">
+      <View className="flex-1 bg-black">
         <StatusBar barStyle="light-content" />
-
         {renderContent()}
       </View>
     </GestureHandlerRootView>

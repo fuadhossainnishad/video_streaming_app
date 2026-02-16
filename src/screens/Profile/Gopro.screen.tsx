@@ -2,87 +2,41 @@ import AppHeader from '@/components/AppHeader';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ProfileParamalist } from '@/navigation/ProfileStack';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import CopyIcon from '../../../assets/icons/copy.svg';
 import MaskedView from '@react-native-masked-view/masked-view';
+import CrossIcon from '../../../assets/icons/cross2.svg';
+import Illustration from '../../../assets/icons/Illustration.svg';
 
 type Props = NativeStackNavigationProp<ProfileParamalist, 'Saved'>;
 
-export default function CouponScreen() {
-  const coupons = [
-    {
-      id: 1,
-      discount: '25%',
-      title: 'Get 25% off when you renew your subscription',
-      code: 'FREESHIP2025',
-      bgColors: ['#9BD71B', '#7AB616'],
-    },
-  ];
+export default function GoproScreen() {
+  // const coupons = [
+  //   {
+  //     id: 1,
+  //     discount: '25%',
+  //     title: 'Get 25% off when you renew your subscription',
+  //     code: 'FREESHIP2025',
+  //     bgColors: ['#9BD71B', '#7AB616'],
+  //   },
+  // ];
   const navigation = useNavigation<Props>();
 
-  const handleCopyCode = (code: string) => {
-    // Implement copy to clipboard
-    console.log('Copied:', code);
-  };
+  // const handleCopyCode = (code: string) => {
+  //   // Implement copy to clipboard
+  //   console.log('Copied:', code);
+  // };
 
   return (
     <SafeAreaView edges={['top']} className="gap-4 bg-black p-4" style={styles.container}>
-      <AppHeader title="Coupon Cards" onPress={() => navigation.goBack()} />
+      <AppHeader title="" LeftIcon={CrossIcon} onPress={() => navigation.goBack()} />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        {coupons.map((coupon, index) => (
-          <View key={coupon.id} style={styles.couponWrapper}>
-            <View className="bg-white/20 " style={styles.couponCard}>
-              {/* Left Section - Discount */}
-              <View style={styles.leftSection}>
-                <MaskedView maskElement={<Text style={styles.text}>{coupon.discount}</Text>}>
-                  <LinearGradient
-                    colors={['#E8FF8B', '#9BD71B', '#7AB616']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}>
-                    {/* This text is invisible, only used for size */}
-                    <Text style={[styles.text, { opacity: 0 }]}>{coupon.discount}</Text>
-                  </LinearGradient>
-                </MaskedView>
-                {/* <Text style={styles.discountText}>{coupon.discount}</Text> */}
-              </View>
-
-              {/* Dotted Divider */}
-              <View style={styles.divider}>
-                {[...Array(8)].map((_, i) => (
-                  <View key={i} style={styles.dot} />
-                ))}
-              </View>
-
-              {/* Right Section - Details */}
-              <View style={styles.rightSection}>
-                <Text style={styles.couponTitle}>{coupon.title}</Text>
-
-                <View style={styles.codeContainer}>
-                  <Text className="text-lg font-semibold" style={styles.codeLabel}>
-                    CODE:
-                  </Text>
-                  <Text className="text-lg font-semibold" style={styles.codeText}>
-                    {coupon.code}
-                  </Text>
-                </View>
-
-                <TouchableOpacity
-                  style={styles.copyButton}
-                  onPress={() => handleCopyCode(coupon.code)}>
-                  <Text style={styles.copyText}>Copy code</Text>
-                  <CopyIcon height={16} width={16} color="#fff" />
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {/* Cutout circles */}
-            <View style={[styles.cutoutLeft, { backgroundColor: '#17191A' }]} />
-            <View style={[styles.cutoutRight, { backgroundColor: '#17191A' }]} />
-          </View>
-        ))}
+        <View className="h-20 w-full p-10">
+          <Illustration height={400} width={50} className="w-full" />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

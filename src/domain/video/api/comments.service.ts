@@ -156,7 +156,8 @@ export const getCommentReactionStats = async (
   commentId: string
 ): Promise<CommentReactionStats> => {
   try {
-    const { data } = await axiosClient.get(`/comment-reactions/stats/${commentId}`);
+    const { data } = await axiosClient.get(`v1/comment-reactions/stats/${commentId}`);
+    console.log('reaction stats:', data)
 
     if (data.status !== 'success' || !data.data) {
       throw new Error('Invalid response format');
@@ -180,7 +181,7 @@ export const getBatchCommentReactionStats = async (
   commentIds: string[]
 ): Promise<Map<string, CommentReactionStats>> => {
   try {
-    const statsPromises = commentIds.map((id) => 
+    const statsPromises = commentIds.map((id) =>
       getCommentReactionStats(id).catch(() => ({ likesCount: 0, dislikesCount: 0 }))
     );
 
@@ -203,7 +204,10 @@ export const getBatchCommentReactionStats = async (
  */
 export const likeComment = async (commentId: string): Promise<void> => {
   try {
-    await axiosClient.post(`/comment/${commentId}/like`);
+    await axiosClient.post(`v1/comment-reactions/toggle`, {
+      "commentId": commentId,
+      "reactionType": "like"
+    });
   } catch (error: any) {
     console.error('Error liking comment:', error);
     throw {
@@ -218,7 +222,10 @@ export const likeComment = async (commentId: string): Promise<void> => {
  */
 export const unlikeComment = async (commentId: string): Promise<void> => {
   try {
-    await axiosClient.delete(`/comment/${commentId}/like`);
+    await axiosClient.post(`v1/comment-reactions/toggle`, {
+      "commentId": commentId,
+      "reactionType": "dislike"
+    });
   } catch (error: any) {
     console.error('Error unliking comment:', error);
     throw {
@@ -233,7 +240,10 @@ export const unlikeComment = async (commentId: string): Promise<void> => {
  */
 export const dislikeComment = async (commentId: string): Promise<void> => {
   try {
-    await axiosClient.post(`/comment/${commentId}/dislike`);
+    await axiosClient.post(`v1/comment-reactions/toggle`, {
+      "commentId": commentId,
+      "reactionType": "dislike"
+    });
   } catch (error: any) {
     console.error('Error disliking comment:', error);
     throw {
@@ -248,7 +258,10 @@ export const dislikeComment = async (commentId: string): Promise<void> => {
  */
 export const undislikeComment = async (commentId: string): Promise<void> => {
   try {
-    await axiosClient.delete(`/comment/${commentId}/dislike`);
+    await axiosClient.post(`v1/comment-reactions/toggle`, {
+      "commentId": commentId,
+      "reactionType": "dislike"
+    });
   } catch (error: any) {
     console.error('Error removing dislike:', error);
     throw {

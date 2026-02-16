@@ -50,7 +50,9 @@ export default function CreatorProfileScreen() {
           <Text className="text-3xl font-bold text-white">Profile</Text>
           <View style={styles.headerRight}>
             <TouchableOpacity
-              onPress={() => { }}
+              onPress={() => {
+                navigation.navigate('Gopro');
+              }}
               style={styles.buttonContent}
               className="rounded-2xl border border-[#9BD71B]/50 px-5 py-3.5">
               <StarIcon height={20} width={20} />
@@ -58,7 +60,7 @@ export default function CreatorProfileScreen() {
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
-                navigation.navigate('Settings');
+                navigation.navigate('BankDetails');
               }}>
               <SettingsIcon height={50} width={50} />
             </TouchableOpacity>
@@ -73,7 +75,7 @@ export default function CreatorProfileScreen() {
           {/* Bank Details */}
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('Following');
+              navigation.navigate('BankDetails');
             }}
             className="flex-row items-center gap-4 rounded-2xl bg-white/20 p-2 pr-4">
             <NotificationIcon height={40} width={40} />
@@ -84,7 +86,7 @@ export default function CreatorProfileScreen() {
           {/* Withdraws */}
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('Download');
+              navigation.navigate('Withdraw');
             }}
             className="flex-row items-center gap-4 rounded-2xl bg-white/20 p-2 pr-4">
             <NotificationIcon height={40} width={40} />

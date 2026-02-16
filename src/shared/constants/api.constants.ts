@@ -1,13 +1,17 @@
 export const GET_ALL_VIDEOS = '/video/all';
+export const GET_CHANNEL_ALL_VIDEOS = (id: string) => `/video/channel/${id}`;
+
 export const GET_VIDEO_BY_ID = (id: string) => `/video/${id}`;
+
 export const SEARCH_VIDEOS = '/videos/search';
-export const GET_VIDEOS_BY_CATEGORY = '/videos/category';
+// export const GET_VIDEOS_BY_CATEGORY = '/videos/category';
 export const LIKE_VIDEO = (id: string) => `/videos/${id}/like`;
 export const DISLIKE_VIDEO = (id: string) => `/videos/${id}/dislike`;
 
 
 export const GET_ALL_POST = 'post/all'
 export const GET_ALL_SHORT = 'shorts/all'
+export const GET_SHORT_BY_ID = (id: string) => `/shorts/${id}`;
 
 
 export const GET_ALL_COMMENTS = (videoId: string) => `/v1/comments/Video/${videoId}`

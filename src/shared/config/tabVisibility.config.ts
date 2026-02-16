@@ -10,6 +10,38 @@ export const TAB_VISIBILITY_CONFIG = {
   HIDDEN_SCREENS: [
     // Home Stack
     'Notification',
+    'Search',
+    'DiscoverCreator',
+    'VideoPlayer',
+    'ChannelOverview',
+
+    'ShortsView',
+    'Report',
+
+    'ChannelOverview',
+    'VideoPlayer',
+
+    'EditProfile',
+    'PivacyPolicy',
+    'TermsAndConditions',
+    'AboutUs',
+    'Settings',
+    'Saved',
+    'Download',
+    'History',
+    'Coupon',
+    'Gopro',
+
+    'CreatorProfile',
+    'CreateChannel',
+    'BankDetails',
+    'Withdraw',
+
+    'CreateVideo',
+    'CreateShorts',
+    'CreatePost',
+
+
   ],
 
   // Tab names that should hide main tabs

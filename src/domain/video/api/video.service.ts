@@ -1,6 +1,5 @@
 import { axiosClient } from "@/shared/config/axios.config";
-import { GET_ALL_VIDEOS, GET_VIDEO_BY_ID } from "@/shared/constants/api.constants";
-import { mockVideoByIdResponse, mockVideoResponse } from "@/shared/mock/video.mock";
+import { GET_ALL_VIDEOS, GET_CHANNEL_ALL_VIDEOS, GET_VIDEO_BY_ID } from "@/shared/constants/api.constants";
 import { VideoData } from "@/shared/types/video.types";
 import { transformVideoData, transformVideosData } from "@/shared/utils/video.utils";
 
@@ -10,6 +9,9 @@ export interface GetVideosParams {
     limit?: number;
     category?: string;
     search?: string;
+}
+export interface GetChannelVideosParams extends GetVideosParams {
+    channelId: string
 }
 
 export interface GetVideosResult {
@@ -78,6 +80,38 @@ export const getVideoById = async (videoId: string): Promise<VideoData> => {
         console.error('Error fetching video:', error);
         throw {
             message: error.message || 'Failed to fetch video',
+            statusCode: error.statusCode || 500,
+        };
+    }
+};
+
+export const getChannelAllVideos = async (
+    channelId: string,
+    params: GetVideosParams = {}
+): Promise<GetVideosResult> => {
+    try {
+        console.log("all videos:")
+        const { data } = await axiosClient.get(GET_CHANNEL_ALL_VIDEOS(channelId), {
+            params,
+        });
+
+        // const data = mockVideoResponse
+        console.log("all videos:", data)
+
+        if (data.status !== 'success' || !data.data.videos) {
+            throw new Error('Invalid response format');
+        }
+
+        const transformedVideos = transformVideosData(data.data.videos);
+
+        return {
+            videos: transformedVideos,
+            pagination: data.data.pagination,
+        };
+    } catch (error: any) {
+        console.error('Error fetching videos:', error);
+        throw {
+            message: error.message || 'Failed to fetch videos',
             statusCode: error.statusCode || 500,
         };
     }

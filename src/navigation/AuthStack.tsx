@@ -14,10 +14,10 @@ const Stack = createNativeStackNavigator();
 export default function AuthStack({ onFinish }: { onFinish: () => void }) {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {/* <Stack.Screen name="Onboarding">
+      <Stack.Screen name="Onboarding">
         {(props) => <OnboardingScreen {...props} onFinish={onFinish} />}
-      </Stack.Screen> */}
-      {/* <Stack.Screen name="Onboarding" component={VideoPlayerScreen} options={{ headerShown: false }} /> */}
+      </Stack.Screen>
+      {/* <Stack.Screen name="Onboarding" component={OnboardingScreen} options={{ headerShown: false }} /> */}
       <Stack.Screen name="Auth" component={AuthScreen} options={{ headerShown: false }} />
       <Stack.Screen name="VerifyOtp" component={VerifyOtpScreen} options={{ headerShown: false }} />
       <Stack.Screen

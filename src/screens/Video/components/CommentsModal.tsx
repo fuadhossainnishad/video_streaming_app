@@ -47,7 +47,7 @@ export default function CommentsModal({ visible, onClose, videoId }: CommentsMod
   const [dislikedComments, setDislikedComments] = useState<Set<string>>(new Set());
   const [selectedComment, setSelectedComment] = useState<CommentUI | null>(null);
   const [showReplyModal, setShowReplyModal] = useState(false);
-  
+
   // NEW: Reaction stats from server
   const [reactionStats, setReactionStats] = useState<Map<string, CommentReactionStats>>(new Map());
   const [statsLoading, setStatsLoading] = useState(false);
@@ -58,10 +58,10 @@ export default function CommentsModal({ visible, onClose, videoId }: CommentsMod
       setLoading(true);
       const result = await getVideoComments(videoId, 1, 20);
       setComments(result.comments);
-      
+
       // Fetch reaction stats for all comments
       if (result.comments.length > 0) {
-        fetchReactionStats(result.comments.map(c => c.id));
+        fetchReactionStats(result.comments.map((c) => c.id));
       }
     } catch (error: any) {
       console.error('Error fetching comments:', error);
@@ -90,29 +90,32 @@ export default function CommentsModal({ visible, onClose, videoId }: CommentsMod
   }, [visible, fetchComments]);
 
   // NEW: Get display counts (server stats or optimistic local updates)
-  const getDisplayCounts = useCallback((commentId: string) => {
-    const serverStats = reactionStats.get(commentId);
-    const comment = comments.find(c => c.id === commentId);
-    
-    // Use server stats if available, otherwise fall back to comment data
-    const baseLikes = serverStats?.likesCount ?? comment?.likes ?? 0;
-    const baseDislikes = serverStats?.dislikesCount ?? comment?.dislikes ?? 0;
-    
-    // Apply optimistic updates
-    let likes = baseLikes;
-    let dislikes = baseDislikes;
-    
-    if (likedComments.has(commentId)) {
-      likes = baseLikes + 1;
-      if (dislikedComments.has(commentId)) {
-        dislikes = baseDislikes - 1;
+  const getDisplayCounts = useCallback(
+    (commentId: string) => {
+      const serverStats = reactionStats.get(commentId);
+      const comment = comments.find((c) => c.id === commentId);
+
+      // Use server stats if available, otherwise fall back to comment data
+      const baseLikes = serverStats?.likesCount ?? comment?.likes ?? 0;
+      const baseDislikes = serverStats?.dislikesCount ?? comment?.dislikes ?? 0;
+
+      // Apply optimistic updates
+      let likes = baseLikes;
+      let dislikes = baseDislikes;
+
+      if (likedComments.has(commentId)) {
+        likes = baseLikes + 1;
+        if (dislikedComments.has(commentId)) {
+          dislikes = baseDislikes - 1;
+        }
+      } else if (dislikedComments.has(commentId)) {
+        dislikes = baseDislikes + 1;
       }
-    } else if (dislikedComments.has(commentId)) {
-      dislikes = baseDislikes + 1;
-    }
-    
-    return { likes, dislikes };
-  }, [comments, reactionStats, likedComments, dislikedComments]);
+
+      return { likes, dislikes };
+    },
+    [comments, reactionStats, likedComments, dislikedComments]
+  );
 
   const handleLikeComment = async (commentId: string) => {
     const newLiked = new Set(likedComments);
@@ -137,7 +140,7 @@ export default function CommentsModal({ visible, onClose, videoId }: CommentsMod
 
       setLikedComments(newLiked);
       setDislikedComments(newDisliked);
-      
+
       // Refresh stats from server
       fetchReactionStats([commentId]);
     } catch (error) {
@@ -168,7 +171,7 @@ export default function CommentsModal({ visible, onClose, videoId }: CommentsMod
 
       setDislikedComments(newDisliked);
       setLikedComments(newLiked);
-      
+
       // Refresh stats from server
       fetchReactionStats([commentId]);
     } catch (error) {
@@ -198,7 +201,7 @@ export default function CommentsModal({ visible, onClose, videoId }: CommentsMod
       // Add new comment to the list
       setComments((prev) => [newCommentData, ...prev]);
       setNewComment('');
-      
+
       // Fetch stats for new comment
       fetchReactionStats([newCommentData.id]);
     } catch (error: any) {
@@ -304,7 +307,7 @@ export default function CommentsModal({ visible, onClose, videoId }: CommentsMod
                           <TouchableOpacity
                             className="self-end"
                             onPress={() => handleOpenReplies(comment)}>
-                            <Text className="text-sm font-normal text-[#9BD71B]">
+                            <Text className="rounded-xl border border-[#9BD71B]/20 p-2 px-3 text-sm font-normal text-[#9BD71B]">
                               {comment.replyCount} {comment.replyCount === 1 ? 'Reply' : 'Replies'}
                             </Text>
                           </TouchableOpacity>

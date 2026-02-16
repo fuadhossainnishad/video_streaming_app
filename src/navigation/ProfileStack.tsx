@@ -16,29 +16,30 @@ import ShortsScreen from '@/screens/Shorts/Shorts.screen';
 import ShortsViewScreen from '@/screens/Shorts/ShortsView.screen';
 import VideoPlayerScreen from '@/screens/Video/VideoPlayer.screen';
 import SavedScreen from '@/screens/Profile/Saved.screen';
-
+import GoproScreen from '@/screens/Profile/Gopro.screen';
 
 const Stack = createNativeStackNavigator();
 export type ProfileParamalist = {
   Profile: undefined;
   EditProfile: {
-    username: string,
-    email: string,
-    avatar: string,
-  }
-  PivacyPolicy: undefined
-  TermsAndConditions: undefined
-  AboutUs: undefined
-  Settings: undefined
-  Saved: undefined
-  Download: undefined
-  History: undefined
-  Coupon: undefined
-  Following: undefined
+    username: string;
+    email: string;
+    avatar: string;
+  };
+  PivacyPolicy: undefined;
+  TermsAndConditions: undefined;
+  AboutUs: undefined;
+  Settings: undefined;
+  Saved: undefined;
+  Download: undefined;
+  History: undefined;
+  Coupon: undefined;
+  Following: undefined;
   ChannelOverview: { channelId: string };
   VideoPlayer: { videoId: string };
   Shorts: { short: ShortData };
   ShortsView: { shortId: string };
+  Gopro: undefined;
 };
 export default function ProfileStack() {
   return (
@@ -59,11 +60,7 @@ export default function ProfileStack() {
         component={ChannelOverviewScreen}
         options={{ headerShown: false }}
       />
-      <Stack.Screen
-        name="Following"
-        component={FollowingScreen}
-        options={{ headerShown: false }}
-      />
+      <Stack.Screen name="Following" component={FollowingScreen} options={{ headerShown: false }} />
       <Stack.Screen
         name="PivacyPolicy"
         component={PrivacyPolicyScreen}
@@ -74,50 +71,24 @@ export default function ProfileStack() {
         component={TermsAndConditionScreen}
         options={{ headerShown: false }}
       />
-      <Stack.Screen
-        name="AboutUs"
-        component={AboutUsScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Settings"
-        component={SettingsStack}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Saved"
-        component={SavedScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Download"
-        component={DownloadScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="History"
-        component={HistoryScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Coupon"
-        component={CouponScreen}
-        options={{ headerShown: false }}
-      />
+      <Stack.Screen name="AboutUs" component={AboutUsScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Settings" component={SettingsStack} options={{ headerShown: false }} />
+      <Stack.Screen name="Saved" component={SavedScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Download" component={DownloadScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="History" component={HistoryScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Coupon" component={CouponScreen} options={{ headerShown: false }} />
       <Stack.Screen
         name="VideoPlayer"
         component={VideoPlayerScreen}
         options={{ headerShown: false }}
       />
-      <Stack.Screen
-        name="Shorts"
-        component={ShortsScreen}
-        options={{ headerShown: false }} />
+      <Stack.Screen name="Shorts" component={ShortsScreen} options={{ headerShown: false }} />
       <Stack.Screen
         name="ShortsView"
         component={ShortsViewScreen}
-        options={{ headerShown: false }} />
-
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen name="Gopro" component={GoproScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }
