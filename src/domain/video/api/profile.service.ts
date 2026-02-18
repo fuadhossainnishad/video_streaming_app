@@ -1,4 +1,5 @@
 import { axiosClient } from "@/shared/config/axios.config";
+import { EDIT_PROFILE } from "@/shared/constants/api.constants";
 import { mockVideoByIdResponse } from "@/shared/mock/video.mock";
 import { ApiEditProfileoResponse, ApiProfileoResponse } from "@/shared/types/profile.types";
 import { VideoData } from "@/shared/types/video.types";
@@ -47,8 +48,9 @@ export const updateProfile = async (
     formData: FormData
 ): Promise<ApiEditProfileoResponse> => {
     try {
+        console.log('edit profile:', formData)
         const { data } = await axiosClient.patch<ApiEditProfileoResponse>(
-            '/user/profile',
+            EDIT_PROFILE,
             formData,
             {
                 headers: {

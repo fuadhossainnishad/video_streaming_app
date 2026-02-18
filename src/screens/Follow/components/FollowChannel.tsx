@@ -1,6 +1,6 @@
-import { getAllChannels } from '@/domain/video/api/channel.service';
+import { getFollowingChannels } from '@/domain/video/api/follow.service';
 import { FollowParamalist } from '@/navigation/FollowStack';
-import { ChannelData } from '@/shared/types/channel.types';
+import { UIChannel } from '@/shared/utils/follow.utils';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCallback, useEffect, useState } from 'react';
@@ -10,7 +10,7 @@ type Props = NativeStackNavigationProp<FollowParamalist>;
 
 export default function FollowChannel() {
     const naviagtion = useNavigation<Props>();
-    const [channels, setChannels] = useState<ChannelData[]>([]);
+    const [channels, setChannels] = useState<UIChannel[]>([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -25,8 +25,9 @@ export default function FollowChannel() {
             }
             setError(null);
 
-            const result = await getAllChannels()
-            setChannels(result);
+            const result = await getFollowingChannels()
+            console.log('getFollowingChannels:', result)
+            setChannels(result.channels);
         } catch (err: any) {
             console.error('Error fetching channels:', err);
             setError(err.message || 'Failed to load channels');

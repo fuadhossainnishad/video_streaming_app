@@ -20,6 +20,7 @@ axiosClient.interceptors.request.use(
         try {
             // Get token from storage
             const tokensJson = await AsyncStorage.getItem(TOKEN_KEY);
+            console.log('tokensJson:', tokensJson)
 
             if (tokensJson) {
                 const tokens = JSON.parse(tokensJson);

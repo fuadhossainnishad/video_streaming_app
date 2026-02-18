@@ -8,12 +8,15 @@ import {
 } from '@/domain/video/api/auth.service';
 import { SignupRequest, LoginRequest, User } from '@/shared/types/auth.types';
 import { useAuth as useAuthContext } from '@/context/AuthProvider';
+import { getMyChannel } from '@/domain/video/api/channel.service';
+import { ChannelDetailsData } from '../types/channel.types';
 
 export const useAuth = () => {
     const { setIsAuthenticated } = useAuthContext();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [user, setUser] = useState<User | null>(null);
+    const [channel, setChannel] = useState<ChannelDetailsData | null>(null);
 
     // Signup
     const signup = useCallback(async (data: SignupRequest) => {
@@ -82,6 +85,26 @@ export const useAuth = () => {
         }
     }, [setIsAuthenticated]);
 
+    const mychannel = useCallback(async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const response = await getMyChannel()
+            console.log("get my channel:", response)
+            setChannel(response);
+            console.log("get my channel:", channel)
+
+            return { success: true, data: response };
+        } catch (err: any) {
+            const errorMessage = err.message || 'Signup failed';
+            setError(errorMessage);
+            return { success: false, error: errorMessage };
+        } finally {
+            setLoading(false);
+        }
+    }, [channel]);
+
     // Load user from storage
     const loadUser = useCallback(async () => {
         try {
@@ -97,10 +120,12 @@ export const useAuth = () => {
 
     return {
         user,
+        channel,
         loading,
         error,
         signup,
         login,
+        mychannel,
         logout,
         loadUser,
         clearError: () => setError(null),

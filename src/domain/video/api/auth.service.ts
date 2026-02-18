@@ -1,13 +1,16 @@
 // domain/auth/api/auth.service.ts
 import { axiosClient } from '@/shared/config/axios.config';
-import { SIGN_UP, SOCIAL_LOGIN } from '@/shared/constants/api.constants';
+import { CHANGE_PASSWORD, DELETE_ACCOUNT, SIGN_UP, SOCIAL_LOGIN } from '@/shared/constants/api.constants';
 import {
   SignupRequest,
   LoginRequest,
   AuthResponse,
   User,
   AuthTokens,
+  ChangePasswordRequest,
+  DeleteAccountResponse,
 } from '@/shared/types/auth.types';
+import { ChangePasswordResponse } from '@/shared/types/password-reset.types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const TOKEN_KEY = '@auth_tokens';
@@ -71,6 +74,34 @@ export const loginUser = async (data: LoginRequest): Promise<AuthResponse> => {
     console.error('Login error:', error);
     throw {
       message: error.message || 'Login failed',
+      statusCode: error.statusCode || 500,
+    };
+  }
+};
+
+/**
+ * Change password
+ * POST /user/change-password
+ */
+export const changePassword = async (
+  data: ChangePasswordRequest
+): Promise<ChangePasswordResponse> => {
+  try {
+    const response = await axiosClient.post<ChangePasswordResponse>(CHANGE_PASSWORD, {
+      oldPassword: data.oldPassword,
+      newPassword: data.newPassword,
+      confirmPassword: data.confirmPassword,
+    });
+
+    if (response.data.status !== 'success') {
+      throw new Error(response.data.message || 'Failed to change password');
+    }
+
+    return response.data;
+  } catch (error: any) {
+    console.error('Change password error:', error);
+    throw {
+      message: error.message || 'Failed to change password',
       statusCode: error.statusCode || 500,
     };
   }
@@ -171,5 +202,47 @@ export const initializeAuth = async (): Promise<{
   } catch (error) {
     console.error('Error initializing auth:', error);
     return { isAuthenticated: false, user: null };
+  }
+};
+
+/**
+ * Delete user account
+ * DELETE /user/delete-user
+ */
+export const deleteAccount = async (): Promise<DeleteAccountResponse> => {
+  try {
+    const response = await axiosClient.delete<DeleteAccountResponse>(DELETE_ACCOUNT);
+
+    if (response.data.status !== 'success') {
+      throw new Error(response.data.message || 'Failed to delete account');
+    }
+
+    // Clear all local data after successful deletion
+    await clearAllUserData();
+
+    return response.data;
+  } catch (error: any) {
+    console.error('Delete account error:', error);
+    throw {
+      message: error.message || 'Failed to delete account',
+      statusCode: error.statusCode || 500,
+    };
+  }
+};
+
+/**
+ * Clear all user data from AsyncStorage
+ */
+const clearAllUserData = async (): Promise<void> => {
+  try {
+    await AsyncStorage.multiRemove([
+      '@auth_tokens',
+      '@user_data',
+      '@signup_email',
+      '@reset_email',
+      '@reset_otp',
+    ]);
+  } catch (error) {
+    console.error('Error clearing user data:', error);
   }
 };

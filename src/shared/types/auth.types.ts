@@ -11,6 +11,13 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface ChangePasswordRequest {
+  oldPassword: string,
+  newPassword: string,
+  confirmPassword: string;
+}
+
+
 export interface AuthResponse {
   status: 'success' | 'error';
   data: {
@@ -31,4 +38,10 @@ export interface User {
 export interface AuthTokens {
   accessToken: string;
   refreshToken: string;
+}
+
+export interface DeleteAccountResponse {
+  status: 'success' | 'error';
+  message: string;
+  data?: any;
 }

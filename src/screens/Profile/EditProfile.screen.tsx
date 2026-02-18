@@ -24,7 +24,7 @@ export default function EditProfileScreen() {
     const { username, email, avatar } = route.params;
 
     const [newUsername, setNewUsername] = useState(username);
-    const [newEmail, setNewEmail] = useState(email);
+    // const [newEmail, setNewEmail] = useState(email);
     const [newAvatar, setNewAvatar] = useState(avatar);
     const [avatarFile, setAvatarFile] = useState<any>(null);
     const [saving, setSaving] = useState(false);
@@ -63,8 +63,6 @@ export default function EditProfileScreen() {
 
             const formData = new FormData();
             formData.append('username', newUsername);
-            formData.append('email', newEmail);
-
             if (avatarFile) {
                 formData.append('avatar', avatarFile as any);
             }
@@ -112,12 +110,13 @@ export default function EditProfileScreen() {
                 <View className="w-full">
                     <Text className="text-white mb-2 text-sm font-semibold">Email</Text>
                     <TextInput
-                        value={newEmail}
-                        onChangeText={setNewEmail}
-                        placeholder="Enter your email"
+                        value={email}
+                        // onChangeText={setNewEmail}
+                        placeholder={email}
                         placeholderTextColor="#9CA3AF"
                         keyboardType="email-address"
                         autoCapitalize="none"
+                        aria-disabled
                         className="border border-white/80 text-white text-sm px-4 py-3 rounded-xl"
                     />
                 </View>

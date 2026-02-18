@@ -276,7 +276,7 @@ export default function VideoPlayerScreen() {
               </View>
             </View>
             <TouchableOpacity className="w-28 rounded-2xl">
-              <GradientButton text="Follow" onPress={() => {}} />
+              <GradientButton text="Follow" onPress={() => { }} />
             </TouchableOpacity>
           </View>
 

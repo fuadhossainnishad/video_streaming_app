@@ -1,6 +1,9 @@
 // domain/follow/api/follow.service.ts
 
+import axiosClient from '@/shared/config/axios.config';
+import { GET_ALL_FOLLOWING_CHANNEL } from '@/shared/constants/api.constants';
 import { mockFollowingResponse } from '@/shared/mock/follow.mock';
+import { FollowingResponse } from '@/shared/types/follow.types';
 import { transformFollowing } from '@/shared/utils/follow.utils';
 
 // import { GET_FOLLOWING_CHANNELS } from '@/shared/constants/api.constants';
@@ -22,13 +25,13 @@ export const getFollowingChannels = async (
 ): Promise<GetFollowingResult> => {
     try {
         // Real API (later)
-        // const { data } = await axiosClient.get<FollowingResponse>(
-        //   GET_FOLLOWING_CHANNELS,
-        //   { params: { page, limit } }
-        // );
+        const { data } = await axiosClient.get<FollowingResponse>(
+            GET_ALL_FOLLOWING_CHANNEL,
+            { params: { page, limit } }
+        );
 
         // MOCK (remove later)
-        const data = mockFollowingResponse;
+        // const data = mockFollowingResponse;
 
         if (data.status !== 'success') {
             throw new Error(data.message || 'Failed to fetch following channels');

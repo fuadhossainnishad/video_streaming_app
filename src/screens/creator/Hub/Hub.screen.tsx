@@ -7,12 +7,12 @@ import ShortsIcon from '../../../../assets/icons/shorts.svg';
 import PostIcon from '../../../../assets/icons/post.svg';
 import AddIcon from '../../../../assets/icons/add.svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import VideoCardComponent from '@/components/VideoCompo';
 import ShortsCardComponent from '@/components/ShortsCompo';
 import PostCardComponent from '@/components/PostCompo';
 import { HubParamalist } from '@/navigation/creator/HubStack';
 import SearchIcon from '../../../../assets/icons/search.svg';
 import Filter from '../../../../assets/icons/filter2.svg';
+import CreatorVideoCompo from '../components/CreatorVideoCompo';
 
 type Props = NativeStackNavigationProp<HubParamalist, 'Hub'>;
 
@@ -30,7 +30,7 @@ export default function HubScreen() {
   const renderContent = () => {
     switch (activeTab) {
       case 'videos':
-        return <VideoCardComponent />;
+        return <CreatorVideoCompo />;
 
       case 'shorts':
         return <ShortsCardComponent />;
@@ -47,8 +47,8 @@ export default function HubScreen() {
     <SafeAreaView edges={['top', 'bottom']} style={styles.container}>
       {/* Header */}
 
-      <View className="w-full flex-row items-center justify-between">
-        <Text className="mt-6 px-4 pb-4 text-3xl font-bold text-white">Following</Text>
+      <View className="my-4 w-full flex-row items-center justify-between">
+        <Text className=" text-2xl font-bold text-white">Content Hub</Text>
         <TouchableOpacity
           onPress={() => {
             if (activeTab === 'videos') {
@@ -60,12 +60,12 @@ export default function HubScreen() {
             }
           }}
           className="items-center">
-          <AddIcon height={50} width={50} />
+          <AddIcon height={32} width={32} />
         </TouchableOpacity>
       </View>
 
-      <View className="gap-y-3">
-        <View className="flex-row items-center gap-2 rounded-2xl bg-[#FFFFFF1A] px-4 py-2">
+      <View className="gap-5 flex-row w-full items-center">
+        <View className="flex-1 flex-row items-center gap-2 rounded-2xl bg-[#FFFFFF1A] px-4 ">
           <SearchIcon height={20} width={20} />
           <TextInput
             className="flex-1 text-base text-white"
@@ -187,11 +187,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    gap: 3,
+    // backgroundColor: 'rgba(255,255,255,0.1)',
     borderRadius: 12,
     paddingVertical: 12,
-    paddingHorizontal: 8,
+    // paddingHorizontal: 8,
   },
   activeTab: {
     backgroundColor: '#9BD71B33', // light green tint

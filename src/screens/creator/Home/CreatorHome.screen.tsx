@@ -142,7 +142,7 @@ export default function CreatorHomeScreen() {
             <Logo height={80} width={80} />
             <View style={styles.headerRight}>
               <TouchableOpacity
-                onPress={() => {}}
+                onPress={() => { }}
                 style={styles.buttonContent}
                 className="rounded-2xl border border-[#9BD71B]/50 px-5 py-3.5">
                 <StarIcon height={20} width={20} />

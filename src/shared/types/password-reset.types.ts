@@ -50,3 +50,15 @@ export interface VerifySignupOtpResponse {
     verified: boolean;
   };
 }
+
+export interface ChangePasswordRequest {
+  oldPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export interface ChangePasswordResponse {
+  status: 'success' | 'error';
+  message: string;
+  data?: any;
+}

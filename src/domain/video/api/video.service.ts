@@ -90,7 +90,7 @@ export const getChannelAllVideos = async (
     params: GetVideosParams = {}
 ): Promise<GetVideosResult> => {
     try {
-        console.log("all videos:")
+        console.log("channel all videos:", channelId!)
         const { data } = await axiosClient.get(GET_CHANNEL_ALL_VIDEOS(channelId), {
             params,
         });

@@ -9,10 +9,11 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
-import { ChannelDetailsData, ChannelStats } from '@/shared/types/channel.types';
+import { ChannelDetailsData } from '@/shared/types/channel.types';
 import { formatNumber, formatCurrency, formatHours } from '@/shared/utils/channel.utils';
 import { getMyChannel } from '@/domain/video/api/channel.service';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useAuth } from '@/shared/hooks/useauth';
 
 // interface ChannelStatsCardProps {
 //     stats: ChannelStats;
@@ -23,6 +24,8 @@ export default function ChannelStatsCard() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { mychannel } = useAuth()
+
   console.log('stats:', stats);
 
   const fetchStats = useCallback(async (isRefresh = false) => {
@@ -34,8 +37,8 @@ export default function ChannelStatsCard() {
       }
       setError(null);
 
-      const result = await getMyChannel();
-      setStats(result);
+      const result = await mychannel();
+      setStats(result.data);
     } catch (err: any) {
       console.error('Error fetching Stats:', err);
       setError(err.message || 'Failed to load Stats');
