@@ -33,6 +33,11 @@
         "foregroundImage": "./assets/splash.png",
         "backgroundColor": "#ffffff"
       },
+      "permissions": [
+        "NOTIFICATIONS",
+        "VIBRATE",
+        "RECEIVE_BOOT_COMPLETED"
+      ],
       "package": "com.syful151.Link"
     }
   }

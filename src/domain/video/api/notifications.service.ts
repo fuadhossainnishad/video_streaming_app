@@ -1,10 +1,13 @@
 // domain/video/api/comment.service.ts
 import { axiosClient } from '@/shared/config/axios.config';
+import { REGISTER_FCM, UNREGISTER_FCM } from '@/shared/constants/api.constants';
 import { mockCommentsResponse } from '@/shared/mock/comments.mock';
 import { mockNotificationsResponse } from '@/shared/mock/notifications.mock';
-import { ApiCommentsResponse, ApiRepliesResponse, CommentUI } from '@/shared/types/comments.type';
+import { CommentUI } from '@/shared/types/comments.type';
 import { transformCommentsData } from '@/shared/utils/comments.utils';
-import { getNotificationCommentText } from '../../../shared/utils/notification.utils';
+import messaging from '@react-native-firebase/messaging';
+import { Platform } from 'react-native';
+import { getUniqueId } from 'react-native-device-info';
 
 export interface GetCommentsResult {
     comments: CommentUI[];
@@ -77,7 +80,7 @@ export const getNotifications = async () => {
             throw new Error('Invalid response format');
         }
 
-        const transformedReplies = trans(data.data.replies);
+        const transformedReplies = transformCommentsData(data.replies);
 
         return {
             notifications: transformedReplies,
@@ -91,3 +94,98 @@ export const getNotifications = async () => {
     }
 };
 
+
+// push notification
+
+// export const requestNotificationPermissions = async () => {
+//     const authStatus = await messaging().requestPermission();
+//     return authStatus === messaging.AuthorizationStatus.AUTHORIZED;
+// };
+
+export const requestNotificationPermissions = async () => {
+    const authStatus = await messaging().requestPermission();
+
+    return (
+        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+        authStatus === messaging.AuthorizationStatus.PROVISIONAL
+    );
+};
+
+// export const getNotificationToken = async () => {
+//     const token = await messaging().getToken();
+//     console.log("FCM TOKEN:", token);
+//     return token;
+// };
+export const getFcmToken = async (): Promise<string | null> => {
+    try {
+        const token = await messaging().getToken();
+        console.log("FCM TOKEN:", token);
+        return token
+    } catch (error) {
+        console.error('Error getting FCM token', error);
+        return null;
+    }
+};
+
+export const setupNotificationHandlers = (navigation) => {
+    // Handle foreground notifications
+    messaging().onMessage(async remoteMessage => {
+        console.log('Notification:', remoteMessage);
+        // Show local notification
+    });
+
+    // Handle notification tap
+    messaging().onNotificationOpenedApp(remoteMessage => {
+        // Navigate to screen
+        navigation.navigate('VideoPlayer', {
+            videoId: remoteMessage.data?.videoId
+        });
+    });
+};
+
+export const registerTokenToServer = async (
+    token: string,
+    deviceId: string,
+    deviceType: 'android' | 'ios'
+) => {
+    return axiosClient.post(REGISTER_FCM, {
+        fcmToken: token,
+        deviceType,
+        deviceId,
+    });
+};
+
+export const unregisterTokenFromServer = async (deviceId: string) => {
+    return axiosClient.post(UNREGISTER_FCM, {
+        deviceId,
+    });
+};
+
+export const syncFcmToken = async () => {
+    try {
+        const permited = await requestNotificationPermissions()
+        if (!permited) return;
+        const token = await getFcmToken();
+        if (!token) return;
+
+        const deviceId = await getUniqueId();
+
+        await registerTokenToServer(
+            token,
+            deviceId!,
+            Platform.OS as 'android' | 'ios',
+        );
+
+        // 🔥 Handle refresh automatically
+        messaging().onTokenRefresh(async (newToken) => {
+            await registerTokenToServer(
+                newToken,
+                deviceId,
+                Platform.OS as 'android' | 'ios',
+            );
+        });
+    } catch (error) {
+        console.log('FCM Sync Error:', error);
+    }
+
+}

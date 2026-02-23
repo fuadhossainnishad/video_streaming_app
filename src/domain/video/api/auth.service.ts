@@ -12,6 +12,8 @@ import {
 } from '@/shared/types/auth.types';
 import { ChangePasswordResponse } from '@/shared/types/password-reset.types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { syncFcmToken, unregisterTokenFromServer } from './notifications.service';
+import { getUniqueId } from 'react-native-device-info';
 
 const TOKEN_KEY = '@auth_tokens';
 const USER_KEY = '@user_data';
@@ -68,6 +70,7 @@ export const loginUser = async (data: LoginRequest): Promise<AuthResponse> => {
 
     // Save tokens and user data
     await saveAuthData(response.data);
+    await syncFcmToken()
 
     return response.data;
   } catch (error: any) {
@@ -169,6 +172,7 @@ export const getStoredUser = async (): Promise<User | null> => {
 export const logoutUser = async (): Promise<void> => {
   try {
     await AsyncStorage.multiRemove([TOKEN_KEY, USER_KEY]);
+    await unregisterTokenFromServer(await getUniqueId());
   } catch (error) {
     console.error('Error during logout:', error);
     throw error;

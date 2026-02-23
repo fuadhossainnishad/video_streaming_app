@@ -10,6 +10,7 @@ import RootNavigation from './src/navigation/RootNavigation';
 import Toast from 'react-native-toast-message';
 import SplashScreenComponent from '@/screens/splash.screen';
 import { AppModeProvider } from './src/context/ModeProvider';
+import { getFcmToken, requestNotificationPermissions } from '@/domain/video/api/notifications.service';
 
 export default function App() {
   const [appReady, setAppReady] = useState(false);
@@ -19,6 +20,8 @@ export default function App() {
       try {
         await SplashScreen.preventAutoHideAsync();
         await new Promise((res) => setTimeout(res, 1500));
+        await requestNotificationPermissions()
+        await getFcmToken()
       } catch (e) {
         console.warn(e);
       } finally {

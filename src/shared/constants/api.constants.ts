@@ -42,3 +42,16 @@ export const EDIT_CHANNEL = '/channel/edit'
 export const GET_ALL_FOLLOWING_CHANNEL = '/v1/follows/my-subscriptions'
 
 export const EDIT_PROFILE = '/user/profile'
+
+export const REGISTER_FCM = '/v1/notifications/register-token'
+export const UNREGISTER_FCM = '/v1/notifications/unregister-token'
+
+export const GET_ALL_NOTIFICATIONS = `/v1/notifications`
+export const GET_COMMENTS_NOTIFICATIONS = `/v1/notifications?type=comment`
+
+export const GET_SAVED = '/v1/save/saved'
+export const POST_SAVED = '/v1/save/save'
+export const CHECK_SAVED = (id: string) => `/v1/save/check/${id}`
+export const UNSAVED = '/v1/save/unsave'
+
+export const HISTORY = '/v1/history/history'
