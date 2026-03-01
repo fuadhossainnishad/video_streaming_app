@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import EditProfileComponent from './components/EditProfile.component';
@@ -15,6 +15,7 @@ type Props = NativeStackNavigationProp<ProfileParamalist, 'Profile'>;
 
 export default function ProfileScreen() {
   const navigation = useNavigation<Props>();
+  const [id, setId] = useState<string | null>(null)
 
   return (
     <SafeAreaView edges={['top']} className="bg-black p-4 " style={styles.container}>
@@ -25,7 +26,7 @@ export default function ProfileScreen() {
           <Text className="text-3xl font-bold text-white">Profile</Text>
           <View style={styles.headerRight}>
             <TouchableOpacity
-              onPress={() => {navigation.navigate('Gopro')}}
+              onPress={() => { navigation.navigate('Gopro') }}
               style={styles.buttonContent}
               className="rounded-2xl border border-[#9BD71B]/50 px-5 py-3.5">
               <StarIcon height={20} width={20} />
@@ -47,7 +48,10 @@ export default function ProfileScreen() {
                     />
                 </View> */}
         <EditProfileComponent
-          viewChannel={() => navigation.navigate('ChannelOverview', { channelId: '123' })}
+          viewChannel={(channel) => {
+            setId(channel)
+            navigation.navigate('ChannelOverview', { channelId: '123' })
+          }}
         />
         <View className="gap-2">
           <View className="flex-row items-center justify-between">

@@ -1,42 +1,40 @@
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { useCallback, useState } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, TextInput } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import VideoIcon from '../../../../assets/icons/video.svg';
 import ShortsIcon from '../../../../assets/icons/shorts.svg';
 import PostIcon from '../../../../assets/icons/post.svg';
 import AddIcon from '../../../../assets/icons/add.svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import ShortsCardComponent from '@/components/ShortsCompo';
-import PostCardComponent from '@/components/PostCompo';
 import { HubParamalist } from '@/navigation/creator/HubStack';
-import SearchIcon from '../../../../assets/icons/search.svg';
-import Filter from '../../../../assets/icons/filter2.svg';
 import CreatorVideoCompo from '../components/CreatorVideoCompo';
+import CreatorShortsCardComponent from '../components/CreatorShortsCompo';
+import CreatorPostCardComponent from '../components/CreatorPostCompo';
 
 type Props = NativeStackNavigationProp<HubParamalist, 'Hub'>;
 
 export default function HubScreen() {
   const navigation = useNavigation<Props>();
   const [activeTab, setActiveTab] = useState<'videos' | 'shorts' | 'posts'>('videos');
-  const [searchQuery, setSearchQuery] = useState('');
+  // const [searchQuery, setSearchQuery] = useState('');
 
-  const handleSearch = useCallback(() => {
-    if (searchQuery.trim()) {
-      // TODO: Implement search functionality
-      console.log('Searching for:', searchQuery);
-    }
-  }, [searchQuery]);
+  // const handleSearch = useCallback(() => {
+  //   if (searchQuery.trim()) {
+  //     // TODO: Implement search functionality
+  //     console.log('Searching for:', searchQuery);
+  //   }
+  // }, [searchQuery]);
   const renderContent = () => {
     switch (activeTab) {
       case 'videos':
         return <CreatorVideoCompo />;
 
       case 'shorts':
-        return <ShortsCardComponent />;
+        return <CreatorShortsCardComponent />;
 
       case 'posts':
-        return <PostCardComponent />;
+        return <CreatorPostCardComponent />;
 
       default:
         return null;
@@ -64,7 +62,7 @@ export default function HubScreen() {
         </TouchableOpacity>
       </View>
 
-      <View className="gap-5 flex-row w-full items-center">
+      {/* <View className="gap-5 flex-row w-full items-center">
         <View className="flex-1 flex-row items-center gap-2 rounded-2xl bg-[#FFFFFF1A] px-4 ">
           <SearchIcon height={20} width={20} />
           <TextInput
@@ -80,7 +78,8 @@ export default function HubScreen() {
           />
         </View>
         <Filter height={32} width={32} />
-      </View>
+      </View> */}
+
       {/* Tabs */}
       <View style={styles.tabsContainer}>
         <TouchableOpacity

@@ -112,12 +112,6 @@ export default function FollowScreen() {
   return (
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-[#17191A]">
       <Text className="mt-6 px-4 pb-4 text-3xl font-bold text-white">Following</Text>
-      <View className="">
-        <FollowChannel />
-      </View>
-
-      <Text className="mt-4 px-4 pb-4 text-xl font-bold text-white">Most Relevant</Text>
-
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContainer}
@@ -130,6 +124,13 @@ export default function FollowScreen() {
           />
         }
       >
+        <View className="">
+          <FollowChannel />
+        </View>
+
+        <Text className="mt-4 px-4 pb-4 text-xl font-bold text-white">Most Relevant</Text>
+
+
         {renderContent()}
       </ScrollView>
     </SafeAreaView>

@@ -1,3 +1,4 @@
+import { useFollow } from '@/shared/hooks/useFollow';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
@@ -11,6 +12,7 @@ interface BottomInfoProps {
   views: number;
   timeAgo: string;
   hashtags: string[];
+  channelId: string
 }
 export default function BottomInfo({
   username,
@@ -20,8 +22,19 @@ export default function BottomInfo({
   views,
   timeAgo,
   hashtags,
+  channelId,
 }: BottomInfoProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  // FOLLOW
+  const {
+    isFollowing,
+    followersCount,
+    loading: followLoading,
+    toggleFollow,
+  } = useFollow(
+    channelId!,
+    0
+  );
 
   return (
     <View className="">
@@ -30,7 +43,34 @@ export default function BottomInfo({
         <Image source={{ uri: avatar! }} className="h-9 w-9 rounded-xl" />
         <Text className="mr-2.5 text-base font-semibold text-white">{username}</Text>
 
-        <LinearGradient
+        <TouchableOpacity
+          disabled={followLoading}
+          onPress={toggleFollow}
+          activeOpacity={0.8}
+        >
+          <LinearGradient
+            colors={
+              isFollowing
+                ? ['#4B5563', '#4B5563'] // gray when following
+                : ['#9BD71B', '#7CB518'] // green when not following
+            }
+            style={{
+              borderRadius: 16,
+              paddingHorizontal: 20,
+              paddingVertical: 8,
+            }}
+          >
+            <Text className="text-sm font-semibold text-black">
+              {followLoading
+                ? "Loading..."
+                : isFollowing
+                  ? "Following"
+                  : "Follow"}
+            </Text>
+          </LinearGradient>
+        </TouchableOpacity>
+
+        {/* <LinearGradient
           colors={['#9BD71B1A', '#9BD71B1A']}
           style={{
             borderWidth: 1,
@@ -41,7 +81,7 @@ export default function BottomInfo({
           <TouchableOpacity className="rounded-xl">
             <Text className="text-xl font-normal text-white">Follow </Text>
           </TouchableOpacity>
-        </LinearGradient>
+        </LinearGradient> */}
       </View>
 
       {/* Title */}

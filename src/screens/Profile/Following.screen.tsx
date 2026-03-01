@@ -5,9 +5,9 @@ import { ProfileParamalist } from '@/navigation/ProfileStack';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import AppHeader from '../../components/AppHeader';
-import CreatorCard from '../../components/CreatorCard';
 import { UIChannel } from '@/shared/utils/follow.utils';
 import { getFollowingChannels } from '@/domain/video/api/follow.service';
+import FollowableCreator from './FollowableCompo';
 
 type Props = NativeStackNavigationProp<ProfileParamalist, 'Following'>;
 
@@ -95,12 +95,9 @@ export default function FollowingScreen() {
         return (
             <>
                 {follwing.map((creator) => (
-                    <CreatorCard
+                    <FollowableCreator
                         key={creator.id}
-                        avatar={creator.avatar!}
-                        name={creator.name}
-                        followers={creator.followers}
-                        onFollow={() => console.log(`Follow ${creator.name}`)}
+                        creator={creator}
                     />
                 ))}
             </>

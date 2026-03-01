@@ -1,12 +1,13 @@
 // VideoCard.component.tsx
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView, StyleSheet, RefreshControl } from 'react-native';
-import { getAllVideos } from '@/domain/video/api/video.service';
 import { VideoData } from '@/shared/types/video.types';
 import VideoCardComponent from './VideoCard.component';
 import { ProfileParamalist } from '@/navigation/ProfileStack';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
+import { getHistory } from '@/domain/video/api/history.service';
+import { transformVideosData } from '@/shared/utils/video.utils';
 
 type Props = NativeStackNavigationProp<ProfileParamalist, 'Saved'>;
 
@@ -27,8 +28,10 @@ export default function HistoryVideoComponent() {
             }
             setError(null);
 
-            const result = await getAllVideos({ page: 1, limit: 10 });
-            setVideos(result.videos);
+            const historyShorts = await getHistory();
+            const transformed = transformVideosData(historyShorts as any);
+            console.log("getHistory:", transformed)
+            setVideos(transformed);
         } catch (err: any) {
             console.error('Error fetching videos:', err);
             setError(err.message || 'Failed to load videos');

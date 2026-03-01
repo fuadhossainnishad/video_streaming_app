@@ -4,6 +4,7 @@ import ShortsScreen from '@/screens/Shorts/Shorts.screen';
 import ShortsViewScreen from '@/screens/Shorts/ShortsView.screen';
 import ReportScreen from '@/screens/Shorts/Report.screen';
 import { ShortData } from '@/shared/types/shorts.types';
+import SearchScreen from '@/screens/Shorts/Search.screen';
 // import OnboardingScreen from '../screens/Onboarding/onboarding.screen';
 // import AuthScreen from '@/screens/Auth/login.screen';
 // import VerifyOtpScreen from '@/screens/Auth/verifyOtp.screen';
@@ -12,17 +13,25 @@ import { ShortData } from '@/shared/types/shorts.types';
 // import resetPasswordScreen from '@/screens/Auth/resetPassword.screen';
 
 const Stack = createNativeStackNavigator();
+
 export type ShortsParamalist = {
     Shorts: { short: ShortData };
     ShortsView: { shortId: string };
-    Report: undefined;
+    SearchShort: undefined;
+    Report: {
+        contentId: string;
+        contentType: "video" | "short";
+    };
 };
+
 export default function ShortsStack() {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Shorts" component={ShortsScreen} options={{ headerShown: false }} />
             <Stack.Screen name="ShortsView" component={ShortsViewScreen} options={{ headerShown: false }} />
             <Stack.Screen name="Report" component={ReportScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="SearchShort" component={SearchScreen} options={{ headerShown: false }} />
+
         </Stack.Navigator>
     );
 }

@@ -13,6 +13,8 @@ export const GET_ALL_POST = 'post/all'
 export const GET_ALL_SHORT = 'shorts/all'
 export const GET_SHORT_BY_ID = (id: string) => `/shorts/${id}`;
 
+export const GET_SHORT_BY_CHANNEL = (id: string) => `/shorts/channel/${id}`
+export const GET_POST_BY_CHANNEL = `/post/my-posts`
 
 export const GET_ALL_COMMENTS = (videoId: string) => `/v1/comments/Video/${videoId}`
 export const POST_COMMENTS = '/v1/comments'
@@ -40,6 +42,7 @@ export const GET_MY_CHANNEL = '/channel/my_channel'
 export const CREATE_CHANNEL = '/channel/create'
 export const EDIT_CHANNEL = '/channel/edit'
 export const GET_ALL_FOLLOWING_CHANNEL = '/v1/follows/my-subscriptions'
+export const GET_DISCOVERY_CHANNEL = '/v1/follows/discover'
 
 export const EDIT_PROFILE = '/user/profile'
 
@@ -55,3 +58,7 @@ export const CHECK_SAVED = (id: string) => `/v1/save/check/${id}`
 export const UNSAVED = '/v1/save/unsave'
 
 export const HISTORY = '/v1/history/history'
+
+export const FOLLOW_CHANNEL = (id: string) => `/v1/follows/toggle/${id}`
+export const VIDEO_REACT = 'v1/reactions/toggle'
+export const VIDEO_REACT_STATS = (id: string) => `/v1/reactions/stats/Video/${id}`

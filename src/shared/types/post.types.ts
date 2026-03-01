@@ -38,6 +38,20 @@ export interface ApiPostResponse {
   count: number;
   data: ApiPost[];
 }
+export interface ShortPagination {
+  currentPage: number;
+  totalPages: number;
+  totalPosts: number;
+  limit: boolean;
+}
+export interface ApiChannelPostResponse {
+  status: 'success' | 'error';
+  count: number;
+  data: {
+    posts: ApiPost[],
+    pagination: ShortPagination
+  };
+}
 
 export interface PostUI {
   id: string;

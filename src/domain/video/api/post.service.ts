@@ -1,7 +1,7 @@
 // domain/video/api/post.service.ts
 import { axiosClient } from '@/shared/config/axios.config';
-import { GET_ALL_POST } from '@/shared/constants/api.constants';
-import { ApiPostResponse, PostUI } from '@/shared/types/post.types';
+import { GET_ALL_POST, GET_POST_BY_CHANNEL } from '@/shared/constants/api.constants';
+import { ApiChannelPostResponse, ApiPostResponse, PostUI } from '@/shared/types/post.types';
 import { transformPostsData } from '@/shared/utils/post.utils';
 
 export interface GetPostsResult {
@@ -65,6 +65,34 @@ export const getAllPosts = async (
     }
 
     const transformedPosts = transformPostsData(data.data);
+
+    return {
+      posts: transformedPosts,
+      count: data.count,
+    };
+  } catch (error: any) {
+    console.error('Error fetching posts:', error);
+    throw {
+      message: error.message || 'Failed to fetch posts',
+      statusCode: error.statusCode || 500,
+    };
+  }
+};
+
+
+export const getAllPostsByChannel = async (
+  page: number = 1,
+  limit: number = 10
+): Promise<GetPostsResult> => {
+  try {
+    const { data } = await axiosClient.get<ApiChannelPostResponse>(GET_POST_BY_CHANNEL);
+
+    if (data.status !== 'success' || !data.data) {
+      throw new Error('Invalid response format');
+    }
+    console.log("fetched post:", data.data.posts)
+
+    const transformedPosts = transformPostsData(data.data.posts);
 
     return {
       posts: transformedPosts,

@@ -1,9 +1,8 @@
 // domain/follow/api/follow.service.ts
 
-import axiosClient from '@/shared/config/axios.config';
-import { GET_ALL_FOLLOWING_CHANNEL } from '@/shared/constants/api.constants';
-import { mockFollowingResponse } from '@/shared/mock/follow.mock';
-import { FollowingResponse } from '@/shared/types/follow.types';
+import { axiosClient } from '@/shared/config/axios.config';
+import { FOLLOW_CHANNEL, GET_ALL_FOLLOWING_CHANNEL } from '@/shared/constants/api.constants';
+import { FollowingResponse, ToggleFollowResponse } from '@/shared/types/follow.types';
 import { transformFollowing } from '@/shared/utils/follow.utils';
 
 // import { GET_FOLLOWING_CHANNELS } from '@/shared/constants/api.constants';
@@ -29,6 +28,8 @@ export const getFollowingChannels = async (
             GET_ALL_FOLLOWING_CHANNEL,
             { params: { page, limit } }
         );
+        console.log('Error toggling follow:', data);
+        console.log('Error toggling data.data.subscriptions:', data.data.subscriptions);
 
         // MOCK (remove later)
         // const data = mockFollowingResponse;
@@ -51,4 +52,48 @@ export const getFollowingChannels = async (
             statusCode: error.statusCode || 500,
         };
     }
+};
+
+/**
+ * Toggle follow/unfollow a channel
+ * POST /follows/toggle/:channelId
+ */
+export const toggleFollow = async (channelId: string): Promise<ToggleFollowResponse> => {
+    try {
+        const response = await axiosClient.post<ToggleFollowResponse>(
+            FOLLOW_CHANNEL(channelId)
+        );
+
+        if (response.data.status !== 'success') {
+            throw new Error(response.data.message || 'Failed to toggle follow');
+        }
+
+        return response.data;
+    } catch (error: any) {
+        console.error('Error toggling follow:', error);
+        throw {
+            message: error.message || 'Failed to toggle follow',
+            statusCode: error.statusCode || 500,
+        };
+    }
+};
+
+/**
+ * Check follow status
+ * GET /follows/check/:channelId
+ */
+export const checkFollowStatus = async (
+    channelId: string
+): Promise<boolean> => {
+    const response = await axiosClient.get(
+        `/follows/check/${channelId}`
+    );
+
+    if (response.data.status !== 'success') {
+        throw new Error(
+            response.data.message || 'Failed to check follow status'
+        );
+    }
+
+    return response.data.data.isFollowing;
 };

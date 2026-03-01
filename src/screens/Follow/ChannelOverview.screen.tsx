@@ -1,6 +1,6 @@
 import AppHeader from '@/components/AppHeader';
 import { FollowParamalist } from '@/navigation/FollowStack';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
@@ -9,33 +9,42 @@ import VideoIcon from '../../../assets/icons/video.svg';
 import ShortsIcon from '../../../assets/icons/shorts.svg';
 import PostIcon from '../../../assets/icons/post.svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import VideoCardComponent from '@/components/VideoCompo';
-import ShortsCardComponent from '@/components/ShortsCompo';
-import PostCardComponent from '@/components/PostCompo';
+import ChannelVideoCardComponent from '@/components/ChannelVideoCompo2';
+import ChannelShortsCardComponent from '@/components/ChannelShortsCompo';
+import ChannelPostCardComponent from '@/components/ChannelPostCompo';
+import { useFollow } from '@/shared/hooks/useFollow';
 
 type Props = NativeStackNavigationProp<FollowParamalist, 'ChannelOverview'>;
+type ChannelRouteProp = RouteProp<FollowParamalist, 'ChannelOverview'>;
 
 export default function ChannelProfileScreen() {
   const navigation = useNavigation<Props>();
-  const route = useRoute<any>();
-  const { channelId } = route.params;
+  const route = useRoute<ChannelRouteProp>();
+  const { channel } = route.params;
   const [activeTab, setActiveTab] = useState<'videos' | 'shorts' | 'posts'>('videos');
+
+  const {
+    isFollowing,
+    followersCount,
+    loading,
+    toggleFollow,
+  } = useFollow(channel.id, 0);
 
   const renderContent = () => {
     switch (activeTab) {
       case 'videos':
         return (
-          <VideoCardComponent />
+          <ChannelVideoCardComponent channelId={channel.id} />
         );
 
       case 'shorts':
         return (
-          <ShortsCardComponent />
+          <ChannelShortsCardComponent channelId={channel.id} />
         );
 
       case 'posts':
         return (
-          <PostCardComponent />
+          <ChannelPostCardComponent />
         );
 
       default:
@@ -59,24 +68,24 @@ export default function ChannelProfileScreen() {
         />
 
         <View style={styles.profileInfo}>
-          <Text style={styles.channelName}>Lukas Wagner</Text>
-          <Text style={styles.handle}>@lukaswagner</Text>
+          <Text style={styles.channelName}>{channel.name}</Text>
+          <Text style={styles.handle}>@{channel.ownerUsername}</Text>
           <View style={styles.statsRow}>
-            <Text style={styles.statText}>1.2M subscribers</Text>
+            <Text style={styles.statText}>{channel.followers} subscribers</Text>
             <Text style={styles.statSeparator}> • </Text>
-            <Text style={styles.statText}>482 videos</Text>
+            <Text style={styles.statText}>{channel.totalVideos} videos</Text>
           </View>
         </View>
       </View>
 
       {/* Bio */}
       <Text style={styles.bio}>
-        Lorem ipsum dolor sit amet consectetur. Ultrices id feugiat venenatis habitant ...{' '}
-        <Text style={styles.more}>more</Text>
+        {channel.description}
+        {/* <Text style={styles.more}>more</Text> */}
       </Text>
 
       {/* Follow Button */}
-      <TouchableOpacity style={styles.followButtonContainer}>
+      {/* <TouchableOpacity style={styles.followButtonContainer}>
         <LinearGradient
           colors={['#282828', '#9BD71B1A', '#282828']}
           start={{ x: 0, y: 0 }}
@@ -84,6 +93,18 @@ export default function ChannelProfileScreen() {
           style={styles.followButton}>
           <Text style={styles.followText}>Follow</Text>
         </LinearGradient>
+      </TouchableOpacity> */}
+
+      <TouchableOpacity
+        onPress={toggleFollow}
+        disabled={loading}
+        className={`px-6 py-2 rounded-full ${isFollowing ? 'bg-gray-700' : 'bg-[#9BD71B]'
+          }`}
+      >
+        <Text className={`font-semibold ${isFollowing ? 'text-white' : 'text-black'
+          }`}>
+          {loading ? 'Please wait...' : isFollowing ? 'Following' : 'Follow'}
+        </Text>
       </TouchableOpacity>
 
       {/* Tabs */}

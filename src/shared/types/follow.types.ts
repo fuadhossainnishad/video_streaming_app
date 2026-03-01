@@ -34,3 +34,17 @@ export interface FollowingResponse {
     };
   };
 }
+
+export interface ToggleFollowResponse {
+  status: 'success' | 'error';
+  message: string;
+  data: {
+    action: 'followed' | 'unfollowed';
+    isFollowing: boolean;
+  };
+}
+
+export interface FollowState {
+  isFollowing: boolean;
+  followersCount: number;
+}

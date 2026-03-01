@@ -9,9 +9,9 @@ import VideoRender from '@/components/VideoRender'; // Your video component
 // import PostsRender from '@/components/PostsRender';
 
 // Icons (adjust paths as needed)
-import VideoIcon from '../../../assets/icons/video.svg';
-import ShortsIcon from '../../../assets/icons/shorts.svg';
-import PostIcon from '../../../assets/icons/post.svg';
+import VideoIcon from '../../../../assets/icons/video.svg';
+import ShortsIcon from '../../../../assets/icons/shorts.svg';
+import PostIcon from '../../../../assets/icons/post.svg';
 
 type AuthStackParamList = {
   Auth: undefined;

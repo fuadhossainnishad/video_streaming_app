@@ -1,6 +1,6 @@
 import AppHeader from '@/components/AppHeader';
 import CreatorCard from '@/components/CreatorCard';
-import { getAllChannels } from '@/domain/video/api/channel.service';
+import { getAllChannels, getAllDiscoveryChannels } from '@/domain/video/api/channel.service';
 import { HomeParamalist } from '@/navigation/HomeStack';
 import { ChannelData } from '@/shared/types/channel.types';
 import { useNavigation } from '@react-navigation/native';
@@ -86,9 +86,10 @@ export default function DiscoverCreatorScreen() {
         {channels.map((channel) => (
           <CreatorCard
             key={channel.id}
+            channelId={channel.id}
             avatar={channel.avatar}
             name={channel.name}
-            followers={'20k'}
+            followers={2000}
             onFollow={() => console.log(`Follow ${channel.name}`)}
           />))}
       </>

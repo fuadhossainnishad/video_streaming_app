@@ -1,9 +1,9 @@
 import { ActivityIndicator, Dimensions, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { PostUI } from "@/shared/utils/post.utils";
 import { getSavedPosts } from "@/domain/video/api/post.service";
 import PostCard from "./PostCard";
+import { PostUI } from "@/shared/types/post.types";
 
 
 export default function PostCardComponent() {

@@ -1,117 +1,51 @@
-// src/hooks/useVideos.ts
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from "react";
+import { getAllVideos } from "@/domain/video/api/video.service";
+import { VideoData } from "@/shared/types/video.types";
 
-interface UseVideosReturn {
-    videos: Video[];
-    pagination: Pagination | null;
-    loading: boolean;
-    error: string | null;
-    refreshing: boolean;
-    fetchVideos: () => Promise<void>;
-    loadMore: () => Promise<void>;
-    refresh: () => Promise<void>;
+interface Params {
+    page?: number;
+    limit?: number;
 }
 
-export const useVideos = (initialPage: number = 1, limit: number = 10): UseVideosReturn => {
-    const [videos, setVideos] = useState<Video[]>([]);
-    const [pagination, setPagination] = useState<Pagination | null>(null);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [refreshing, setRefreshing] = useState<boolean>(false);
+export const useVideos = ({ page = 1, limit = 10 }: Params) => {
+    const [videos, setVideos] = useState<VideoData[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [currentPage, setCurrentPage] = useState<number>(initialPage);
 
-    const fetchVideos = useCallback(async (page: number = 1, append: boolean = false) => {
+    const fetchVideos = useCallback(async (isRefresh = false) => {
         try {
-            if (!append) {
+            if (isRefresh) {
+                setRefreshing(true);
+            } else {
                 setLoading(true);
             }
+
             setError(null);
 
-            const response = await videoService.getVideos(page, limit);
+            const result = await getAllVideos({ page, limit });
 
-            if (response.status === 'success') {
-                if (append) {
-                    setVideos((prev) => [...prev, ...response.data.videos]);
-                } else {
-                    setVideos(response.data.videos);
-                }
-                setPagination(response.data.pagination);
-                setCurrentPage(page);
-            }
+            setVideos(result.videos);
         } catch (err: any) {
-            setError(err.message || 'Failed to fetch videos');
-            console.error('Error fetching videos:', err);
+            console.error("Fetch videos error:", err);
+            setError(err?.message || "Failed to load videos");
         } finally {
             setLoading(false);
             setRefreshing(false);
         }
-    }, [limit]);
-
-    const loadMore = useCallback(async () => {
-        if (pagination?.hasMore && !loading) {
-            await fetchVideos(currentPage + 1, true);
-        }
-    }, [pagination, loading, currentPage, fetchVideos]);
-
-    const refresh = useCallback(async () => {
-        setRefreshing(true);
-        await fetchVideos(1, false);
-    }, [fetchVideos]);
+    }, [page, limit]);
 
     useEffect(() => {
-        fetchVideos(initialPage);
-    }, []);
+        fetchVideos();
+    }, [fetchVideos]);
+
+    const refresh = () => fetchVideos(true);
 
     return {
         videos,
-        pagination,
         loading,
-        error,
         refreshing,
-        fetchVideos: () => fetchVideos(1, false),
-        loadMore,
+        error,
         refresh,
     };
-};
-
-// Hook for searching videos
-export const useSearchVideos = (query: string) => {
-    const [videos, setVideos] = useState<Video[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
-
-    const searchVideos = useCallback(async (searchQuery: string) => {
-        if (!searchQuery.trim()) {
-            setVideos([]);
-            return;
-        }
-
-        try {
-            setLoading(true);
-            setError(null);
-
-            const response = await videoService.searchVideos(searchQuery);
-
-            if (response.status === 'success') {
-                setVideos(response.data.videos);
-            }
-        } catch (err: any) {
-            setError(err.message || 'Failed to search videos');
-            console.error('Error searching videos:', err);
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
-    useEffect(() => {
-        const debounceTimer = setTimeout(() => {
-            if (query) {
-                searchVideos(query);
-            }
-        }, 500); // Debounce search by 500ms
-
-        return () => clearTimeout(debounceTimer);
-    }, [query, searchVideos]);
-
-    return { videos, loading, error };
 };

@@ -81,7 +81,7 @@ export default function FollowChannel() {
         return (
             <>
                 {channels.map((channel) => (
-                    <TouchableOpacity key={channel.id} onPress={() => { naviagtion.navigate('ChannelOverview', { channelId: channel.id }) }}>
+                    <TouchableOpacity key={channel.id} onPress={() => { naviagtion.navigate('ChannelOverview', { channel: channel }) }}>
                         <View style={styles.channelContainer} className="items-center gap-2">
                             <Image source={{ uri: channel.avatar }} className="h-10 w-10 rounded-xl" resizeMode="cover" />
                             <Text numberOfLines={2} ellipsizeMode="tail" style={styles.channelName}>

@@ -11,8 +11,8 @@ import {
 } from 'react-native';
 import { VideoData } from '@/shared/types/video.types';
 import { useNavigation } from '@react-navigation/native';
-import VideoRender from '@/components/VideoRender';
 import { useAuth } from '@/shared/hooks/useauth';
+import CreatorVideoRender from './CreatorVideoRender';
 
 export default function CreatorVideoCompo({ vertical = false }: { vertical?: boolean }) {
   const navigation = useNavigation<any>();
@@ -20,7 +20,10 @@ export default function CreatorVideoCompo({ vertical = false }: { vertical?: boo
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { channel } = useAuth()
+  const { channel, mychannel } = useAuth()
+  const [self, setSelf] = useState(channel)
+
+  console.log("channel:", channel)
 
   console.log('videos:', videos);
 
@@ -33,6 +36,16 @@ export default function CreatorVideoCompo({ vertical = false }: { vertical?: boo
       }
       setError(null);
       console.log("channel:", channel)
+      if (channel === null) {
+        const response = await mychannel()
+        if (!response.success) {
+          return;
+        }
+        setSelf(response.data!)
+      }
+
+      console.log("self:", self)
+
       const result = await getChannelAllVideos(channel?.id!, { page: 1, limit: 10 });
       setVideos(result.videos);
     } catch (err: any) {
@@ -42,7 +55,7 @@ export default function CreatorVideoCompo({ vertical = false }: { vertical?: boo
       setLoading(false);
       setRefreshing(false);
     }
-  }, []);
+  }, [self?.id!]);
 
   useEffect(() => {
     fetchVideos();
@@ -98,7 +111,7 @@ export default function CreatorVideoCompo({ vertical = false }: { vertical?: boo
     return (
       <>
         {videos.map((video) => (
-          <VideoRender
+          <CreatorVideoRender
             key={video.id}
             videoData={video}
             onPress={() => handleVideoPress(video.id)}

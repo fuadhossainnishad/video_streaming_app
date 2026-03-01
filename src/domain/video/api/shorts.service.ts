@@ -1,8 +1,7 @@
 // domain/short/api/short.service.ts
 
 import { axiosClient } from "@/shared/config/axios.config";
-import { GET_ALL_SHORT, GET_SHORT_BY_ID } from "@/shared/constants/api.constants";
-import { mockShortsResponse } from "@/shared/mock/shorts.mock";
+import { GET_ALL_SHORT, GET_SHORT_BY_CHANNEL, GET_SHORT_BY_ID } from "@/shared/constants/api.constants";
 import { ApiShortPagination, ApiShortResponse, ShortData } from "@/shared/types/shorts.types";
 import { transformShort, transformShorts } from "@/shared/utils/shorts.utils";
 
@@ -60,6 +59,40 @@ export const getShortById = async (shortId: string): Promise<ShortData> => {
 
         // Transform single short
         return transformShort(data.data.short);
+    } catch (error: any) {
+        console.error('Error fetching short:', error);
+        throw {
+            message: error.message || 'Failed to fetch short',
+            statusCode: error.statusCode || 500,
+        };
+    }
+};
+
+export interface GetShortParams {
+    page?: number;
+    limit?: number;
+    category?: string;
+    search?: string;
+}
+
+export const getShortByChannel = async (
+    channelId: string,
+    params: GetShortParams = {}
+): Promise<GetShortsResult> => {
+    try {
+        const { data } = await axiosClient.get(GET_SHORT_BY_CHANNEL(channelId), {
+            params,
+        });
+        if (data.status !== "success") {
+            throw new Error("Failed to fetch shorts");
+        }
+        console.log('shorts data of channel:', data.data)
+        const transformed = transformShorts(data.data.shorts);
+
+        return {
+            shorts: transformed,
+            pagination: data.data.pagination,
+        };
     } catch (error: any) {
         console.error('Error fetching short:', error);
         throw {

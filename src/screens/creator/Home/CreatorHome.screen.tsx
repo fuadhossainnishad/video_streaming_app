@@ -30,7 +30,7 @@ type Props = NativeStackNavigationProp<CreatorHomeParamalist, 'CreatorHome'>;
 
 export default function CreatorHomeScreen() {
   const navigation = useNavigation<Props>();
-  const [searchQuery, setSearchQuery] = useState('');
+  // const [searchQuery, setSearchQuery] = useState('');
   const [videos, setVideos] = useState<VideoData[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -77,12 +77,12 @@ export default function CreatorHomeScreen() {
     // TODO: Implement menu actions (Share, Save, Report, etc.)
   }, []);
 
-  const handleSearch = useCallback(() => {
-    if (searchQuery.trim()) {
-      // TODO: Implement search functionality
-      console.log('Searching for:', searchQuery);
-    }
-  }, [searchQuery]);
+  // const handleSearch = useCallback(() => {
+  //   if (searchQuery.trim()) {
+  //     // TODO: Implement search functionality
+  //     console.log('Searching for:', searchQuery);
+  //   }
+  // }, [searchQuery]);
 
   const renderContent = () => {
     if (loading) {

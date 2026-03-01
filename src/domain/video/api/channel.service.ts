@@ -1,5 +1,5 @@
 import { axiosClient } from "@/shared/config/axios.config";
-import { CREATE_CHANNEL, EDIT_CHANNEL, GET_ALL_CHANNEL, GET_MY_CHANNEL } from "@/shared/constants/api.constants";
+import { CREATE_CHANNEL, EDIT_CHANNEL, GET_ALL_CHANNEL, GET_DISCOVERY_CHANNEL, GET_MY_CHANNEL } from "@/shared/constants/api.constants";
 import { mockChannelDetailsResponse, mockMychannelResponse, mockTopChannelsResponse } from "@/shared/mock/channel.mock";
 import {
     ApiAllChannelsResponse,
@@ -39,6 +39,31 @@ export const getAllChannels = async (): Promise<ChannelData[]> => {
         };
     }
 };
+
+export const getAllDiscoveryChannels = async (): Promise<ChannelData[]> => {
+    try {
+        const { data } = await axiosClient.get<ApiAllChannelsResponse>(GET_DISCOVERY_CHANNEL);
+
+        // const data = mockTopChannelsResponse
+
+
+        if (data.status !== "success" || !data.data) {
+            throw new Error("Invalid channel response");
+        }
+
+        console.log("getAllDiscoveryChannels data fetched:", data.data);
+
+        return transformChannelsData(data.data);
+    } catch (error: any) {
+        console.error("Error fetching channels:", error);
+
+        throw {
+            message: error.message || "Failed to fetch channels",
+            statusCode: error.response?.status || 500,
+        };
+    }
+};
+
 
 /**
  * Fetch single channel by ID

@@ -8,6 +8,7 @@ interface ActionButtonProps {
     count?: string;
     isActive?: boolean;
     onPress?: () => void;
+    disabled?: boolean;
 }
 
 export default function ActionButton({
@@ -15,13 +16,16 @@ export default function ActionButton({
     count,
     isActive = false,
     onPress,
+    disabled = false
 }: ActionButtonProps) {
     const isSvgComponent = typeof Icon !== "string";
 
     return (
         <TouchableOpacity
-            onPress={onPress}
-            className="items-center bg-[#2F30311A] rounded-lg px-3"
+            onPress={disabled ? undefined : onPress}
+            disabled={disabled}
+            className={`items-center bg-[#2F30311A] rounded-lg px-3 ${disabled ? "opacity-50" : ""
+                }`}
             activeOpacity={0.7}
         >
             <View
@@ -41,12 +45,12 @@ export default function ActionButton({
                         color={isActive ? "#22C55E" : "white"}
                     />
                 )}
-
-                {count && (
+                {count !== undefined && (
                     <Text className="text-white text-sm font-semibold">
                         {count}
                     </Text>
                 )}
+
             </View>
         </TouchableOpacity>
     );

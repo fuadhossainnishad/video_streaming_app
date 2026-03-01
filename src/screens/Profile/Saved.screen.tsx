@@ -13,6 +13,8 @@ import PostCard from '@/components/PostCard';
 import VideoCardComponent from '@/components/VideoCompo';
 import ShortsCardComponent from '@/components/ShortsCompo';
 import PostCardComponent from '@/components/PostCompo';
+import SaveVideoCardComponent from '@/components/SaveVideoCompo';
+import SaveShortsCardComponent from '@/components/SaveShortsCompo';
 
 type Props = NativeStackNavigationProp<ProfileParamalist, 'Saved'>;
 
@@ -23,18 +25,18 @@ export default function SavedScreen() {
     switch (activeTab) {
       case 'videos':
         return (
-          <VideoCardComponent />
+          <SaveVideoCardComponent />
         );
 
       case 'shorts':
         return (
-          <ShortsCardComponent />
+          <SaveShortsCardComponent />
         );
 
-      case 'posts':
-        return (
-          <PostCardComponent />
-        );
+      // case 'posts':
+      //   return (
+      //     <PostCardComponent />
+      //   );
 
       default:
         return null;
@@ -66,15 +68,15 @@ export default function SavedScreen() {
             <Text style={styles.tabText}>Shorts</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={[styles.tabItem, activeTab === 'posts' && styles.activeTab]}
             onPress={() => setActiveTab('posts')}>
             <PostIcon width={16} height={16} />
             <Text style={styles.tabText}>Posts</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
         <TouchableOpacity
-          onPress={() => setActiveTab('posts')}>
+          onPress={() => {}}>
           <SearchIcon width={28} height={28} />
         </TouchableOpacity>
       </View>

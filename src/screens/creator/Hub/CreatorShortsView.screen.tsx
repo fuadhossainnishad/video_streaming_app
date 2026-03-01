@@ -5,27 +5,26 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Video } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Share from '../../../assets/icons/share.svg'
-import Saved from '../../../assets/icons/saved.svg'
-import Report from '../../../assets/icons/report.svg'
-import Like from '../../../assets/icons/like2.svg'
-import LikeInActive from '../../../assets/icons/like3.svg'
-import Dislike from '../../../assets/icons/dislike3.svg'
-import DislikeInActive from '../../../assets/icons/dislike2.svg'
+import Share from '../../../../assets/icons/share.svg'
+import Edit from '../../../../assets/icons/edit2.svg'
+import Like from '../../../../assets/icons/like2.svg'
+import LikeInActive from '../../../../assets/icons/like3.svg'
+import Dislike from '../../../../assets/icons/dislike3.svg'
+import DislikeInActive from '../../../../assets/icons/dislike2.svg'
 import ActionButton from './components/ActionButton';
 import VideoPlayer from './components/VideoPlayer';
-import BottomInfo from './components/BottomInfo';
 import SeekableProgressBar from './components/SeekableProgressBar';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { ShortsParamalist } from '@/navigation/ShortsStack';
 import { ShortData } from '@/shared/types/shorts.types';
 import { getShortById } from '@/domain/video/api/shorts.service';
 import { formatTimeAgo } from '@/shared/utils/formatters';
+import { HubParamalist } from '@/navigation/creator/HubStack';
+import ShortBottomInfo from './components/ShortBottomInfo';
 
-type Props = NativeStackNavigationProp<ShortsParamalist, 'ShortsView'>;
+type Props = NativeStackNavigationProp<HubParamalist, 'ShortsView'>;
 
-export default function ShortsViewScreen() {
+export default function CreatorShortsViewScreen() {
   const navigation = useNavigation<Props>();
   const route = useRoute<any>();
   const { shortId } = route.params;
@@ -35,7 +34,6 @@ export default function ShortsViewScreen() {
   const [commentCount] = useState(16);
   const [isLiked, setIsLiked] = useState(false);
   const [isDisliked, setIsDisliked] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
   const [videoProgress, setVideoProgress] = useState(0);
   const [videoDuration, setVideoDuration] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -179,10 +177,13 @@ export default function ShortsViewScreen() {
               <Ionicons name="chevron-back" size={24} color="white" />
             </TouchableOpacity>
 
-            {/* Search Button */}
-            <TouchableOpacity className="w-14 h-14 rounded-2xl bg-black/40 justify-center items-center">
-              <Ionicons name="search-outline" size={22} color="white" />
+            <TouchableOpacity className="flex-row justify-end items-center px-4 py-2 rounded-lg bg-black/50">
+              <Edit height={24} width={24} />
             </TouchableOpacity>
+            {/* Search Button */}
+            {/* <TouchableOpacity className="w-14 h-14 rounded-2xl bg-black/40 justify-center items-center">
+              <Ionicons name="search-outline" size={22} color="white" />
+            </TouchableOpacity> */}
           </View>
         </SafeAreaView>
 
@@ -194,17 +195,6 @@ export default function ShortsViewScreen() {
               <Text className="text-white text-base ml-1.5 font-medium">Share</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity className="flex-row justify-end items-center px-4 py-2 rounded-lg bg-black/50">
-              <Saved height={24} width={24} />
-              <Text className="text-white text-base ml-1.5 font-medium">Save</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => navigation.navigate('Report')}
-              className="flex-row justify-end items-center px-4 py-2 rounded-lg bg-black/50">
-              <Report height={24} width={24} />
-              <Text className="text-white text-base ml-1.5 font-medium">Report</Text>
-            </TouchableOpacity>
           </View>
         </SafeAreaView>
 
@@ -229,7 +219,7 @@ export default function ShortsViewScreen() {
             />
           </View>
 
-          <BottomInfo
+          <ShortBottomInfo
             username={shortData.ownerName}
             avatar={shortData.ownerAvatar!}
             title={shortData.title}

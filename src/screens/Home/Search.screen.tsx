@@ -6,15 +6,22 @@ import { useState } from 'react';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { HomeParamalist } from '@/navigation/HomeStack';
 import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import SearchVideoCardComponent from '@/components/SearchVideoCompo';
 
 type Props = NativeStackNavigationProp<HomeParamalist, 'Search'>;
 
 export default function SearchScreen() {
     const navigation = useNavigation<Props>();
     const [searchQuery, setSearchQuery] = useState('');
-    return (
-        <View className="flex-1 bg-black">
-            <View className="mt-4 w-full flex-row items-center gap-4 px-4 py-2">
+    const [submittedQuery, setSubmittedQuery] = useState('');
+
+    const handleSubmit = () => {
+        if (!searchQuery.trim()) return;
+        setSubmittedQuery(searchQuery.trim());
+    }; return (
+        <SafeAreaView edges={['top']} className="flex-1 bg-black px-4 gap-8 py-4">
+            <View className="w-full flex-row items-center gap-4 ">
                 <TouchableOpacity
                     onPress={() => {
                         navigation.goBack();
@@ -26,11 +33,13 @@ export default function SearchScreen() {
                 <View className="flex-1 flex-row items-center gap-2 rounded-2xl bg-[#FFFFFF1A] px-4">
                     <SearchIcon height={20} width={20} />
                     <TextInput
-                        className="text-xl"
+                        className="text-xl text-white"
                         placeholder="Search"
                         placeholderTextColor="#888"
                         value={searchQuery}
                         onChangeText={setSearchQuery}
+                        onSubmitEditing={handleSubmit}
+                        returnKeyType="search"
                         autoCapitalize="none"
                         autoCorrect={false}
                     />
@@ -39,14 +48,23 @@ export default function SearchScreen() {
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollViewContent}>
-                <SearchCard searchTerm="best movie 2024" />
+                {submittedQuery ? (
+                    <SearchVideoCardComponent query={submittedQuery} />
+                ) : (
+                    <View>
+                        <SearchCard searchTerm="best movie 2024" />
+                        <SearchCard searchTerm="best movie 2024" />
+                        <SearchCard searchTerm="best movie 2024" />
+                    </View>
+                )}
+
             </ScrollView>
-        </View>
+        </SafeAreaView>
     );
 }
 const styles = StyleSheet.create({
     scrollViewContent: {
-        paddingRight: 16,
+        // paddingRight: 16,
         backgroundColor: 'black',
         gap: 12,
     },

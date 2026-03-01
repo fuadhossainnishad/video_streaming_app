@@ -6,6 +6,8 @@ export interface UIChannel {
   avatar: string;
   followers: string;
   ownerUsername: string;
+  description: string
+  totalVideos: string
 }
 
 export const transformFollowing = (
@@ -16,7 +18,9 @@ export const transformFollowing = (
     name: sub.channel.channelName,
     avatar: sub.channel.channelIcon,
     followers: formatFollowers(sub.channel.totalfollowers),
-    ownerUsername: sub.channel.owner.username,
+    ownerUsername: sub.channel.owner?.username ?? 'unknown',
+    description: sub.channel.description,
+    totalVideos: formatFollowers(sub.channel.totalViews),
   }));
 };
 

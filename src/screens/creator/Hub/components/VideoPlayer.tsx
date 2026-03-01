@@ -2,9 +2,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { AVPlaybackStatus, ResizeMode, Video } from "expo-av";
 import { useState } from "react";
 import { Dimensions, Text, TouchableOpacity, View } from "react-native";
-import PauseIcon from '../../../../assets/icons/Play.svg'
-import ForwardIcon from '../../../../assets/icons/forward.svg'
-import BackwardIcon from '../../../../assets/icons/backward.svg'
+import PauseIcon from '../../../../../assets/icons/Play.svg'
+import ForwardIcon from '../../../../../assets/icons/forward.svg'
+import BackwardIcon from '../../../../../assets/icons/backward.svg'
 
 interface VideoPlayerProps {
     uri: string;

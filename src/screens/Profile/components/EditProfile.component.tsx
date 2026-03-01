@@ -9,7 +9,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ProfileParamalist } from '@/navigation/ProfileStack';
 
 export interface IAction {
-    viewChannel: () => void;
+    viewChannel: (channel: string) => void;
 }
 
 export default function EditProfileComponent({ viewChannel }: IAction) {

@@ -24,6 +24,9 @@ import VideoRender from '@/components/VideoRender';
 import TopCreator from '@/components/TopCreator';
 import { VideoData } from '../../shared/types/video.types';
 import { getAllVideos } from '@/domain/video/api/video.service';
+import { useHistory } from '@/shared/hooks/useHistory';
+import { useBanners } from '@/shared/hooks/useBanners';
+import BannerCarousel from './BannerCarousel';
 
 
 type Props = NativeStackNavigationProp<HomeParamalist, 'Home'>;
@@ -35,7 +38,11 @@ export default function HomeScreen2() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { banners, loading: bannerLoading } = useBanners();
+
   console.log("videos:", videos)
+
+  const { trackVideo } = useHistory();
 
   const fetchVideos = useCallback(async (isRefresh = false) => {
     try {
@@ -67,9 +74,10 @@ export default function HomeScreen2() {
 
   const handleVideoPress = useCallback(
     (videoId: string) => {
+      trackVideo(videoId);
       navigation.navigate('VideoPlayer', { videoId: videoId });
     },
-    [navigation]
+    [navigation, trackVideo]
   );
 
   const handleVideoMenu = useCallback((videoId: string) => {
@@ -184,11 +192,21 @@ export default function HomeScreen2() {
             }
           >
             {/* Hero Banner */}
-            <View>
+            {/* <View>
               <Image
                 source={require('../../../assets/poster/hero.png')}
                 style={{ width: '100%', height: 200, resizeMode: 'contain' }}
               />
+            </View> */}
+
+            <View>
+              {bannerLoading ? (
+                <View className="items-center justify-center" style={{ height: 200 }}>
+                  <ActivityIndicator size="large" color="#9BD71B" />
+                </View>
+              ) : (
+                <BannerCarousel banners={banners} />
+              )}
             </View>
 
             {/* Search Section */}
@@ -196,7 +214,9 @@ export default function HomeScreen2() {
               <Text className="w-2/3 px-4 text-xl font-semibold text-[#B4BABD]">
                 Let&apos;s explore today&apos;s trending moments
               </Text>
-              <View className="flex-row items-center gap-2 rounded-2xl bg-[#FFFFFF1A] px-4 py-2">
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Search')}
+                className="flex-row items-center gap-2 rounded-2xl bg-[#FFFFFF1A] px-4 py-2">
                 <SearchIcon height={20} width={20} />
                 <TextInput
                   className="flex-1 text-base text-white"
@@ -209,7 +229,7 @@ export default function HomeScreen2() {
                   autoCorrect={false}
                   returnKeyType="search"
                 />
-              </View>
+              </TouchableOpacity>
             </View>
 
             {/* Video Feed */}

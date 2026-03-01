@@ -43,6 +43,9 @@ import { VideoData } from '@/shared/types/video.types';
 import { getVideoById } from '@/domain/video/api/video.service';
 import CommentPreviewCard from './components/CommentPreviewCard';
 import { useCommentPreview } from '@/shared/hooks/useCommentPreview';
+import { useReaction } from '@/shared/hooks/useReaction';
+import { useSave } from '@/shared/hooks/useSave';
+import { useFollow } from '@/shared/hooks/useFollow';
 
 type Props = NativeStackNavigationProp<HomeParamalist, 'VideoPlayer'>;
 
@@ -61,9 +64,10 @@ export default function VideoPlayerScreen() {
   // Video player state
   const [videoProgress, setVideoProgress] = useState(0);
   const [videoDuration, setVideoDuration] = useState(0);
-  const [isLiked, setIsLiked] = useState(false);
-  const [isDisliked, setIsDisliked] = useState(false);
+  // const [isLiked, setIsLiked] = useState(false);
+  // const [isDisliked, setIsDisliked] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
+
   const [showSettings, setShowSettings] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -75,6 +79,32 @@ export default function VideoPlayerScreen() {
   const [videos, setVideos] = useState<VideoData>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const channelId = videos?.channelId;
+  const channelFollowers = videos?.channelFollower!;
+
+  const followHook = useFollow(
+    channelId ?? "",
+    channelFollowers
+  );
+  const {
+    userReaction,
+    likesCount,
+    dislikesCount,
+    loading: reactionLoading,
+    toggleReaction,
+  } = useReaction(
+    videos?.id ?? "",
+    'Video',
+    videos?.likes ?? 0,
+    videos?.dislikes ?? 0
+  );
+
+  const {
+    isSaved,
+    loading: saveLoading,
+    checking: saveChecking,
+    toggleSave,
+  } = useSave(videos?.id!, "Video");
 
   // Comment preview hook
   const {
@@ -87,12 +117,25 @@ export default function VideoPlayerScreen() {
     previewCount: 2,
   });
 
+  // const {
+  //   isFollowing,
+  //   followersCount,
+  //   loading: followLoading,
+  //   toggleFollow,
+  // } = useFollow(
+  //   videos?.channelId!,
+  //   videos?.channelFollower!
+  // );
+
   const fetchVideos = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       const result = await getVideoById(videoId);
+      console.log("getVideoById:", result)
       setVideos(result);
+      // setLikesCount(result.likes ?? 0);
+      // setDislikesCount(result.dislikes ?? 0);
     } catch (err: any) {
       console.error('Error fetching video:', err);
       setError(err.message || 'Failed to load video');
@@ -153,27 +196,27 @@ export default function VideoPlayerScreen() {
     }
   };
 
-  const handleLike = () => {
-    if (isLiked) {
-      setIsLiked(false);
-    } else {
-      setIsLiked(true);
-      if (isDisliked) {
-        setIsDisliked(false);
-      }
-    }
-  };
+  // const handleLike = () => {
+  //   if (isLiked) {
+  //     setIsLiked(false);
+  //   } else {
+  //     setIsLiked(true);
+  //     if (isDisliked) {
+  //       setIsDisliked(false);
+  //     }
+  //   }
+  // };
 
-  const handleDislike = () => {
-    if (isDisliked) {
-      setIsDisliked(false);
-    } else {
-      setIsDisliked(true);
-      if (isLiked) {
-        setIsLiked(false);
-      }
-    }
-  };
+  // const handleDislike = () => {
+  //   if (isDisliked) {
+  //     setIsDisliked(false);
+  //   } else {
+  //     setIsDisliked(true);
+  //     if (isLiked) {
+  //       setIsLiked(false);
+  //     }
+  //   }
+  // };
 
   const handleCloseComments = useCallback(() => {
     setShowComments(false);
@@ -272,11 +315,26 @@ export default function VideoPlayerScreen() {
                 <Text className="ml-1.5 text-sm font-semibold text-white">
                   {videos.channelName}
                 </Text>
-                <Text className="ml-1 text-xs text-gray-400">Followers</Text>
+                <Text className="ml-1 text-xs text-gray-400">
+                  {followHook.followersCount} Followers
+                </Text>
               </View>
             </View>
-            <TouchableOpacity className="w-28 rounded-2xl">
-              <GradientButton text="Follow" onPress={() => { }} />
+            <TouchableOpacity
+              disabled={followHook.loading}
+              onPress={followHook.toggleFollow}
+              className="w-28 rounded-2xl"
+            >
+              <GradientButton
+                text={
+                  followHook.loading
+                    ? "Loading..."
+                    : followHook.isFollowing
+                      ? "Following"
+                      : "Follow"
+                }
+                onPress={followHook.toggleFollow}
+              />
             </TouchableOpacity>
           </View>
 
@@ -356,25 +414,45 @@ export default function VideoPlayerScreen() {
             <View className="flex-row gap-5">
               <View className="flex-row gap-1">
                 <ActionButton
-                  Icon={isLiked ? Like : LikeInactive}
-                  count={videos.likes?.toString() || '0'}
-                  isActive={isLiked}
-                  onPress={handleLike}
+                  Icon={userReaction === 'like' ? Like : LikeInactive}
+                  count={likesCount?.toString()!}
+                  isActive={userReaction === 'like'}
+                  onPress={() => toggleReaction('like')}
+                  disabled={reactionLoading}
+
                 />
                 <ActionButton
-                  Icon={isDisliked ? Dislike : DislikeInactive}
-                  count={videos.dislikes?.toString() || '0'}
-                  isActive={isDisliked}
-                  onPress={handleDislike}
+                  Icon={userReaction === 'dislike' ? Dislike : DislikeInactive}
+                  count={dislikesCount?.toString()!}
+                  isActive={userReaction === 'dislike'}
+                  onPress={() => toggleReaction('dislike')}
+                  disabled={reactionLoading}
+
                 />
               </View>
               <TouchableOpacity className="flex-row items-center justify-end rounded-lg bg-white/5 px-2 py-2">
                 <Share height={24} width={24} />
                 <Text className="ml-1.5 text-base font-medium text-white">Share</Text>
               </TouchableOpacity>
-              <TouchableOpacity className="flex-row items-center justify-end rounded-lg bg-white/5 px-2 py-2">
-                <Saved height={24} width={24} />
-                <Text className="ml-1.5 text-base font-medium text-white">Save</Text>
+              <TouchableOpacity
+                className="flex-row items-center justify-end rounded-lg bg-white/5 px-2 py-2"
+                onPress={toggleSave}
+                disabled={saveLoading || saveChecking}
+              >
+                {saveLoading ? (
+                  <ActivityIndicator size="small" color="#22C55E" />
+                ) : (
+                  <>
+                    <Saved
+                      height={24}
+                      width={24}
+                      fill={isSaved ? "#22C55E" : "white"}
+                    />
+                    <Text className="ml-1.5 text-base font-medium text-white">
+                      {isSaved ? "Saved ✓" : "Save"}
+                    </Text>
+                  </>
+                )}
               </TouchableOpacity>
               <TouchableOpacity className="flex-row items-center justify-end rounded-lg bg-white/5 px-2 py-2">
                 <Download height={24} width={24} />

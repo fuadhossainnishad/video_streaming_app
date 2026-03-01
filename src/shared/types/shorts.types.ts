@@ -74,6 +74,7 @@ export interface ShortData {
     hashtags: string[];
     ownerName: string;
     ownerAvatar: string;
+    channelId: string
     channelName: string;
     channelIcon: string;
     views: number;
