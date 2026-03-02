@@ -158,7 +158,9 @@ export default function ShortsViewScreen() {
               <Ionicons name="chevron-back" size={24} color="white" />
             </TouchableOpacity>
 
-            <TouchableOpacity className="h-14 w-14 items-center justify-center rounded-2xl bg-black/40">
+            <TouchableOpacity
+              onPress={() => navigation.navigate('SearchShort')}
+              className="h-14 w-14 items-center justify-center rounded-2xl bg-black/40">
               <Ionicons name="search-outline" size={22} color="white" />
             </TouchableOpacity>
           </View>

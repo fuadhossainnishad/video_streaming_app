@@ -15,7 +15,7 @@ interface Props {
 export default function OnboardingTemplate({ title, subtitle, buttonText, onNext, onSkip }: Props) {
   return (
     <View className="relative flex-1 bg-[#17191A]">
-      <View className="absolute  m-4 mt-12 rounded-lg border border-white/10 px-4 py-2">
+      <View className="absolute z-50 m-4 mt-12 rounded-lg border border-white/10 px-4 py-2">
         <TouchableOpacity onPress={onSkip}>
           <Text className="text-base font-medium text-[#9BD71B]">Skip</Text>
         </TouchableOpacity>

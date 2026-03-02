@@ -6,7 +6,6 @@ import VerifyOtpScreen from '@/screens/Auth/verifyOtp.screen';
 import VerifyOtp2Screen from '@/screens/Auth/verifyOtp2.screen';
 import SendOtpScreen from '@/screens/Auth/sendOtp.screen';
 import resetPasswordScreen from '@/screens/Auth/resetPassword.screen';
-import VideoPlayerScreen from '@/screens/Video/VideoPlayer.screen';
 // import HomeStack from './HomeStack';
 
 const Stack = createNativeStackNavigator();

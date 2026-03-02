@@ -37,8 +37,8 @@ export default function SearchShortsCardComponent({ query, vertical = false }: {
       console.log('fetched shorts:', result);
       setShorts(result);
     } catch (err: any) {
-      console.error('Error fetching videos:', err);
-      setError(err.message || 'Failed to load videos');
+      console.error('Error fetching shorts:', err);
+      setError(err.message || 'Failed to load shorts');
     } finally {
       setLoading(false);
       setRefreshing(false);

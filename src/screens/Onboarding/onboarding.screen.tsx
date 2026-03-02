@@ -38,17 +38,28 @@ export default function OnboardingScreen({
     if (index < onboardingData.length - 1) {
       setIndex(index + 1);
     } else {
+      onFinish();
       navigation.replace('Auth');
     }
+  };
+  const handleSkip = () => {
+    // Mark onboarding as complete
+    onFinish();
+    // Navigate to Auth screen
+    navigation.replace('Auth');
   };
 
-  const handleSkip = () => {
-    if (onFinish) {
-      onFinish();
-    } else {
-      navigation.replace('Auth');
-    }
-  };
+  // const handleSkip = () => {
+  //   onFinish()
+  // }
+
+  // const handleSkip = () => {
+  //   if (onFinish) {
+  //     onFinish();
+  //   } else {
+  //     navigation.replace('Auth');
+  //   }
+  // };
 
   const current = onboardingData[index];
 

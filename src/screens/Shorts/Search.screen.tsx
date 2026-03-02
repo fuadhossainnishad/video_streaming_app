@@ -8,6 +8,7 @@ import { HomeParamalist } from '@/navigation/HomeStack';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SearchVideoCardComponent from '@/components/SearchVideoCompo';
+import SearchShortsCardComponent from '@/components/SearchShortsCompo';
 
 type Props = NativeStackNavigationProp<HomeParamalist, 'Search'>;
 
@@ -49,7 +50,7 @@ export default function SearchScreen() {
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollViewContent}>
                 {submittedQuery ? (
-                    <SearchVideoCardComponent query={submittedQuery} />
+                    <SearchShortsCardComponent query={submittedQuery} />
                 ) : (
                     <View>
                         <SearchCard searchTerm="best short 2024" />

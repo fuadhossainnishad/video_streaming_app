@@ -37,7 +37,7 @@ export const searchShorts = async (
     page = 1,
     limit = 10
 ) => {
-    const response = await axiosClient.get<SearchResponse>('/search/search', {
+    const response = await axiosClient.get<SearchResponse>('/v1/search/search', {
         params: { query, page, limit },
     });
     const transformedShorts = transformShorts(response.data.shorts);
@@ -50,7 +50,7 @@ export const searchPost = async (
     page = 1,
     limit = 10
 ) => {
-    const response = await axiosClient.get<SearchResponse>('/search/search', {
+    const response = await axiosClient.get<SearchResponse>('/v1/search/search', {
         params: { query, page, limit },
     });
     const transformedPost = transformPostsData(response.data.posts);

@@ -8,7 +8,8 @@ const RootNavigation = () => {
   const [showOnboarding, setShowOnboarding] = useState(true);
 
   if (showOnboarding && !isAuthenticated) {
-    return <AuthStack onFinish={() => setShowOnboarding(false)} />;
+    return <AuthStack 
+    onFinish={() => setShowOnboarding(false)} />;
   }
 
   return isAuthenticated ? <AppTabs /> : <AuthStack onFinish={() => setShowOnboarding(false)} />;

@@ -21,10 +21,10 @@ export default function VideoRender({ onPress, videoData, onMenuPress }: VideoRe
     ? `${videoData.currentTime} / ${videoData.duration}`
     : videoData.duration;
 
-  const handleMenuPress = (e: any) => {
-    e.stopPropagation();
-    onMenuPress?.();
-  };
+  // const handleMenuPress = (e: any) => {
+  //   e.stopPropagation();
+  //   onMenuPress?.();
+  // };
 
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={0.8}>
@@ -43,13 +43,13 @@ export default function VideoRender({ onPress, videoData, onMenuPress }: VideoRe
           </View>
 
           {/* Three Dot Menu */}
-          <View className="absolute right-2 top-3">
+          {/* <View className="absolute right-2 top-3">
             <TouchableOpacity
               onPress={handleMenuPress}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
               <ThreeDotIcon height={50} width={50} />
             </TouchableOpacity>
-          </View>
+          </View> */}
         </View>
 
         {/* Video Info */}
