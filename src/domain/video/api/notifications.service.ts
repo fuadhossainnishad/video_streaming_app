@@ -189,3 +189,52 @@ export const syncFcmToken = async () => {
     }
 
 }
+
+/**
+ * Get single notification
+ */
+export const getNotificationById = async (id: string) => {
+  const { data } = await axiosClient.get(
+    `/api/v1/notifications/${id}`,
+  );
+
+  return data.data;
+};
+
+/**
+ * Mark notification as read
+ */
+export const markNotificationAsRead = async (id: string) => {
+  return axiosClient.patch(
+    `/api/v1/notifications/${id}/read`,
+  );
+};
+
+/**
+ * Mark all as read
+ */
+export const markAllNotificationsAsRead = async () => {
+  return axiosClient.patch(
+    '/api/v1/notifications/read-all',
+  );
+};
+
+/**
+ * Get unread count
+ */
+export const getUnreadCount = async (): Promise<number> => {
+  const { data } = await axiosClient.get(
+    '/api/v1/notifications/unread-count',
+  );
+
+  return data.data.count;
+};
+
+/**
+ * Clear all notifications
+ */
+export const clearAllNotifications = async () => {
+  return axiosClient.delete(
+    '/api/v1/notifications/clear-all',
+  );
+};

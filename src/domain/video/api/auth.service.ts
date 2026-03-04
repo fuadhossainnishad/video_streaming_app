@@ -171,8 +171,8 @@ export const getStoredUser = async (): Promise<User | null> => {
  */
 export const logoutUser = async (): Promise<void> => {
   try {
-    await AsyncStorage.multiRemove([TOKEN_KEY, USER_KEY]);
     await unregisterTokenFromServer(await getUniqueId());
+    await AsyncStorage.multiRemove([TOKEN_KEY, USER_KEY]);
   } catch (error) {
     console.error('Error during logout:', error);
     throw error;
@@ -199,6 +199,7 @@ export const initializeAuth = async (): Promise<{
     const user = await getStoredUser();
 
     if (tokens && user) {
+      await syncFcmToken();
       return { isAuthenticated: true, user };
     }
 

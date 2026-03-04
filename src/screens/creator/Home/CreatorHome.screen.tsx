@@ -25,6 +25,7 @@ import BarChart from '@/components/BarChart';
 import { chartData } from './data';
 import ChannelStatsCard from '@/components/ChannelStatsCard';
 import { CreatorHomeParamalist } from '@/navigation/creator/CreatorHomeStack';
+import { getUnreadCount } from '@/domain/video/api/notifications.service';
 
 type Props = NativeStackNavigationProp<CreatorHomeParamalist, 'CreatorHome'>;
 
@@ -35,6 +36,7 @@ export default function CreatorHomeScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [unread, setUnread] = useState<number>(0)
   console.log('videos:', videos);
 
   const fetchVideos = useCallback(async (isRefresh = false) => {
@@ -47,6 +49,11 @@ export default function CreatorHomeScreen() {
       setError(null);
 
       const result = await getAllVideos({ page: 1, limit: 10 });
+      const unread_notification = await getUnreadCount()
+      console.log("unread_notification:", unread_notification)
+      if (unread_notification > 0) {
+        setUnread(unread_notification)
+      }
       setVideos(result.videos);
     } catch (err: any) {
       console.error('Error fetching videos:', err);
@@ -153,6 +160,9 @@ export default function CreatorHomeScreen() {
                   navigation.navigate('CreatorNotification');
                 }}>
                 <NotificationIcon height={50} width={50} />
+                {unread > 0 &&
+                  <Text className='absolute top-0 right-0 p-2 rounded-full bg-red-400 text-white text-xs'>{unread}</Text>
+                }
               </TouchableOpacity>
             </View>
           </View>
