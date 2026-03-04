@@ -21,6 +21,10 @@ import AppleIcon from '../../../assets/icons/apple.svg';
 import GoogleIcon from '../../../assets/icons/google.svg';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuth } from '@/shared/hooks/useauth';
+import { signInWithApple, signInWithGoogle } from '@/shared/lib/socialAuth';
+import { socialLogin } from '@/domain/video/api/auth.service';
+import { useNavigation } from '@react-navigation/native';
+import { statusCodes } from '@react-native-google-signin/google-signin';
 
 type AuthMode = 'login' | 'signup';
 
@@ -47,6 +51,7 @@ type props = NativeStackNavigationProp<LoginParamalist, 'Auth'>;
 
 export default function AuthScreen({ navigation }: { navigation: props }) {
   const [mode, setMode] = useState<AuthMode>('login');
+  const [authLoading, setAuthLoading] = useState(false);
   const { signup, login, loading, error, clearError } = useAuth();
 
   const {
@@ -67,6 +72,31 @@ export default function AuthScreen({ navigation }: { navigation: props }) {
       mobileOtp: false,
     },
   });
+
+  async function handleSocialAuth(provider: "google" | "apple") {
+    if (loading) return;
+    setAuthLoading(true);
+    try {
+      const payload =
+        provider === "google"
+          ? await signInWithGoogle()
+          : await signInWithApple();
+
+      await socialLogin(payload);
+
+      navigation.replace('Auth');
+    } catch (err: any) {
+      const isCancelled =
+        err?.code === statusCodes.SIGN_IN_CANCELLED || // Google cancel
+        err?.code === "1001"; // Apple cancel
+
+      if (!isCancelled) {
+        Alert.alert("Sign-in failed", err?.message ?? "Please try again.");
+      }
+    } finally {
+      setAuthLoading(false);
+    }
+  }
 
   const onSubmit = async (data: IAuth) => {
     // Dismiss keyboard first
@@ -429,10 +459,14 @@ export default function AuthScreen({ navigation }: { navigation: props }) {
 
                 {/* Social Login */}
                 <View className="mb-6 w-full flex-row items-center justify-center gap-5">
-                  <TouchableOpacity disabled={loading}>
+                  <TouchableOpacity
+                    onPress={() => handleSocialAuth('google')}
+                    disabled={loading || authLoading}>
                     <GoogleIcon height={48} width={48} />
                   </TouchableOpacity>
-                  <TouchableOpacity disabled={loading}>
+                  <TouchableOpacity
+                    onPress={() => handleSocialAuth('apple')}
+                    disabled={loading || authLoading}>
                     <AppleIcon height={48} width={48} />
                   </TouchableOpacity>
                 </View>

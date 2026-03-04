@@ -14,6 +14,7 @@ import { ChangePasswordResponse } from '@/shared/types/password-reset.types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { syncFcmToken, unregisterTokenFromServer } from './notifications.service';
 import { getUniqueId } from 'react-native-device-info';
+import { SocialAuthPayload } from '@/shared/lib/socialAuth';
 
 const TOKEN_KEY = '@auth_tokens';
 const USER_KEY = '@user_data';
@@ -249,5 +250,41 @@ const clearAllUserData = async (): Promise<void> => {
     ]);
   } catch (error) {
     console.error('Error clearing user data:', error);
+  }
+};
+
+export interface SocialLoginResponse {
+  token: string;
+  user: {
+    id: string;
+    email: string;
+    name: string;
+    photo: string;
+  };
+}
+export const socialLogin = async (data: SocialAuthPayload): Promise<AuthResponse> => {
+  try {
+    const response = await axiosClient.post<AuthResponse>(SOCIAL_LOGIN, {
+      email: data.email,
+      name: data.name,
+      photo: data.photo
+    });
+    console.log("signup response:", response.data)
+
+    if (response.data.status !== 'success') {
+      throw new Error('Login failed');
+    }
+
+    // Save tokens and user data
+    await saveAuthData(response.data);
+    await syncFcmToken()
+
+    return response.data;
+  } catch (error: any) {
+    console.error('Login error:', error);
+    throw {
+      message: error.message || 'Login failed',
+      statusCode: error.statusCode || 500,
+    };
   }
 };

@@ -11,7 +11,8 @@
     },
     "plugins": [
       "expo-video",
-      "expo-asset"
+      "expo-asset",
+      "@react-native-google-signin/google-signin"
     ],
     "orientation": "portrait",
     "icon": "./assets/splash.png",
