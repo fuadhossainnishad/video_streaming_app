@@ -27,6 +27,14 @@ export default function CreatorVideoCompo({ vertical = false }: { vertical?: boo
 
   console.log('videos:', videos);
 
+  const resolveChannelId = useCallback(async (): Promise<string | null> => {
+    if (channel?.id) return channel.id;
+
+    const response = await mychannel();
+    if (!response.success || !response.data?.id) return null;
+
+    return response.data.id;
+  }, [channel?.id, mychannel]);
   const fetchVideos = useCallback(async (isRefresh = false) => {
     try {
       if (isRefresh) {
@@ -36,17 +44,16 @@ export default function CreatorVideoCompo({ vertical = false }: { vertical?: boo
       }
       setError(null);
       console.log("channel:", channel)
-      if (channel === null) {
-        const response = await mychannel()
-        if (!response.success) {
-          return;
-        }
-        setSelf(response.data!)
+      const channelId = await resolveChannelId();
+
+      if (!channelId) {
+        setError('Could not resolve channel. Please try again.');
+        return;
       }
 
-      console.log("self:", self)
+      console.log("channelId:", channelId)
 
-      const result = await getChannelAllVideos(channel?.id!, { page: 1, limit: 10 });
+      const result = await getChannelAllVideos(channelId, { page: 1, limit: 10 });
       setVideos(result.videos);
     } catch (err: any) {
       console.error('Error fetching videos:', err);
@@ -55,7 +62,7 @@ export default function CreatorVideoCompo({ vertical = false }: { vertical?: boo
       setLoading(false);
       setRefreshing(false);
     }
-  }, [self?.id!]);
+  }, [resolveChannelId]);
 
   useEffect(() => {
     fetchVideos();

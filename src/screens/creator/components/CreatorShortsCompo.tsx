@@ -137,9 +137,7 @@ export default function CreatorShortsCardComponent() {
 
 const styles = StyleSheet.create({
   gridContainer: {
-    paddingHorizontal: 16,
     paddingBottom: 16,
-    backgroundColor: 'black',
   },
   columnWrapper: {
     justifyContent: 'space-between',

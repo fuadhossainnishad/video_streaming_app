@@ -7,12 +7,15 @@ import { Asset } from 'expo-asset';
 import { FilePickerResult } from '../types/upload.type';
 import { ShortUploadFormData } from '../types/uploadShort.type';
 import { uploadShort } from '@/domain/video/api/uploadShort.service';
+import { useAuth } from './useauth';
 
 // EMULATOR FALLBACK - Replace these with your actual asset paths
 const FALLBACK_THUMBNAIL = require('../../../assets/poster/hero.png');
 const FALLBACK_VIDEO = require('../../../assets/videos/sampleVideo.mp4');
 
 export const useShortUpload = () => {
+    const { channel, mychannel } = useAuth();
+
     const [formData, setFormData] = useState<ShortUploadFormData>({
         title: '',
         description: '',
@@ -23,7 +26,7 @@ export const useShortUpload = () => {
         visibility: 'public',
         video: null,
         taggedPeople: [],
-        channelId: '699057df1c97f013438b1f9c'
+        channelId: ''
     });
 
     const [videoFile, setVideoFile] = useState<FilePickerResult | null>(null);
@@ -31,6 +34,15 @@ export const useShortUpload = () => {
     const [uploading, setUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [errors, setErrors] = useState<Record<string, string>>({});
+
+    const resolveChannelId = useCallback(async (): Promise<string | null> => {
+        if (channel?.id) return channel.id;
+
+        const response = await mychannel();
+        if (!response.success || !response.data?.id) return null;
+
+        return response.data.id;
+    }, [channel?.id, mychannel]);
 
     // Load fallback asset as file
     const loadFallbackAsset = async (
@@ -272,11 +284,19 @@ export const useShortUpload = () => {
             return null;
         }
 
+        const channelId = await resolveChannelId();
+        if (!channelId) {
+            setErrors(prev => ({ ...prev, general: 'Channel not found. Please try again.' }));
+            throw new Error('Could not resolve channel ID');
+        }
+        console.log("channelId:", channelId)
+
+
         try {
             setUploading(true);
             setUploadProgress(0);
 
-            const response = await uploadShort(formData);
+            const response = await uploadShort({ ...formData, channelId });
 
             setUploadProgress(100);
             return response;
@@ -286,7 +306,7 @@ export const useShortUpload = () => {
         } finally {
             setUploading(false);
         }
-    }, [formData, validateForm]);
+    }, [formData, validateForm, resolveChannelId]);
 
     // Reset form
     const resetForm = useCallback(() => {

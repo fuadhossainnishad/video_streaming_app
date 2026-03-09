@@ -76,7 +76,7 @@ export default function SavedScreen() {
           </TouchableOpacity> */}
         </View>
         <TouchableOpacity
-          onPress={() => {}}>
+          onPress={() => { }}>
           <SearchIcon width={28} height={28} />
         </TouchableOpacity>
       </View>

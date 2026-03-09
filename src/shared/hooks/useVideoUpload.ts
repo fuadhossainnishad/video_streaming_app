@@ -6,12 +6,15 @@ import { Asset } from 'expo-asset';
 
 import { uploadVideo } from '@/domain/video/api/upload.service';
 import { FilePickerResult, VideoUploadFormData } from '../types/upload.type';
+import { useAuth } from './useauth';
 
 // EMULATOR FALLBACK - Replace these with your actual asset paths
 const FALLBACK_THUMBNAIL = require('../../../assets/poster/hero.png');
 const FALLBACK_VIDEO = require('../../../assets/videos/sampleVideo.mp4');
 
 export const useVideoUpload = () => {
+    const { channel, mychannel } = useAuth();
+
     const [formData, setFormData] = useState<VideoUploadFormData>({
         title: '',
         description: '',
@@ -23,7 +26,7 @@ export const useVideoUpload = () => {
         video: null,
         thumbnail: null,
         taggedPeople: [],
-        channelId: '699057df1c97f013438b1f9c'
+        channelId: ''
     });
 
     const [videoFile, setVideoFile] = useState<FilePickerResult | null>(null);
@@ -31,6 +34,16 @@ export const useVideoUpload = () => {
     const [uploading, setUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [errors, setErrors] = useState<Record<string, string>>({});
+
+
+    const resolveChannelId = useCallback(async (): Promise<string | null> => {
+        if (channel?.id) return channel.id;
+
+        const response = await mychannel();
+        if (!response.success || !response.data?.id) return null;
+
+        return response.data.id;
+    }, [channel?.id, mychannel]);
 
     // Load fallback asset as file
     const loadFallbackAsset = async (
@@ -271,12 +284,19 @@ export const useVideoUpload = () => {
         if (!validateForm()) {
             return null;
         }
+        const channelId = await resolveChannelId();
+        if (!channelId) {
+            setErrors(prev => ({ ...prev, general: 'Channel not found. Please try again.' }));
+            throw new Error('Could not resolve channel ID');
+        }
+        console.log("channelId:", channelId)
 
         try {
             setUploading(true);
             setUploadProgress(0);
-
-            const response = await uploadVideo(formData);
+            console.log("uploadVideo:", formData)
+            const response = await uploadVideo({ ...formData, channelId });
+            console.log("uploadVideo:", response)
 
             setUploadProgress(100);
             return response;
