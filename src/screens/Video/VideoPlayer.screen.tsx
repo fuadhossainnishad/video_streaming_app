@@ -8,6 +8,7 @@ import {
   ScrollView,
   Image,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Video } from 'expo-av';
@@ -27,7 +28,7 @@ import Like from '../../../assets/icons/like2.svg';
 import LikeInactive from '../../../assets/icons/like3.svg';
 import DislikeInactive from '../../../assets/icons/dislike2.svg';
 import Dislike from '../../../assets/icons/dislike3.svg';
-import Share from '../../../assets/icons/share.svg';
+import ShareIcon from '../../../assets/icons/share.svg';
 import Saved from '../../../assets/icons/saved.svg';
 import Download from '../../../assets/icons/download.svg';
 import Arrow from '../../../assets/icons/arrow4.svg';
@@ -46,6 +47,8 @@ import { useCommentPreview } from '@/shared/hooks/useCommentPreview';
 import { useReaction } from '@/shared/hooks/useReaction';
 import { useSave } from '@/shared/hooks/useSave';
 import { useFollow } from '@/shared/hooks/useFollow';
+import Share, { ShareOptions } from 'react-native-share';
+import * as FileSystem from 'expo-file-system/legacy';
 
 type Props = NativeStackNavigationProp<HomeParamalist, 'VideoPlayer'>;
 
@@ -152,6 +155,41 @@ export default function VideoPlayerScreen() {
     setVideoProgress(progress);
     setVideoDuration(duration);
   }, []);
+
+  const handleShare = async () => {
+    if (!videos) return;
+
+    const message = `Check out this video on ${videos.channelName}!\n\n${videos.title}`;
+
+    try {
+      let shareUrl = videos.videoUrl;
+
+      // Download thumbnail locally to show as preview
+      if (videos.thumbnailUrl) {
+        const fileUri = `${FileSystem.cacheDirectory}${videos.id}_thumbnail.jpg`;
+        const { uri } = await FileSystem.downloadAsync(videos.thumbnailUrl, fileUri);
+        shareUrl = uri; // local file path for sharing
+      }
+
+      const shareOptions: ShareOptions = {
+        title: videos.title,
+        message: Platform.OS === 'android' ? `${message}\n\nWatch here: ${videos.videoUrl}` : message,
+        url: shareUrl,
+        failOnCancel: false,
+      };
+
+      const result = await Share.open(shareOptions);
+
+      if (result.success) {
+        console.log('Video shared successfully!', result);
+      } else {
+        console.log('Share dismissed', result);
+      }
+    } catch (error: any) {
+      console.error('Error sharing video:', error.message);
+      Alert.alert('Share failed', 'Could not share the video. Please try again later.');
+    }
+  };
 
   const handleSeek = async (position: number) => {
     if (videoRef.current) {
@@ -430,8 +468,11 @@ export default function VideoPlayerScreen() {
 
                 />
               </View>
-              <TouchableOpacity className="flex-row items-center justify-end rounded-lg bg-white/5 px-2 py-2">
-                <Share height={24} width={24} />
+              <TouchableOpacity
+                className="flex-row items-center justify-end rounded-lg bg-white/5 px-2 py-2"
+                onPress={ }
+              >
+                <ShareIcon height={24} width={24} />
                 <Text className="ml-1.5 text-base font-medium text-white">Share</Text>
               </TouchableOpacity>
               <TouchableOpacity

@@ -9,8 +9,8 @@ import { VideoUploadFormData, VideoUploadResponse } from '@/shared/types/upload.
  * @returns Promise with upload response
  */
 export const uploadVideo = async (formData: VideoUploadFormData): Promise<VideoUploadResponse> => {
-  const token =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5OGNlNWZjODI3ZWQ0ZDgyZTQ4ZjU2NSIsImlhdCI6MTc3MTA2MTM4OCwiZXhwIjoxNzcxNjY2MTg4fQ.HD8bXkCiA1AGN90xviEK0FTvGAisxTumYAIIWMoxvmw';
+  // const token =
+  //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5OGNlNWZjODI3ZWQ0ZDgyZTQ4ZjU2NSIsImlhdCI6MTc3MTA2MTM4OCwiZXhwIjoxNzcxNjY2MTg4fQ.HD8bXkCiA1AGN90xviEK0FTvGAisxTumYAIIWMoxvmw';
   try {
     const data = new FormData();
 
@@ -52,7 +52,6 @@ export const uploadVideo = async (formData: VideoUploadFormData): Promise<VideoU
     const response = await axiosClient.post<VideoUploadResponse>('/video/create', data, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${token}`,
       },
       // Track upload progress
       onUploadProgress: (progressEvent) => {

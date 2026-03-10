@@ -1,11 +1,11 @@
 // presentation/shorts/ShortsViewScreen.tsx
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, TouchableOpacity, Text, StatusBar, ActivityIndicator, Alert } from 'react-native';
+import { View, TouchableOpacity, Text, StatusBar, ActivityIndicator, Alert, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Video } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Share from '../../../assets/icons/share.svg';
+import ShareIcon from '../../../assets/icons/share.svg';
 import Saved from '../../../assets/icons/saved.svg';
 import Report from '../../../assets/icons/report.svg';
 import Like from '../../../assets/icons/like2.svg';
@@ -24,6 +24,8 @@ import { getShortById } from '@/domain/video/api/shorts.service';
 import { formatTimeAgo } from '@/shared/utils/formatters';
 import { useSave } from '@/shared/hooks/useSave';
 import { useReaction } from '@/shared/hooks/useReaction';
+import Share, { ShareOptions } from 'react-native-share';
+import * as FileSystem from 'expo-file-system/legacy';
 
 type Props = NativeStackNavigationProp<ShortsParamalist, 'ShortsView'>;
 
@@ -89,7 +91,40 @@ export default function ShortsViewScreen() {
     }
   }, [shortId, fetchShort]);
 
+  const handleShare = async () => {
+    if (!shortData) return;
 
+    const message = `Check out this short on ${shortData.channelName}!\n\n${shortData.title}`;
+
+    try {
+      let shareUrl = shortData.videoUrl;
+
+      // Download thumbnail locally to show as preview
+      if (shortData.ownerAvatar) {
+        const fileUri = `${FileSystem.cacheDirectory}${shortData.id}_thumbnail.jpg`;
+        const { uri } = await FileSystem.downloadAsync(shortData.ownerAvatar, fileUri);
+        shareUrl = uri; // local file path for sharing
+      }
+
+      const shareOptions: ShareOptions = {
+        title: shortData.title,
+        message: Platform.OS === 'android' ? `${message}\n\nWatch here: ${shortData.videoUrl}` : message,
+        url: shareUrl,
+        failOnCancel: false,
+      };
+
+      const result = await Share.open(shareOptions);
+
+      if (result.success) {
+        console.log('Short shared successfully!', result);
+      } else {
+        console.log('Share dismissed', result);
+      }
+    } catch (error: any) {
+      console.error('Error sharing short:', error.message);
+      Alert.alert('Share failed', 'Could not share the short. Please try again later.');
+    }
+  };
 
   const handleProgressUpdate = (progress: number, duration: number) => {
     setVideoProgress(progress);
@@ -169,8 +204,11 @@ export default function ShortsViewScreen() {
         {/* Top Right Actions */}
         <SafeAreaView edges={['top']} className="absolute right-4 top-0">
           <View className="mt-20 gap-2">
-            <TouchableOpacity className="flex-row items-center justify-end rounded-lg bg-black/50 px-4 py-2">
-              <Share height={24} width={24} />
+            <TouchableOpacity
+              className="flex-row items-center justify-end rounded-lg bg-black/50 px-4 py-2"
+              onPress={handleShare}
+            >
+              <ShareIcon height={24} width={24} />
               <Text className="ml-1.5 text-base font-medium text-white">Share</Text>
             </TouchableOpacity>
 

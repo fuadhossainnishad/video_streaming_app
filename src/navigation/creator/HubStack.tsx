@@ -10,6 +10,8 @@ import CreatePostScreen from '@/screens/creator/Hub/CreatePost.screen';
 import CreatorVideoPlayerScreen from '@/screens/creator/Hub/CreatorVideoPlayer.screen';
 import CreatorShortsViewScreen from '@/screens/creator/Hub/CreatorShortsView.screen';
 import EditPostScreen from '@/screens/creator/Hub/EditPost.scren';
+import EditVideoScreen from '@/screens/creator/Hub/Editvideo.screen';
+import EditShortScreen from '@/screens/creator/Hub/EditShorts.screen';
 
 
 const Stack = createNativeStackNavigator();
@@ -23,7 +25,8 @@ export type HubParamalist = {
   Shorts: { short: ShortData };
   ShortsView: { shortId: string };
   EditPost: { postId: string };
-
+  EditVideo: { videoId: string }
+  EditShort: { shortId: string }
 };
 export default function HubStack() {
   return (
@@ -66,6 +69,16 @@ export default function HubStack() {
       <Stack.Screen
         name="EditPost"
         component={EditPostScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="EditVideo"
+        component={EditVideoScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="EditShort"
+        component={EditShortScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

@@ -45,7 +45,7 @@ import CommentsModal from '@/screens/Video/components/CommentsModal';
 import { HubParamalist } from '@/navigation/creator/HubStack';
 import VideoPlayer from '@/screens/Video/components/VideoPlayer';
 import Share, { ShareOptions } from 'react-native-share';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 
 
 
@@ -377,7 +377,7 @@ export default function CreatorVideoPlayerScreen() {
             <TouchableOpacity onPress={() => navigation.goBack()} className="items-center">
               <ArrowIcon height={50} width={50} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.goBack()} className="items-center">
+            <TouchableOpacity onPress={() => navigation.navigate('EditVideo', { videoId })} className="items-center">
               <Edit height={40} width={40} />
             </TouchableOpacity>
 

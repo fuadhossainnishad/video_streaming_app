@@ -1,11 +1,11 @@
 // presentation/shorts/ShortsViewScreen.tsx
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, TouchableOpacity, Text, StatusBar, ActivityIndicator } from 'react-native';
+import { View, TouchableOpacity, Text, StatusBar, ActivityIndicator, Platform, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Video } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Share from '../../../../assets/icons/share.svg'
+import ShareIcon from '../../../../assets/icons/share.svg'
 import Edit from '../../../../assets/icons/edit2.svg'
 import Like from '../../../../assets/icons/like2.svg'
 import LikeInActive from '../../../../assets/icons/like3.svg'
@@ -21,6 +21,8 @@ import { getShortById } from '@/domain/video/api/shorts.service';
 import { formatTimeAgo } from '@/shared/utils/formatters';
 import { HubParamalist } from '@/navigation/creator/HubStack';
 import ShortBottomInfo from './components/ShortBottomInfo';
+import Share, { ShareOptions } from 'react-native-share';
+import * as FileSystem from 'expo-file-system/legacy';
 
 type Props = NativeStackNavigationProp<HubParamalist, 'ShortsView'>;
 
@@ -65,6 +67,42 @@ export default function CreatorShortsViewScreen() {
   useEffect(() => {
     fetchVideos();
   }, [fetchVideos]);
+
+  const handleShare = async () => {
+    if (!shortData) return;
+
+    const message = `Check out this short on ${shortData.channelName}!\n\n${shortData.title}`;
+
+    try {
+      let shareUrl = shortData.videoUrl;
+
+      // Download thumbnail locally to show as preview
+      if (shortData.ownerAvatar) {
+        const fileUri = `${FileSystem.cacheDirectory}${shortData.id}_thumbnail.jpg`;
+        const { uri } = await FileSystem.downloadAsync(shortData.ownerAvatar, fileUri);
+        shareUrl = uri; // local file path for sharing
+      }
+
+      const shareOptions: ShareOptions = {
+        title: shortData.title,
+        message: Platform.OS === 'android' ? `${message}\n\nWatch here: ${shortData.videoUrl}` : message,
+        url: shareUrl,
+        failOnCancel: false,
+      };
+
+      const result = await Share.open(shareOptions);
+
+      if (result.success) {
+        console.log('Short shared successfully!', result);
+      } else {
+        console.log('Share dismissed', result);
+      }
+    } catch (error: any) {
+      console.error('Error sharing short:', error.message);
+      Alert.alert('Share failed', 'Could not share the short. Please try again later.');
+    }
+  };
+
 
   const handleRefresh = useCallback(() => {
     fetchVideos(true);
@@ -177,21 +215,23 @@ export default function CreatorShortsViewScreen() {
               <Ionicons name="chevron-back" size={24} color="white" />
             </TouchableOpacity>
 
-            <TouchableOpacity className="flex-row justify-end items-center px-4 py-2 rounded-lg bg-black/50">
-              <Edit height={24} width={24} />
+            <TouchableOpacity
+              className="w-14 h-14 px-4 py-2 rounded-lg bg-black/50"
+              onPress={() => { navigation.navigate('EditShort', { shortId }) }}
+            >
+              <Edit height={32} width={32} />
             </TouchableOpacity>
-            {/* Search Button */}
-            {/* <TouchableOpacity className="w-14 h-14 rounded-2xl bg-black/40 justify-center items-center">
-              <Ionicons name="search-outline" size={22} color="white" />
-            </TouchableOpacity> */}
           </View>
         </SafeAreaView>
 
         {/* Top Right Actions (Below SafeArea) */}
         <SafeAreaView edges={['top']} className="absolute top-0 right-4">
           <View className="gap-2 mt-20">
-            <TouchableOpacity className="flex-row justify-end items-center px-4 py-2 rounded-lg bg-black/50">
-              <Share height={24} width={24} />
+            <TouchableOpacity
+              className="flex-row justify-end items-center px-4 py-2 rounded-lg bg-black/50"
+              onPress={handleShare}
+            >
+              <ShareIcon height={24} width={24} />
               <Text className="text-white text-base ml-1.5 font-medium">Share</Text>
             </TouchableOpacity>
 
