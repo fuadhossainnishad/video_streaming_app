@@ -15,6 +15,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEditShort } from '@/shared/hooks/useEditShort';
 import BackIcon from '../../../../assets/icons/arrow2.svg';
+import { useDelete } from '@/shared/hooks/useDelete';
+import { deleteShort } from '@/domain/video/api/EditShort.service';
+import DeleteIcon from '../../../../assets/icons/delete.svg';
+
+
 
 export default function EditShortScreen() {
   const navigation = useNavigation();
@@ -38,6 +43,10 @@ export default function EditShortScreen() {
   const [hashtagInput, setHashtagInput] = useState('');
   const [categoryModalVisible, setCategoryModalVisible] = useState(false);
 
+  const { confirmDelete, deleting } = useDelete(
+    () => deleteShort(shortId),
+    'short'
+  );
   const handleAddHashtag = () => {
     if (hashtagInput.trim()) {
       addHashtag(hashtagInput.trim());
@@ -76,8 +85,16 @@ export default function EditShortScreen() {
           <BackIcon width={40} height={40} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Edit Short</Text>
-        <View style={styles.headerSpacer} />
-      </View>
+
+        <TouchableOpacity
+          onPress={confirmDelete}
+          disabled={deleting}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+          {deleting
+            ? <ActivityIndicator color="#EF4444" size="small" />
+            : <DeleteIcon width={24} height={24} />
+          }
+        </TouchableOpacity>      </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
 

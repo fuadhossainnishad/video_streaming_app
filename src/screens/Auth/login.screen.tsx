@@ -154,8 +154,9 @@ export default function AuthScreen({ navigation }: { navigation: props }) {
     <SafeAreaView edges={['top']} className="flex-1 bg-white/50">
       <KeyboardAvoidingView
         className="flex-1"
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}>
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 20 : 0}
+      >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View className="flex-1">
             {/* Logo - Fixed at top */}

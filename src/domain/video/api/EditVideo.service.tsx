@@ -62,3 +62,10 @@ export const editVideo = async (
     };
   }
 };
+
+export const deleteVideo = async (videoId: string): Promise<void> => {
+  const response = await axiosClient.delete(`/video/${videoId}`);
+  if (response.data.status !== 'success') {
+    throw new Error(response.data.message || 'Failed to delete video');
+  }
+};

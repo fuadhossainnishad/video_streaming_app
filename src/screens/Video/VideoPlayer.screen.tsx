@@ -470,7 +470,7 @@ export default function VideoPlayerScreen() {
               </View>
               <TouchableOpacity
                 className="flex-row items-center justify-end rounded-lg bg-white/5 px-2 py-2"
-                onPress={ }
+                onPress={handleShare}
               >
                 <ShareIcon height={24} width={24} />
                 <Text className="ml-1.5 text-base font-medium text-white">Share</Text>

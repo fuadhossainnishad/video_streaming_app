@@ -12,14 +12,13 @@ import CommentsFocusedIcon from '../../assets/icons/comments2.svg';
 import ProfileIcon from '../../assets/icons/tabIcons/profile.svg';
 import ProfileFocusedIcon from '../../assets/icons/tabIcons/inline-profile.svg';
 import AddIcon from '../../assets/icons/tabIcons/add.svg';
-import FollowStack from './FollowStack';
-import ProfileStack from './ProfileStack';
 import MainTabs from './MainTabs';
 import { ShowTabBar } from '@/shared/config/tabVisibility.config';
 import { useAppMode } from '@/context/ModeProvider';
 import CreatorHomeStack from './creator/CreatorHomeStack';
 import HubStack from './creator/HubStack';
 import CreatorProfileStack from './creator/CreatorProfileStack';
+import CommentsNotificationsScreen from '@/screens/creator/comments/CommentsNotificationsScreen';
 
 export type AddTabParamList = {
     CreatorHomeStack: undefined;
@@ -56,7 +55,7 @@ const TabList = [
     },
     {
         name: 'CommentStack',
-        component: FollowStack,
+        component: CommentsNotificationsScreen,
         title: 'Comments',
         activeIcon: CommentsFocusedIcon,
         inactiveIcon: CommentsIcon,

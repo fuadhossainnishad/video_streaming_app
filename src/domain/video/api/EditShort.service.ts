@@ -37,3 +37,10 @@ export const editShort = async (
     };
   }
 };
+
+export const deleteShort = async (shortId: string): Promise<void> => {
+  const response = await axiosClient.delete(`/shorts/${shortId}`);
+  if (response.data.status !== 'success') {
+    throw new Error(response.data.message || 'Failed to delete short');
+  }
+};

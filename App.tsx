@@ -1,3 +1,6 @@
+import { Buffer } from 'buffer';
+
+
 import './global.css';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -10,7 +13,10 @@ import RootNavigation from './src/navigation/RootNavigation';
 import Toast from 'react-native-toast-message';
 import SplashScreenComponent from '@/screens/splash.screen';
 import { AppModeProvider } from './src/context/ModeProvider';
-import { getFcmToken, requestNotificationPermissions } from '@/domain/video/api/notifications.service';
+import { getFcmToken, requestNotificationPermissions, syncFcmToken } from '@/domain/video/api/notifications.service';
+import { createNotificationChannel, registerForegroundHandler } from '@/shared/utils/notificationHandler';
+
+(globalThis as any).Buffer = (globalThis as any).Buffer || Buffer;
 
 export default function App() {
   const [appReady, setAppReady] = useState(false);
@@ -20,7 +26,10 @@ export default function App() {
       try {
         await SplashScreen.preventAutoHideAsync();
         await new Promise((res) => setTimeout(res, 1500));
-        await requestNotificationPermissions()
+        // await requestNotificationPermissions()
+
+        await createNotificationChannel();
+        await syncFcmToken()
         await getFcmToken()
       } catch (e) {
         console.warn(e);
@@ -30,6 +39,11 @@ export default function App() {
       }
     };
     prepare();
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = registerForegroundHandler();
+    return unsubscribe; // clean up on unmount
   }, []);
 
   if (!appReady) {

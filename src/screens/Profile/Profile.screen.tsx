@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import EditProfileComponent from './components/EditProfile.component';
 import ArrowIcon from '../../../assets/icons/leftArrow2.svg';
@@ -11,11 +11,35 @@ import SettingsIcon from '../../../assets/icons/settings.svg';
 import NotificationIcon from '../../../assets/icons/notification.svg';
 import LogoutIcon from '../../../assets/icons/logout.svg';
 import HistoryVideoComponent from './components/HistoryVideo';
+import { useAuth } from '@/shared/hooks/useauth';
 type Props = NativeStackNavigationProp<ProfileParamalist, 'Profile'>;
 
 export default function ProfileScreen() {
   const navigation = useNavigation<Props>();
   const [id, setId] = useState<string | null>(null)
+  const { logout, loading } = useAuth();
+
+  const handleLogout = () => {
+    Alert.alert('Logout', 'Are you sure you want to logout?', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Logout',
+        style: 'destructive',
+        onPress: async () => {
+          const result = await logout();
+          if (result.success) {
+            // Navigation will be handled by AuthProvider
+            Alert.alert('Success', 'Logged out successfully');
+          } else {
+            Alert.alert('Error', result.error || 'Failed to logout');
+          }
+        },
+      },
+    ]);
+  };
 
   return (
     <SafeAreaView edges={['top']} className="bg-black p-4 " style={styles.container}>
@@ -138,12 +162,15 @@ export default function ProfileScreen() {
             <ArrowIcon height={24} width={24} />
           </TouchableOpacity>
         </View>
-
         <TouchableOpacity
           className="flex-row items-center gap-3 rounded-full border border-[#EE3A3A] px-6 py-2"
-          style={{ alignSelf: 'center' }}>
+          style={{ alignSelf: 'center' }}
+          onPress={handleLogout}
+          disabled={loading}>
           <LogoutIcon height={16} width={16} color="#EE3A3A" />
-          <Text className="text-lg font-bold text-[#EE3A3A]">Log Out</Text>
+          <Text className="text-lg font-bold text-[#EE3A3A]">
+            {loading ? 'Logging out...' : 'Log Out'}
+          </Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

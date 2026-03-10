@@ -14,7 +14,7 @@ import DislikeInActive from '../../../../assets/icons/dislike2.svg'
 import ActionButton from './components/ActionButton';
 import VideoPlayer from './components/VideoPlayer';
 import SeekableProgressBar from './components/SeekableProgressBar';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ShortData } from '@/shared/types/shorts.types';
 import { getShortById } from '@/domain/video/api/shorts.service';
@@ -25,10 +25,11 @@ import Share, { ShareOptions } from 'react-native-share';
 import * as FileSystem from 'expo-file-system/legacy';
 
 type Props = NativeStackNavigationProp<HubParamalist, 'ShortsView'>;
+type ShortsViewRouteProp = RouteProp<HubParamalist, 'ShortsView'>;
 
 export default function CreatorShortsViewScreen() {
   const navigation = useNavigation<Props>();
-  const route = useRoute<any>();
+  const route = useRoute<ShortsViewRouteProp>();
   const { shortId } = route.params;
   const videoRef = useRef<Video>(null);
   const [likeCount, setLikeCount] = useState(16);
@@ -206,7 +207,10 @@ export default function CreatorShortsViewScreen() {
         />
 
         {/* Top Controls - Inside SafeArea */}
-        <SafeAreaView edges={['top']} className="absolute top-0 left-0 right-0">
+        <SafeAreaView
+          edges={['top']}
+          pointerEvents="box-none"
+          className="absolute top-0 left-0 right-0">
           <View className="flex-row justify-between items-center px-4">
             {/* Back Button */}
             <TouchableOpacity
@@ -216,16 +220,21 @@ export default function CreatorShortsViewScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              className="w-14 h-14 px-4 py-2 rounded-lg bg-black/50"
-              onPress={() => { navigation.navigate('EditShort', { shortId }) }}
-            >
-              <Edit height={32} width={32} />
+              onPress={() => {
+                console.log("Edit pressed")
+                navigation.navigate('EditShort', { shortId })
+              }}
+              className="w-14 h-14 rounded-2xl bg-black/40 justify-center items-center"            >
+              <Edit height={36} width={36} />
             </TouchableOpacity>
           </View>
         </SafeAreaView>
 
         {/* Top Right Actions (Below SafeArea) */}
-        <SafeAreaView edges={['top']} className="absolute top-0 right-4">
+        <SafeAreaView
+          edges={['top']}
+          pointerEvents="box-none"
+          className="absolute top-0 right-4">
           <View className="gap-2 mt-20">
             <TouchableOpacity
               className="flex-row justify-end items-center px-4 py-2 rounded-lg bg-black/50"

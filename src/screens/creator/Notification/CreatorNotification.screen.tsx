@@ -1,160 +1,241 @@
-import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import AppHeader from '../../../components/AppHeader';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { HomeParamalist } from '@/navigation/HomeStack';
-import { useNavigation } from '@react-navigation/native';
-import NotificationModal from '../../../components/NotoficationModal';
+import React, { useCallback } from 'react';
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useCallback, useEffect, useState } from 'react';
-import CreatorNotificationModal from '@/components/CreatorNotoficationModal';
-import TimeIcon from '../../../../assets/icons/time.svg';
-import Report from '../../../../assets/icons/report2.svg'
-import Comment from '../../../../assets/icons/comments3.svg'
-import { CreatorHomeParamalist } from '@/navigation/creator/CreatorHomeStack';
-type Props = NativeStackNavigationProp<CreatorHomeParamalist, 'CreatorNotification'>;
+import NotificationItem from './components/NotificationItem';
+import { useNotifications } from '@/shared/hooks/useNotifications';
+import { Notification } from '@/shared/types/notification.types';
 
-export default function CreatorNotificationScreen() {
-  const navigation = useNavigation<Props>();
-  const [notification, setNotification] = useState<[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  console.log("videos:", notification)
+export default function CreatorNotificationsScreen() {
+  const {
+    notifications,
+    unreadCount,
+    loading,
+    loadingMore,
+    refreshing,
+    error,
+    refresh,
+    loadMore,
+    markAsRead,
+    markAllAsRead,
+    clearAll,
+  } = useNotifications();
 
-  // const fetchVideos = useCallback(async (isRefresh = false) => {
-  //   try {
-  //     if (isRefresh) {
-  //       setRefreshing(true);
-  //     } else {
-  //       setLoading(true);
-  //     }
-  //     setError(null);
+  const handlePress = useCallback((notification: Notification) => {
+    if (!notification.isRead) {
+      markAsRead(notification._id);
+    }
+    // TODO: navigate based on type when content IDs are available in payload
+  }, [markAsRead]);
 
-  //     const result = await getAllVideos({ page: 1, limit: 10 });
-  //     setNotification(result.videos);
-  //   } catch (err: any) {
-  //     console.error('Error fetching videos:', err);
-  //     setError(err.message || 'Failed to load videos');
-  //   } finally {
-  //     setLoading(false);
-  //     setRefreshing(false);
-  //   }
-  // }, []);
+  const handleClearAll = () => {
+    Alert.alert(
+      'Clear All Notifications',
+      'Are you sure you want to clear all notifications?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Clear All', style: 'destructive', onPress: clearAll },
+      ]
+    );
+  };
 
-  // useEffect(() => {
-  //   fetchVideos();
-  // }, [fetchVideos]);
+  const renderFooter = () => {
+    if (!loadingMore) return null;
+    return (
+      <View style={styles.footerLoader}>
+        <ActivityIndicator color="#9BD71B" size="small" />
+      </View>
+    );
+  };
 
-  // const handleRefresh = useCallback(() => {
-  //   fetchVideos(true);
-  // }, [fetchVideos]);
+  const renderEmpty = () => {
+    if (loading) return null;
+    return (
+      <View style={styles.emptyContainer}>
+        <Text style={styles.emptyIcon}>🔔</Text>
+        <Text style={styles.emptyTitle}>No notifications yet</Text>
+        <Text style={styles.emptyMessage}>
+          You&apos;ll see notifications for comments, likes, new followers and more here.
+        </Text>
+      </View>
+    );
+  };
 
-  // const handleVideoPress = useCallback(
-  //   (videoId: string) => {
-  //     navigation.navigate('VideoPlayer', { videoId: videoId });
-  //   },
-  //   [navigation]
-  // );
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <ActivityIndicator style={styles.loader} color="#9BD71B" size="large" />
+      </SafeAreaView>
+    );
+  }
 
-  // const handleVideoMenu = useCallback((videoId: string) => {
-  //   console.log('Menu pressed for video:', videoId);
-  //   // TODO: Implement menu actions (Share, Save, Report, etc.)
-  // }, []);
+  if (error) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyIcon}>⚠️</Text>
+          <Text style={styles.emptyTitle}>Failed to load</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={refresh}>
+            <Text style={styles.retryText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
-
-  // const renderContent = () => {
-  //   if (loading) {
-  //     return (
-  //       <View className="flex-1 justify-center items-center py-20">
-  //         <ActivityIndicator size="large" color="#9BD71B" />
-  //         <Text className="text-gray-400 mt-4">Loading videos...</Text>
-  //       </View>
-  //     );
-  //   }
-
-  //   if (error) {
-  //     return (
-  //       <View className="flex-1 justify-center items-center py-20">
-  //         <Text className="text-red-400 text-center mb-4">{error}</Text>
-  //         <TouchableOpacity
-  //           onPress={() => fetchVideos()}
-  //           className="bg-[#9BD71B] px-6 py-3 rounded-xl"
-  //         >
-  //           <Text className="text-black font-semibold">Retry</Text>
-  //         </TouchableOpacity>
-  //       </View>
-  //     );
-  //   }
-
-  //   if (notification.length === 0) {
-  //     return (
-  //       <View className="flex-1 justify-center items-center py-20">
-  //         <Text className="text-gray-400 text-center">
-  //           No notification available at the moment
-  //         </Text>
-  //       </View>
-  //     );
-  //   }
-
-  //   return (
-  //     <>
-  //       {notification.map((video) => (
-  //         <CreatorNotificationScreen
-  //           key={video.id}
-  //           videoData={video}
-  //           onPress={() => handleVideoPress(video.id)}
-  //           onMenuPress={() => handleVideoMenu(video.id)}
-  //         />
-  //       ))}
-  //     </>
-  //   );
-  // };
   return (
+    <SafeAreaView style={styles.container} edges={['top']}>
+      {/* Header */}
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          <Text style={styles.headerTitle}>Notifications</Text>
+          {unreadCount > 0 && (
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </Text>
+            </View>
+          )}
+        </View>
 
-    <SafeAreaView className="bg-black flex-1 px-4 gap-4">
-      <AppHeader title="Notifications" onPress={() => navigation.goBack()} />
-      <ScrollView
+        <View style={styles.headerActions}>
+          {unreadCount > 0 && (
+            <TouchableOpacity onPress={markAllAsRead} style={styles.headerAction}>
+              <Text style={styles.headerActionText}>Mark all read</Text>
+            </TouchableOpacity>
+          )}
+          {notifications.length > 0 && (
+            <TouchableOpacity onPress={handleClearAll} style={styles.headerAction}>
+              <Text style={[styles.headerActionText, styles.clearText]}>Clear all</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+
+      <FlatList
+        data={notifications}
+        keyExtractor={(item) => item._id}
+        renderItem={({ item }) => (
+          <NotificationItem notification={item} onPress={handlePress} />
+        )}
+        onRefresh={refresh}
+        refreshing={refreshing}
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.3}
+        ListFooterComponent={renderFooter}
+        ListEmptyComponent={renderEmpty}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollViewContent}
-
-      >
-        {/* {renderContent()} */}
-
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => { navigation.navigate('CreatorNotificationDetails', { details: "dfjhdjkf", receivedReports: 4, timeago: 'ago' }) }}
-          className="flex-row items-start bg-white/20 rounded-xl p-4 gap-2"
-        >
-          <View className="">
-            <Report height={24} width={24} />
-          </View>
-
-          <View className="flex-1">
-            <View className="text-white text-base leading-6 flex-col gap-1">
-              <Text className="text-white font-semibold text-base">445465chgfghf</Text>
-              <Text className="font-medium text-white/70  text-sm text-wrap">fghghgh</Text>
-            </View>
-            <View className='flex-row items-center gap-2'>
-              <TimeIcon height={24} width={24} />
-              <Text className="text-white text-sm">212</Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-      </ScrollView>
-
+        contentContainerStyle={
+          notifications.length === 0 ? styles.emptyList : undefined
+        }
+      />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollViewContent: {
-    backgroundColor: 'black',
-    gap: 8
+  container: {
+    flex: 1,
+    backgroundColor: '#17191A',
+  },
+  loader: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#1F2937',
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  badge: {
+    backgroundColor: '#EF4444',
+    borderRadius: 10,
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    minWidth: 20,
+    alignItems: 'center',
+  },
+  badgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    gap: 12,
+    alignItems: 'center',
+  },
+  headerAction: {
+    paddingVertical: 4,
+    paddingHorizontal: 2,
+  },
+  headerActionText: {
+    fontSize: 13,
+    color: '#9BD71B',
+    fontWeight: '500',
+  },
+  clearText: {
+    color: '#EF4444',
+  },
+  footerLoader: {
+    paddingVertical: 20,
+    alignItems: 'center',
+  },
+  emptyList: {
+    flex: 1,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 40,
+    gap: 12,
+  },
+  emptyIcon: {
+    fontSize: 48,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    textAlign: 'center',
+  },
+  emptyMessage: {
+    fontSize: 14,
+    color: '#6B7280',
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  retryButton: {
+    backgroundColor: '#9BD71B',
+    paddingHorizontal: 24,
+    paddingVertical: 10,
+    borderRadius: 10,
+    marginTop: 8,
+  },
+  retryText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#000000',
   },
 });
-// <RefreshControl
-//   refreshing={refreshing}
-//   onRefresh={handleRefresh}
-//   tintColor="#9BD71B"
-//   colors={['#9BD71B']}
-// />

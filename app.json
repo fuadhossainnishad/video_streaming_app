@@ -40,6 +40,11 @@
         "RECEIVE_BOOT_COMPLETED"
       ],
       "package": "com.syful151.Link"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "0c659ee6-1755-4f3a-85d6-ca2b45245378"
+      }
     }
   }
 }

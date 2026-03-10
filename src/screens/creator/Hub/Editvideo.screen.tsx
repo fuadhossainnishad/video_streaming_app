@@ -14,11 +14,19 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useEditVideo } from '@/shared/hooks/useEditVideo';
 import BackIcon from '../../../../assets/icons/arrow2.svg';
+import DeleteIcon from '../../../../assets/icons/delete.svg';
+import { useDelete } from '@/shared/hooks/useDelete';
+import { deleteVideo } from '@/domain/video/api/EditVideo.service';
 
 export default function EditVideoScreen() {
   const navigation = useNavigation();
   const route = useRoute<any>();
   const { videoId } = route.params;
+
+  const { confirmDelete, deleting } = useDelete(
+    () => deleteVideo(videoId),
+    'video'
+  );
 
   const {
     videoDetail,
@@ -65,8 +73,15 @@ export default function EditVideoScreen() {
           <BackIcon width={40} height={40} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Edit Video</Text>
-        <View style={styles.headerSpacer} />
-      </View>
+        <TouchableOpacity
+          onPress={confirmDelete}
+          disabled={deleting}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+          {deleting
+            ? <ActivityIndicator color="#EF4444" size="small" />
+            : <DeleteIcon width={24} height={24} />
+          }
+        </TouchableOpacity>      </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
 

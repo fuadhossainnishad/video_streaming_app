@@ -22,6 +22,9 @@ import BackIcon from '../../../../assets/icons/arrow2.svg';
 import UploadIcon from '../../../../assets/icons/upload.svg';
 import { usePostEdit } from '@/shared/hooks/usePostEdit';
 import EditableImageGrid from './components/EditableImageGrid';
+import DeleteIcon from '../../../../assets/icons/delete.svg'
+import { useDelete } from '@/shared/hooks/useDelete';
+import { deletePost } from '@/domain/video/api/post-edit.service';
 
 // Hook
 
@@ -30,6 +33,10 @@ export default function EditPostScreen() {
     const route = useRoute<any>();
     const { postId } = route.params;
 
+    const { confirmDelete, deleting } = useDelete(
+        () => deletePost(postId),
+        'post'
+    );
     const {
         formData,
         mediaFiles,
@@ -90,7 +97,15 @@ export default function EditPostScreen() {
 
                 <Text style={styles.headerTitle}>Edit Post</Text>
 
-                <View style={{ width: 40 }} />
+                <TouchableOpacity
+                    onPress={confirmDelete}
+                    disabled={deleting}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                    {deleting
+                        ? <ActivityIndicator color="#EF4444" size="small" />
+                        : <DeleteIcon width={24} height={24} />
+                    }
+                </TouchableOpacity>
             </View>
 
             {/* Form */}

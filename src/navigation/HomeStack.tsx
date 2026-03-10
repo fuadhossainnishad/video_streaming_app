@@ -6,6 +6,7 @@ import SearchScreen from '@/screens/Home/Search.screen';
 import DiscoverCreatorScreen from '@/screens/Home/DiscoverCreator.screen';
 import VideoPlayerScreen from '@/screens/Video/VideoPlayer.screen';
 import ChannelProfileScreen from '@/screens/Follow/ChannelOverview.screen';
+import CreatorNotificationsScreen from '@/screens/creator/Notification/CreatorNotification.screen';
 // import OnboardingScreen from '../screens/Onboarding/onboarding.screen';
 // import AuthScreen from '@/screens/Auth/login.screen';
 // import VerifyOtpScreen from '@/screens/Auth/verifyOtp.screen';
@@ -31,7 +32,7 @@ export default function HomeStack() {
       <Stack.Screen name="Home" component={HomeScreen2} options={{ headerShown: false }} />
       <Stack.Screen
         name="Notification"
-        component={NotificationScreen}
+        component={CreatorNotificationsScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen name="Search" component={SearchScreen} options={{ headerShown: false }} />
