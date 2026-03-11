@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "760476887339",
+    "project_id": "video-streaming-app-ea3bc",
+    "storage_bucket": "video-streaming-app-ea3bc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:760476887339:android:12a8f126bf289db0f97d6e",
+        "android_client_info": {
+          "package_name": "com.syful151.Link"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBjWgPPkv0suIoV-SP-PEGZh6gwVZNxAM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

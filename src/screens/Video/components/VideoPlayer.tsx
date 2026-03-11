@@ -73,6 +73,8 @@ export default function VideoPlayer({
     }
   };
 
+  const videoWidth = isFullscreen ? width : width;
+
   const videoHeight = isFullscreen ? height : width * (9 / 16);
   // Show controls when entering fullscreen
   useEffect(() => {
@@ -85,7 +87,7 @@ export default function VideoPlayer({
 
   return (
     <View
-      style={{ height: videoHeight, width: isFullscreen ? height : width }}
+      style={{ height: videoHeight, width: videoWidth }}
       className="bg-black">
       <Video
         ref={videoRef}

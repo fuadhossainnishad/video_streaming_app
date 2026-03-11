@@ -9,6 +9,7 @@ import {
   Image,
   ActivityIndicator,
   Platform,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Video } from 'expo-av';
@@ -49,6 +50,7 @@ import { useSave } from '@/shared/hooks/useSave';
 import { useFollow } from '@/shared/hooks/useFollow';
 import Share, { ShareOptions } from 'react-native-share';
 import * as FileSystem from 'expo-file-system/legacy';
+import { increaseVideoView } from '../../domain/video/api/videoView.service';
 
 type Props = NativeStackNavigationProp<HomeParamalist, 'VideoPlayer'>;
 
@@ -84,6 +86,8 @@ export default function VideoPlayerScreen() {
   const [error, setError] = useState<string | null>(null);
   const channelId = videos?.channelId;
   const channelFollowers = videos?.channelFollower!;
+
+  const viewRecorded = useRef(false);
 
   const followHook = useFollow(
     channelId ?? "",
@@ -135,6 +139,12 @@ export default function VideoPlayerScreen() {
       setLoading(true);
       setError(null);
       const result = await getVideoById(videoId);
+
+      if (!viewRecorded.current) {
+        await increaseVideoView(videoId);
+        viewRecorded.current = true;
+      }
+
       console.log("getVideoById:", result)
       setVideos(result);
       // setLikesCount(result.likes ?? 0);

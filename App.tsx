@@ -1,4 +1,6 @@
+import './src/shims/buffer';  // ← must be first line
 import { Buffer } from 'buffer';
+
 
 
 import './global.css';
@@ -16,7 +18,7 @@ import { AppModeProvider } from './src/context/ModeProvider';
 import { getFcmToken, requestNotificationPermissions, syncFcmToken } from '@/domain/video/api/notifications.service';
 import { createNotificationChannel, registerForegroundHandler } from '@/shared/utils/notificationHandler';
 
-(globalThis as any).Buffer = (globalThis as any).Buffer || Buffer;
+global.Buffer = global.Buffer || Buffer;
 
 export default function App() {
   const [appReady, setAppReady] = useState(false);
