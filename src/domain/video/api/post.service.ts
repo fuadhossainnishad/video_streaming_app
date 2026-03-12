@@ -93,6 +93,7 @@ export const getAllPostsByChannel = async (
     console.log("fetched post:", data.data.posts)
 
     const transformedPosts = transformPostsData(data.data.posts);
+    console.log("transformedPosts:",transformedPosts)
 
     return {
       posts: transformedPosts,

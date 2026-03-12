@@ -60,30 +60,32 @@ export default function ChannelProfileScreen() {
       <AppHeader title="Channel Overview" onPress={() => navigation.goBack()} />
 
       {/* Profile Section */}
-      <View style={styles.profileSection}>
-        <Image
-          source={require('../../../assets/poster/profile.jpg')}
-          style={styles.profileImage}
-          resizeMode="cover"
-        />
 
-        <View style={styles.profileInfo}>
-          <Text style={styles.channelName}>{channel.name}</Text>
-          <Text style={styles.handle}>@{channel.ownerUsername}</Text>
-          <View style={styles.statsRow}>
-            <Text style={styles.statText}>{channel.followers} subscribers</Text>
-            <Text style={styles.statSeparator}> • </Text>
-            <Text style={styles.statText}>{channel.totalVideos} videos</Text>
+      <View className='bg-[#9BD71B]/10 rounded-2xl px-4 my-4'>
+        <View style={styles.profileSection}>
+          <Image
+            source={require('../../../assets/poster/profile.jpg')}
+            style={styles.profileImage}
+            resizeMode="cover"
+          />
+
+          <View style={styles.profileInfo}>
+            <Text style={styles.channelName}>{channel.name}</Text>
+            <Text style={styles.handle}>@{channel.ownerUsername}</Text>
+            <View style={styles.statsRow}>
+              <Text style={styles.statText}>{channel.followers} subscribers</Text>
+              <Text style={styles.statSeparator}> • </Text>
+              <Text style={styles.statText}>{channel.totalVideos} videos</Text>
+            </View>
           </View>
         </View>
+
+        {/* Bio */}
+        <Text style={styles.bio}>
+          {channel.description}
+          {/* <Text style={styles.more}>more</Text> */}
+        </Text>
       </View>
-
-      {/* Bio */}
-      <Text style={styles.bio}>
-        {channel.description}
-        {/* <Text style={styles.more}>more</Text> */}
-      </Text>
-
       {/* Follow Button */}
       {/* <TouchableOpacity style={styles.followButtonContainer}>
         <LinearGradient
@@ -98,10 +100,10 @@ export default function ChannelProfileScreen() {
       <TouchableOpacity
         onPress={toggleFollow}
         disabled={loading}
-        className={`px-6 py-2 w-fit text-center rounded-full ${isFollowing ? 'bg-gray-700' : 'bg-[#9BD71B]'
+        className={`px-6 py-3 mb-2 w-fit flex-row justify-center rounded-full ${isFollowing ? 'bg-gray-700' : 'bg-[#9BD71B]/10'
           }`}
       >
-        <Text className={`font-semibold ${isFollowing ? 'text-white' : 'text-black'
+        <Text className={`text-center font-semibold ${isFollowing ? 'text-white ' : 'text-[#9BD71B] '
           }`}>
           {loading ? 'Please wait...' : isFollowing ? 'Following' : 'Follow'}
         </Text>
@@ -145,13 +147,13 @@ const styles = StyleSheet.create({
   },
   profileSection: {
     flexDirection: 'row',
-    paddingVertical: 12,
+    paddingVertical: 16,
     alignItems: 'center',
     gap: 12,
   },
   profileImage: {
-    width: 100,
-    height: 100,
+    width: 80,
+    height: 80,
     borderRadius: 16,
   },
   profileInfo: {
@@ -214,7 +216,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    // backgroundColor: 'rgba(255,255,255,0.1)',
     borderRadius: 12,
     paddingVertical: 12,
     paddingHorizontal: 8,

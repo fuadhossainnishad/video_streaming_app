@@ -48,11 +48,6 @@ export default function CreatorHomeStack() {
         component={ChannelProfileScreen}
         options={{ headerShown: false }}
       />
-      <Stack.Screen
-        name="CreatorNotification"
-        component={CreatorNotificationScreen}
-        options={{ headerShown: false }}
-      />
     </Stack.Navigator>
   );
 }
