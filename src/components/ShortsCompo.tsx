@@ -126,7 +126,7 @@ export default function ShortsCardComponent() {
 const styles = StyleSheet.create({
   gridContainer: {
     paddingHorizontal: 16,
-    paddingBottom: 16,
+    paddingBottom: 70,
     backgroundColor: 'black',
   },
   columnWrapper: {

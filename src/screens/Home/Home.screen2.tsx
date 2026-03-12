@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     gap: 12,
-    paddingBottom: 20,
+    paddingBottom: 70,
   },
   gradient: {
     flex: 1,

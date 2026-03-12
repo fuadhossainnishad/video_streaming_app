@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Platform,
   Alert,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -50,6 +51,7 @@ import { useFollow } from '@/shared/hooks/useFollow';
 import Share, { ShareOptions } from 'react-native-share';
 import * as FileSystem from 'expo-file-system/legacy';
 import { increaseVideoView } from '../../domain/video/api/videoView.service';
+import VideoCommentsModal from './components/VideoCommentsModal';
 
 type Props = NativeStackNavigationProp<HomeParamalist, 'VideoPlayer'>;
 
@@ -382,64 +384,70 @@ export default function VideoPlayerScreen() {
     }
 
     return (
-      <SafeAreaView
-        edges={['top', 'bottom']}
+      <KeyboardAvoidingView
         style={{ flex: 1 }}
-        className="flex-1 bg-[#17191A] p-4">
-        <StatusBar barStyle="light-content" />
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {/* Header */}
-          <View className="mb-4 w-full flex-row items-center justify-between">
-            <TouchableOpacity onPress={() => navigation.goBack()} className="items-center">
-              <ArrowIcon height={50} width={50} />
-            </TouchableOpacity>
-            <View className="flex-row items-center justify-between gap-2 px-4 py-2">
-              <Image source={{ uri: videos.channelAvatarUrl }} className="h-10 w-10 rounded-lg" />
-              <View className="flex-col items-center">
-                <Text className="ml-1.5 text-sm font-semibold text-white">
-                  {videos.channelName}
-                </Text>
-                <Text className="ml-1 text-xs text-gray-400">
-                  {followHook.followersCount} Followers
-                </Text>
+        behavior={Platform.OS === 'android' ? 'height' : 'padding'}
+      // keyboardVerticalOffset={Platform.OS === "ios" ? 20 : 20}
+      >
+        <SafeAreaView
+          edges={['top', 'bottom']}
+          style={{ flex: 1 }}
+          className="flex-1 bg-[#17191A] p-4">
+            
+          <StatusBar barStyle="light-content" />
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {/* Header */}
+            <View className="mb-4 w-full flex-row items-center justify-between">
+              <TouchableOpacity onPress={() => navigation.goBack()} className="items-center">
+                <ArrowIcon height={50} width={50} />
+              </TouchableOpacity>
+              <View className="flex-row items-center justify-between gap-2 px-4 py-2">
+                <Image source={{ uri: videos.channelAvatarUrl }} className="h-10 w-10 rounded-lg" />
+                <View className="flex-col items-center">
+                  <Text className="ml-1.5 text-sm font-semibold text-white">
+                    {videos.channelName}
+                  </Text>
+                  <Text className="ml-1 text-xs text-gray-400">
+                    {followHook.followersCount} Followers
+                  </Text>
+                </View>
               </View>
-            </View>
-            <TouchableOpacity
-              disabled={followHook.loading || followHook.checking}
-              onPress={followHook.toggleFollow}
-              className="w-28 rounded-2xl"
-            >
-              <GradientButton
-                text={
-                  followHook.checking
-                    ? 'Loading...'
-                    : followHook.loading
-                      ? 'Please wait...'
-                      : followHook.isFollowing
-                        ? 'Following'
-                        : 'Follow'
-                }
+              <TouchableOpacity
+                disabled={followHook.loading || followHook.checking}
                 onPress={followHook.toggleFollow}
-              />
-            </TouchableOpacity>
-          </View>
+                className="w-28 rounded-2xl"
+              >
+                <GradientButton
+                  text={
+                    followHook.checking
+                      ? 'Loading...'
+                      : followHook.loading
+                        ? 'Please wait...'
+                        : followHook.isFollowing
+                          ? 'Following'
+                          : 'Follow'
+                  }
+                  onPress={followHook.toggleFollow}
+                />
+              </TouchableOpacity>
+            </View>
 
-          {/* Video Player */}
-          <View className="w-full overflow-hidden rounded-lg bg-black">
-            <VideoPlayer
-              uri={videos.videoUrl!}
-              ref={videoRef}
-              onProgressUpdate={handleProgressUpdate}
-              onSkipBackward={skipBackward}
-              onSkipForward={skipForward}
-              playbackRate={playbackRate}
-              onToggleFullscreen={toggleFullscreen}
-              isFullscreen={isFullscreen}
-              volume={volume}
-              isMuted={isMuted}
-              bottomControls={BottomControls}
-            />
-            {/* <View className="bg-white/10">
+            {/* Video Player */}
+            <View className="w-full overflow-hidden rounded-lg bg-black">
+              <VideoPlayer
+                uri={videos.videoUrl!}
+                ref={videoRef}
+                onProgressUpdate={handleProgressUpdate}
+                onSkipBackward={skipBackward}
+                onSkipForward={skipForward}
+                playbackRate={playbackRate}
+                onToggleFullscreen={toggleFullscreen}
+                isFullscreen={isFullscreen}
+                volume={volume}
+                isMuted={isMuted}
+                bottomControls={BottomControls}
+              />
+              {/* <View className="bg-white/10">
               <SeekableProgressBar
                 progress={videoProgress}
                 duration={videoDuration}
@@ -468,155 +476,163 @@ export default function VideoPlayerScreen() {
                 </View>
               </View>
             </View> */}
-          </View>
-
-          {/* Video Info */}
-          <View className="py-3">
-            <View className="flex-row justify-between gap-4">
-              <Text className="mb-2 flex-1 text-lg font-bold text-white">{videos.title}</Text>
-              <TouchableOpacity onPress={() => setShowDescription(true)} className="ml-auto">
-                <Arrow height={32} width={32} />
-              </TouchableOpacity>
             </View>
-            <View className="mb-3 flex-row items-center">
-              <View className="mr-3 flex-row items-center">
-                <Views height={22} width={22} />
-                <Text className="ml-1 text-sm text-gray-400">{videos.views}</Text>
-              </View>
-              <View className="mr-3 flex-row items-center">
-                <Upload height={20} width={20} />
-                <Text className="ml-1 text-sm text-gray-400">{videos.timeAgo}</Text>
-              </View>
-              {videos.hashtags && videos.hashtags[0] && (
-                <Text className="text-sm font-medium text-blue-400">{videos.hashtags[0]}</Text>
-              )}
-            </View>
-          </View>
 
-          {/* Action Buttons */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingRight: 0 }}>
-            <View className="flex-row gap-5">
-              <View className="flex-row gap-1">
-                <ActionButton
-                  Icon={userReaction === 'like' ? Like : LikeInactive}
-                  count={likesCount?.toString()!}
-                  isActive={userReaction === 'like'}
-                  onPress={() => toggleReaction('like')}
-                  disabled={reactionLoading || reactionChecking}
-
-                />
-                <ActionButton
-                  Icon={userReaction === 'dislike' ? Dislike : DislikeInactive}
-                  count={dislikesCount?.toString()!}
-                  isActive={userReaction === 'dislike'}
-                  onPress={() => toggleReaction('dislike')}
-                  disabled={reactionLoading || reactionChecking}
-
-                />
+            {/* Video Info */}
+            <View className="py-3">
+              <View className="flex-row justify-between gap-4">
+                <Text className="mb-2 flex-1 text-lg font-bold text-white">{videos.title}</Text>
+                <TouchableOpacity onPress={() => setShowDescription(true)} className="ml-auto">
+                  <Arrow height={32} width={32} />
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity
-                className="flex-row items-center justify-end rounded-lg bg-white/5 px-2 py-2"
-                onPress={handleShare}
-              >
-                <ShareIcon height={24} width={24} />
-                <Text className="ml-1.5 text-base font-medium text-white">Share</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                className="flex-row items-center justify-end rounded-lg bg-white/5 px-2 py-2"
-                onPress={toggleSave}
-                disabled={saveLoading || saveChecking}
-              >
-                {saveLoading ? (
-                  <ActivityIndicator size="small" color="#22C55E" />
-                ) : (
-                  <>
-                    <Saved
-                      height={24}
-                      width={24}
-                      fill={isSaved ? "#22C55E" : "white"}
-                    />
-                    <Text className="ml-1.5 text-base font-medium text-white">
-                      {isSaved ? "Saved ✓" : "Save"}
-                    </Text>
-                  </>
+              <View className="mb-3 flex-row items-center">
+                <View className="mr-3 flex-row items-center">
+                  <Views height={22} width={22} />
+                  <Text className="ml-1 text-sm text-gray-400">{videos.views}</Text>
+                </View>
+                <View className="mr-3 flex-row items-center">
+                  <Upload height={20} width={20} />
+                  <Text className="ml-1 text-sm text-gray-400">{videos.timeAgo}</Text>
+                </View>
+                {videos.hashtags && videos.hashtags[0] && (
+                  <Text className="text-sm font-medium text-blue-400">{videos.hashtags[0]}</Text>
                 )}
-              </TouchableOpacity>
-              <TouchableOpacity className="flex-row items-center justify-end rounded-lg bg-white/5 px-2 py-2">
-                <Download height={24} width={24} />
-                <Text className="ml-1.5 text-base font-medium text-white">Download</Text>
-              </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* Action Buttons */}
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingRight: 0 }}>
+              <View className="flex-row gap-5">
+                <View className="flex-row gap-1">
+                  <ActionButton
+                    Icon={userReaction === 'like' ? Like : LikeInactive}
+                    count={likesCount?.toString()!}
+                    isActive={userReaction === 'like'}
+                    onPress={() => toggleReaction('like')}
+                    disabled={reactionLoading || reactionChecking}
+
+                  />
+                  <ActionButton
+                    Icon={userReaction === 'dislike' ? Dislike : DislikeInactive}
+                    count={dislikesCount?.toString()!}
+                    isActive={userReaction === 'dislike'}
+                    onPress={() => toggleReaction('dislike')}
+                    disabled={reactionLoading || reactionChecking}
+
+                  />
+                </View>
+                <TouchableOpacity
+                  className="flex-row items-center justify-end rounded-lg bg-white/5 px-2 py-2"
+                  onPress={handleShare}
+                >
+                  <ShareIcon height={24} width={24} />
+                  <Text className="ml-1.5 text-base font-medium text-white">Share</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  className="flex-row items-center justify-end rounded-lg bg-white/5 px-2 py-2"
+                  onPress={toggleSave}
+                  disabled={saveLoading || saveChecking}
+                >
+                  {saveLoading ? (
+                    <ActivityIndicator size="small" color="#22C55E" />
+                  ) : (
+                    <>
+                      <Saved
+                        height={24}
+                        width={24}
+                        fill={isSaved ? "#22C55E" : "white"}
+                      />
+                      <Text className="ml-1.5 text-base font-medium text-white">
+                        {isSaved ? "Saved ✓" : "Save"}
+                      </Text>
+                    </>
+                  )}
+                </TouchableOpacity>
+                <TouchableOpacity className="flex-row items-center justify-end rounded-lg bg-white/5 px-2 py-2">
+                  <Download height={24} width={24} />
+                  <Text className="ml-1.5 text-base font-medium text-white">Download</Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+
+            {/* Comments Preview Section */}
+            <TouchableOpacity
+              onPress={() => setShowComments(true)}
+              className="my-4 rounded-xl bg-white/10 px-4 py-3"
+              activeOpacity={0.8}>
+              <View className="mb-3 flex-row items-center justify-between">
+                <Text className="text-base font-semibold text-white">
+                  Comments {totalComments > 0 ? totalComments : videos.comments || 0}
+                </Text>
+                <Text className="text-sm font-semibold text-[#9BD71B]">See all</Text>
+              </View>
+
+              {commentsLoading ? (
+                <View className="py-4">
+                  <ActivityIndicator size="small" color="#9BD71B" />
+                </View>
+              ) : commentPreviews.length > 0 ? (
+                commentPreviews.map((comment) => (
+                  <CommentPreviewCard key={comment.id} comment={comment} />
+                ))
+              ) : (
+                <View className="py-3">
+                  <Text className="text-center text-sm text-gray-400">
+                    No comments yet. Be the first to comment!
+                  </Text>
+                </View>
+              )}
+            </TouchableOpacity>
+
+            {/* Related Videos */}
+            <View className="py-4">
+              <Text className="mb-3 text-lg font-semibold text-white">
+                More videos you&apos;ll love
+              </Text>
+              <VideoRender
+                onPress={() => navigation.navigate('VideoPlayer', { videoId: videos.id })}
+              />
             </View>
           </ScrollView>
 
-          {/* Comments Preview Section */}
-          <TouchableOpacity
-            onPress={() => setShowComments(true)}
-            className="my-4 rounded-xl bg-white/10 px-4 py-3"
-            activeOpacity={0.8}>
-            <View className="mb-3 flex-row items-center justify-between">
-              <Text className="text-base font-semibold text-white">
-                Comments {totalComments > 0 ? totalComments : videos.comments || 0}
-              </Text>
-              <Text className="text-sm font-semibold text-[#9BD71B]">See all</Text>
-            </View>
-
-            {commentsLoading ? (
-              <View className="py-4">
-                <ActivityIndicator size="small" color="#9BD71B" />
-              </View>
-            ) : commentPreviews.length > 0 ? (
-              commentPreviews.map((comment) => (
-                <CommentPreviewCard key={comment.id} comment={comment} />
-              ))
-            ) : (
-              <View className="py-3">
-                <Text className="text-center text-sm text-gray-400">
-                  No comments yet. Be the first to comment!
-                </Text>
-              </View>
-            )}
-          </TouchableOpacity>
-
-          {/* Related Videos */}
-          <View className="py-4">
-            <Text className="mb-3 text-lg font-semibold text-white">
-              More videos you&apos;ll love
-            </Text>
-            <VideoRender
-              onPress={() => navigation.navigate('VideoPlayer', { videoId: videos.id })}
+          {/* Modals */}
+          {showDescription && (
+            <DescriptionModal
+              visible={showDescription}
+              onClose={() => setShowDescription(false)}
+              title={videos.title}
+              description={videos.description!}
+              likes={videos.likes!}
+              views={Number(videos.views.replace(/[^0-9]/g, ''))}
+              uploadDate={videos.timeAgo}
             />
-          </View>
-        </ScrollView>
+          )}
 
-        {/* Modals */}
-        {showDescription && (
-          <DescriptionModal
-            visible={showDescription}
-            onClose={() => setShowDescription(false)}
-            title={videos.title}
-            description={videos.description!}
-            likes={videos.likes!}
-            views={Number(videos.views.replace(/[^0-9]/g, ''))}
-            uploadDate={videos.timeAgo}
-          />
-        )}
+          {showSettings && (
+            <SettingsModal
+              visible={showSettings}
+              onClose={() => setShowSettings(false)}
+              playbackRate={playbackRate}
+              onPlaybackRateChange={handlePlaybackRateChange}
+            />
+          )}
+          {showComments && (
+            <VideoCommentsModal
+              visible={showComments}
+              onClose={handleCloseComments}
+              videoId={videos.id}
+              targetType="Video" />
+          )}
 
-        {showSettings && (
-          <SettingsModal
-            visible={showSettings}
-            onClose={() => setShowSettings(false)}
-            playbackRate={playbackRate}
-            onPlaybackRateChange={handlePlaybackRateChange}
-          />
-        )}
-
-        {showComments && (
+          {/* {showComments && (
           <CommentsModal visible={showComments} onClose={handleCloseComments} videoId={videos.id} />
-        )}
-      </SafeAreaView>
+        )} */}
+        </SafeAreaView>
+      </KeyboardAvoidingView>
     );
   };
 

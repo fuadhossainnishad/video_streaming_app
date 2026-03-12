@@ -29,6 +29,7 @@ import { useReaction } from '@/shared/hooks/useReaction';
 import Share, { ShareOptions } from 'react-native-share';
 import * as FileSystem from 'expo-file-system/legacy';
 import { increaseShortView } from '@/domain/video/api/shortView.service';
+import ShortCommentsModal from '../Video/components/ShortCommentsModal';
 
 type Props = NativeStackNavigationProp<ShortsParamalist, 'ShortsView'>;
 
@@ -43,6 +44,9 @@ export default function ShortsViewScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [shortData, setShortData] = useState<ShortData | null>(null);
+
+  const [showComments, setShowComments] = useState(false);
+
 
   // ─── UI visibility ────────────────────────────────────────────────────
   const [overlayVisible, setOverlayVisible] = useState(true); // visible on first load
@@ -65,6 +69,10 @@ export default function ShortsViewScreen() {
     shortData?.likes ?? 0,
     shortData?.dislikes ?? 0,
   );
+
+  const handleCloseComments = useCallback(() => {
+    setShowComments(false);
+  }, []);
 
   const {
     isSaved,
@@ -318,6 +326,8 @@ export default function ShortsViewScreen() {
                 <ActionButton
                   Icon="chatbubble-outline"
                   count={(shortData.comments ?? 0).toString()}
+                  onPress={() => setShowComments(true)}
+
                 />
               </View>
 
@@ -341,6 +351,16 @@ export default function ShortsViewScreen() {
               </View>
             </SafeAreaView>
           </Animated.View>
+        )}
+
+
+        {showComments && (
+          <ShortCommentsModal
+            visible={showComments}
+            onClose={handleCloseComments}
+            videoId={shortData.id}
+            targetType="Short"
+          />
         )}
       </View>
     </GestureHandlerRootView>

@@ -5,12 +5,7 @@ import ShortsViewScreen from '@/screens/Shorts/ShortsView.screen';
 import ReportScreen from '@/screens/Shorts/Report.screen';
 import { ShortData } from '@/shared/types/shorts.types';
 import SearchScreen from '@/screens/Shorts/Search.screen';
-// import OnboardingScreen from '../screens/Onboarding/onboarding.screen';
-// import AuthScreen from '@/screens/Auth/login.screen';
-// import VerifyOtpScreen from '@/screens/Auth/verifyOtp.screen';
-// import VerifyOtp2Screen from '@/screens/Auth/verifyOtp2.screen';
-// import SendOtpScreen from '@/screens/Auth/sendOtp.screen';
-// import resetPasswordScreen from '@/screens/Auth/resetPassword.screen';
+
 
 const Stack = createNativeStackNavigator();
 

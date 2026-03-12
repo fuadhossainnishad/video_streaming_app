@@ -174,6 +174,35 @@ export const getCommentReactionStats = async (
   }
 };
 
+
+export const getCommentUserReaction = async (
+  commentId: string
+): Promise<'like' | 'dislike' | null> => {
+  const response = await axiosClient.get(`v1/comment-reactions/user/${commentId}`);
+  const reaction = response?.data?.data?.reaction;
+  return reaction?.reactionType ?? null;
+};
+
+export const getCommentStats = async (
+  commentId: string
+): Promise<{ likesCount: number; dislikesCount: number }> => {
+  const response = await axiosClient.get(`v1/comment-reactions/stats/${commentId}`);
+  const data = response?.data?.data ?? {};
+  return {
+    likesCount: data.likesCount ?? 0,
+    dislikesCount: data.dislikesCount ?? 0,
+  };
+};
+
+export const toggleCommentReaction = async (
+  commentId: string,
+  reactionType: 'like' | 'dislike'
+): Promise<void> => {
+  await axiosClient.post('v1/comment-reactions/toggle', {
+    commentId,
+    reactionType,
+  });
+};
 /**
  * Get reaction stats for multiple comments (batch)
  */
@@ -199,74 +228,77 @@ export const getBatchCommentReactionStats = async (
   }
 };
 
+
+
 /**
  * Like a comment
  */
-export const likeComment = async (commentId: string): Promise<void> => {
-  try {
-    await axiosClient.post(`v1/comment-reactions/toggle`, {
-      "commentId": commentId,
-      "reactionType": "like"
-    });
-  } catch (error: any) {
-    console.error('Error liking comment:', error);
-    throw {
-      message: error.message || 'Failed to like comment',
-      statusCode: error.statusCode || 500,
-    };
-  }
-};
+// export const likeComment = async (commentId: string): Promise<void> => {
+//   try {
+//     await axiosClient.post(`v1/comment-reactions/toggle`, {
+//       "commentId": commentId,
+//       "reactionType": "like"
+//     });
+//   } catch (error: any) {
+//     console.error('Error liking comment:', error);
+//     throw {
+//       message: error.message || 'Failed to like comment',
+//       statusCode: error.statusCode || 500,
+//     };
+//   }
+// };
 
 /**
  * Unlike a comment
  */
-export const unlikeComment = async (commentId: string): Promise<void> => {
-  try {
-    await axiosClient.post(`v1/comment-reactions/toggle`, {
-      "commentId": commentId,
-      "reactionType": "like"
-    });
-  } catch (error: any) {
-    console.error('Error unliking comment:', error);
-    throw {
-      message: error.message || 'Failed to unlike comment',
-      statusCode: error.statusCode || 500,
-    };
-  }
-};
+// export const unlikeComment = async (commentId: string): Promise<void> => {
+//   try {
+//     await axiosClient.post(`v1/comment-reactions/toggle`, {
+//       "commentId": commentId,
+//       "reactionType": "like"
+//     });
+//   } catch (error: any) {
+//     console.error('Error unliking comment:', error);
+//     throw {
+//       message: error.message || 'Failed to unlike comment',
+//       statusCode: error.statusCode || 500,
+//     };
+//   }
+// };
 
 /**
  * Dislike a comment
  */
-export const dislikeComment = async (commentId: string): Promise<void> => {
-  try {
-    await axiosClient.post(`v1/comment-reactions/toggle`, {
-      "commentId": commentId,
-      "reactionType": "dislike"
-    });
-  } catch (error: any) {
-    console.error('Error disliking comment:', error);
-    throw {
-      message: error.message || 'Failed to dislike comment',
-      statusCode: error.statusCode || 500,
-    };
-  }
-};
+// export const dislikeComment = async (commentId: string): Promise<void> => {
+//   try {
+//     await axiosClient.post(`v1/comment-reactions/toggle`, {
+//       "commentId": commentId,
+//       "reactionType": "dislike"
+//     });
+//   } catch (error: any) {
+//     console.error('Error disliking comment:', error);
+//     throw {
+//       message: error.message || 'Failed to dislike comment',
+//       statusCode: error.statusCode || 500,
+//     };
+//   }
+// };
 
 /**
  * Remove dislike from a comment
  */
-export const undislikeComment = async (commentId: string): Promise<void> => {
-  try {
-    await axiosClient.post(`v1/comment-reactions/toggle`, {
-      "commentId": commentId,
-      "reactionType": "dislike"
-    });
-  } catch (error: any) {
-    console.error('Error removing dislike:', error);
-    throw {
-      message: error.message || 'Failed to remove dislike',
-      statusCode: error.statusCode || 500,
-    };
-  }
-};
+// export const undislikeComment = async (commentId: string): Promise<void> => {
+//   try {
+//     await axiosClient.post(`v1/comment-reactions/toggle`, {
+//       "commentId": commentId,
+//       "reactionType": "dislike"
+//     });
+//   } catch (error: any) {
+//     console.error('Error removing dislike:', error);
+//     throw {
+//       message: error.message || 'Failed to remove dislike',
+//       statusCode: error.statusCode || 500,
+//     };
+//   }
+// };
+

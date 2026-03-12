@@ -6,6 +6,7 @@ import {
     TextInput,
     Alert,
     ActivityIndicator,
+    TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -15,6 +16,7 @@ import CrossIcon from '../../../assets/icons/cross.svg';
 import { ShortsParamalist } from '@/navigation/ShortsStack';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { createReport } from '@/domain/video/api/report.service';
+import { LinearGradient } from 'expo-linear-gradient';
 
 type Props = NativeStackNavigationProp<ShortsParamalist, 'Report'>;
 
@@ -95,13 +97,26 @@ export default function ReportScreen() {
                         className="border border-white/80 text-white text-sm px-4 py-3 rounded-xl"
                     />
                 </View>
+                <TouchableOpacity
+                    onPress={handleSubmit}
+                    className="bg-gradient-to-l from-[#282828] via-[#9BD71B1A] to-[#282828] w-full">
+                    <LinearGradient
+                        // colors={['#9BD71B1A', '#9BD71B1A', '#282828']}
+                        colors={['#282828', '#9BD71B1A', '#9BD71B1A', '#9BD71B1A', '#282828']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        className="w-full flex-row items-center justify-center  gap-2 rounded-2xl py-3"
+                        style={styles.button}>
+                        <Text style={styles.btnText}>{loading ? "Submitting..." : "Submit"}</Text>
+                    </LinearGradient>
+                </TouchableOpacity>
 
-                <View className="mt-4">
+                {/* <View className="mt-4">
                     <GradientButton
                         text={loading ? "Submitting..." : "Submit"}
                         onPress={handleSubmit}
                     />
-                </View>
+                </View> */}
 
                 {/* {loading && (
                     <ActivityIndicator
@@ -119,5 +134,14 @@ export default function ReportScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    button: {
+        borderRadius: 10,
+    },
+
+    btnText: {
+        color: '#9BD71B',
+        fontSize: 16,
+        fontWeight: '600',
     },
 });
