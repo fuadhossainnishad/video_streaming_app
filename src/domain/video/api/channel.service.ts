@@ -6,6 +6,7 @@ import {
     ApiChannelByIdResponse,
     ChannelData,
     ChannelDetailsData,
+    DiscoveryChannelData,
     ICreateChannelApi,
 } from "@/shared/types/channel.types";
 import {
@@ -40,9 +41,9 @@ export const getAllChannels = async (): Promise<ChannelData[]> => {
     }
 };
 
-export const getAllDiscoveryChannels = async (): Promise<ChannelData[]> => {
+export const getAllDiscoveryChannels = async (): Promise<DiscoveryChannelData[]> => {
     try {
-        const { data } = await axiosClient.get<ApiAllChannelsResponse>(GET_DISCOVERY_CHANNEL);
+        const { data } = await axiosClient.get(GET_DISCOVERY_CHANNEL);
 
         // const data = mockTopChannelsResponse
 
@@ -51,9 +52,16 @@ export const getAllDiscoveryChannels = async (): Promise<ChannelData[]> => {
             throw new Error("Invalid channel response");
         }
 
-        console.log("getAllDiscoveryChannels data fetched:", data.data);
+        console.log("getAllDiscoveryChannels data fetched:", data.data.channels);
 
-        return transformChannelsData(data.data);
+        const channels = data.data?.channels ?? [];
+        return channels.map((raw: any): DiscoveryChannelData => ({
+            id: raw._id,
+            name: raw.channelName,
+            avatar: raw.channelIcon,
+            totalfollowers: raw.totalfollowers ?? 0,
+        }));
+
     } catch (error: any) {
         console.error("Error fetching channels:", error);
 

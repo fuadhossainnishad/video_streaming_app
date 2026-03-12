@@ -151,7 +151,7 @@ export default function AuthScreen({ navigation }: { navigation: props }) {
   };
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-white/50">
+    <SafeAreaView edges={['top']} className="flex-1 bg-gray-400">
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}

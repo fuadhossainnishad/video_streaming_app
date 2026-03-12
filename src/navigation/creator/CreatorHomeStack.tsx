@@ -1,7 +1,5 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import NotificationScreen from '@/screens/Notification/Notification.screen';
-import HomeScreen2 from '@/screens/Home/Home.screen2';
 import SearchScreen from '@/screens/Home/Search.screen';
 import DiscoverCreatorScreen from '@/screens/Home/DiscoverCreator.screen';
 import VideoPlayerScreen from '@/screens/Video/VideoPlayer.screen';
@@ -9,12 +7,6 @@ import ChannelProfileScreen from '@/screens/Follow/ChannelOverview.screen';
 import CreatorHomeScreen from '@/screens/creator/Home/CreatorHome.screen';
 import CreatorNotificationScreen from '@/screens/creator/Notification/CreatorNotification.screen';
 import CreatorNotificationDetailsScreen from '@/screens/creator/Notification/CreatorNotificationDetails.screen';
-// import OnboardingScreen from '../screens/Onboarding/onboarding.screen';
-// import AuthScreen from '@/screens/Auth/login.screen';
-// import VerifyOtpScreen from '@/screens/Auth/verifyOtp.screen';
-// import VerifyOtp2Screen from '@/screens/Auth/verifyOtp2.screen';
-// import SendOtpScreen from '@/screens/Auth/sendOtp.screen';
-// import resetPasswordScreen from '@/screens/Auth/resetPassword.screen';
 
 const Stack = createNativeStackNavigator();
 export type CreatorHomeParamalist = {
@@ -25,6 +17,7 @@ export type CreatorHomeParamalist = {
   DiscoverCreator: undefined;
   VideoPlayer: { videoId: string };
   ChannelOverview: { channelId: string };
+
 };
 export default function CreatorHomeStack() {
   return (
@@ -56,7 +49,7 @@ export default function CreatorHomeStack() {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="Notifications"
+        name="CreatorNotification"
         component={CreatorNotificationScreen}
         options={{ headerShown: false }}
       />

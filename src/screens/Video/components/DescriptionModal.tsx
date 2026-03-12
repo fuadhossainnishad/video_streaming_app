@@ -82,7 +82,7 @@ const DescriptionModal: React.FC<DescriptionModalProps> = ({
                             </View>
 
                             <View className="bg-white/5 rounded-xl px-4 py-3 flex-1 items-center">
-                                <Text className="text-white text-xl font-bold">{uploadDate}</Text>
+                                <Text className="text-white text-base font-bold">{uploadDate}</Text>
                                 <Text className="text-gray-400 text-sm mt-1">2025</Text>
                             </View>
                         </View>

@@ -1,19 +1,27 @@
+// VideoPlayer.tsx
 import { Ionicons } from '@expo/vector-icons';
-import { AVPlaybackStatus, ResizeMode, Video } from 'expo-av';
-import { useEffect, useState } from 'react';
-import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
-import Settings from '../../../../assets/icons/settings.svg';
-import Caption from '../../../../assets/icons/caption.svg';
-import Audio from '../../../../assets/icons/audio.svg';
-import Full from '../../../../assets/icons/full.svg';
-import Play from '../../../../assets/icons/Play.svg';
+import { useVideoPlayer, VideoView } from 'expo-video';
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import {
+  Dimensions,
+  Modal,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import Backward from '../../../../assets/icons/backward.svg';
 import Forward from '../../../../assets/icons/forward.svg';
-import { useVideoPlayer } from 'expo-video';
+import Play from '../../../../assets/icons/Play.svg';
+
+export interface VideoPlayerHandle {
+  seek: (positionSeconds: number) => void;
+  replay: () => void;
+  setRate: (rate: number) => void;
+}
 
 interface VideoPlayerProps {
   uri: string;
-  videoRef: React.RefObject<Video>;
   onProgressUpdate: (progress: number, duration: number) => void;
   onSkipBackward: () => void;
   onSkipForward: () => void;
@@ -22,13 +30,15 @@ interface VideoPlayerProps {
   isFullscreen: boolean;
   volume: number;
   isMuted: boolean;
+  bottomControls?: React.ReactNode;
 }
 
 const { width, height } = Dimensions.get('window');
+const LS_WIDTH = Math.max(width, height);
+const LS_HEIGHT = Math.min(width, height);
 
-export default function VideoPlayer({
+const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(({
   uri,
-  videoRef,
   onProgressUpdate,
   onSkipBackward,
   onSkipForward,
@@ -37,288 +47,256 @@ export default function VideoPlayer({
   isFullscreen,
   volume,
   isMuted,
-}: VideoPlayerProps) {
+  bottomControls,
+}, ref) => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [showControls, setShowControls] = useState(false);
-  const player = useVideoPlayer(uri, (player) => {
-    player.loop = false;
-    player.play();
+  const controlsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // ─── Player ──────────────────────────────────────────────────────────
+  const player = useVideoPlayer(uri, (p) => {
+    p.loop = false;
+    p.volume = isMuted ? 0 : volume;
+    p.playbackRate = playbackRate;
+    p.play();
   });
 
-  const togglePlay = async () => {
-    if (!videoRef.current) return;
+  // ─── Expose to parent ─────────────────────────────────────────────────
+  useImperativeHandle(ref, () => ({
+    seek: (positionSeconds) => {
+      if (player) player.currentTime = positionSeconds;
+    },
+    replay: () => {
+      if (player) {
+        player.currentTime = 0;
+        player.play();
+      }
+    },
+    setRate: (rate) => {
+      if (player) player.playbackRate = rate;
+    },
+  }));
 
-    if (isPlaying) {
-      await videoRef.current.pauseAsync();
+  // ─── Sync volume / mute ───────────────────────────────────────────────
+  useEffect(() => {
+    if (!player) return;
+    player.volume = isMuted ? 0 : volume;
+  }, [player, volume, isMuted]);
+
+  // ─── Sync playback rate ───────────────────────────────────────────────
+  useEffect(() => {
+    if (!player) return;
+    player.playbackRate = playbackRate;
+  }, [player, playbackRate]);
+
+  // ─── Track progress ───────────────────────────────────────────────────
+  const onProgressUpdateRef = useRef(onProgressUpdate);
+  useEffect(() => {
+    onProgressUpdateRef.current = onProgressUpdate;
+  }, [onProgressUpdate]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!player) return;
+      onProgressUpdateRef.current(
+        player.currentTime ?? 0,
+        player.duration ?? 0,
+      );
+      setIsPlaying(player.playing);
+    }, 500);
+    return () => clearInterval(interval);
+  }, [player]);
+
+  // ─── Controls timer ───────────────────────────────────────────────────
+  const showControlsTemporarily = () => {
+    setShowControls(true);
+    if (controlsTimer.current) clearTimeout(controlsTimer.current);
+    controlsTimer.current = setTimeout(() => setShowControls(false), 3000);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (controlsTimer.current) clearTimeout(controlsTimer.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isFullscreen) showControlsTemporarily();
+  }, [isFullscreen]);
+
+  // ─── Playback ─────────────────────────────────────────────────────────
+  const togglePlay = () => {
+    if (!player) return;
+    if (player.playing) {
+      player.pause();
       setIsPlaying(false);
     } else {
-      await videoRef.current.playAsync();
+      player.play();
       setIsPlaying(true);
     }
   };
 
-  const handleScreenTap = () => {
-    setShowControls(!showControls);
-    if (!showControls) {
-      setTimeout(() => setShowControls(false), 3000);
-    }
+  const handleSkipBackward = () => {
+    if (!player) return;
+    player.currentTime = Math.max(0, player.currentTime - 10);
+    onSkipBackward();
   };
 
-  const handlePlaybackStatusUpdate = (status: AVPlaybackStatus) => {
-    if (status.isLoaded) {
-      const currentPosition = status.positionMillis / 1000;
-      const totalDuration = status.durationMillis ? status.durationMillis / 1000 : 0;
-      onProgressUpdate(currentPosition, totalDuration);
-      setIsPlaying(status.isPlaying);
-    }
+  const handleSkipForward = () => {
+    if (!player) return;
+    player.currentTime = player.currentTime + 10;
+    onSkipForward();
   };
 
-  const videoWidth = isFullscreen ? width : width;
-
-  const videoHeight = isFullscreen ? height : width * (9 / 16);
-  // Show controls when entering fullscreen
-  useEffect(() => {
-    if (isFullscreen) {
-      setShowControls(true);
-      const timer = setTimeout(() => setShowControls(false), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [isFullscreen]);
-
-  return (
-    <View
-      style={{ height: videoHeight, width: videoWidth }}
-      className="bg-black">
-      <Video
-        ref={videoRef}
-        source={{ uri }}
-        style={{ width: '100%', height: '100%' }}
-        resizeMode={ResizeMode.CONTAIN}
-        shouldPlay
-        rate={playbackRate}
-        volume={isMuted ? 0 : volume}
-        onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
-        useNativeControls
-      />
-
+  // ─── Shared overlay (center + expand button) ──────────────────────────
+  // shown in both normal and fullscreen
+  const PlaybackOverlay = () => (
+    <>
+      {/* Invisible touch layer */}
       <TouchableOpacity
         activeOpacity={1}
-        onPress={handleScreenTap}
-        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+        onPress={showControlsTemporarily}
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
       />
 
+      {/* Center controls */}
       {(showControls || !isPlaying) && (
-        <View className="absolute inset-0 w-full flex-row items-center justify-center gap-12">
+        <View style={{
+          position: 'absolute',
+          top: 0, left: 0, right: 0, bottom: 0,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 48,
+        }}>
           <TouchableOpacity
-            onPress={onSkipBackward}
-            className="h-12 w-12  items-center justify-center">
+            onPress={handleSkipBackward}
+            style={{ width: 48, height: 48, alignItems: 'center', justifyContent: 'center' }}
+          >
             <Backward width={40} height={40} />
-            <Text className="absolute -bottom-0.5 text-[9px] font-bold text-white">10</Text>
+            <Text style={{
+              position: 'absolute', bottom: -2,
+              fontSize: 9, fontWeight: '700', color: '#fff',
+            }}>10</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={togglePlay}
-            className="h-16 w-16  items-center justify-center rounded-xl bg-black/30">
-            {isPlaying ? (
-              <Ionicons name={isPlaying ? 'pause' : 'play'} size={36} color="white" />
-            ) : (
-              <Play width={48} height={48} />
-            )}
+            style={{
+              width: 64, height: 64,
+              alignItems: 'center', justifyContent: 'center',
+              borderRadius: 12, backgroundColor: 'rgba(0,0,0,0.3)',
+            }}
+          >
+            {isPlaying
+              ? <Ionicons name="pause" size={36} color="white" />
+              : <Play width={48} height={48} />
+            }
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={onSkipForward}
-            className="h-12 w-12   items-center justify-center">
+            onPress={handleSkipForward}
+            style={{ width: 48, height: 48, alignItems: 'center', justifyContent: 'center' }}
+          >
             <Forward width={40} height={40} />
-            <Text className="absolute -bottom-0.5 text-[9px] font-bold text-white">10</Text>
+            <Text style={{
+              position: 'absolute', bottom: -2,
+              fontSize: 9, fontWeight: '700', color: '#fff',
+            }}>10</Text>
           </TouchableOpacity>
         </View>
       )}
-      {/* {isFullscreen && showControls && (
-                <TouchableOpacity
-                    onPress={onToggleFullscreen}
-                    className="absolute top-4 left-4 w-10 h-10 rounded-full bg-black/70 justify-center items-center"
-                    style={{ zIndex: 3 }}
-                >
-                    <Ionicons name="close" size={24} color="white" />
-                </TouchableOpacity>
-            )} */}
-    </View>
+
+      {/* Expand / contract — bottom right */}
+      {showControls && (
+        <TouchableOpacity
+          onPress={onToggleFullscreen}
+          style={{
+            position: 'absolute', bottom: 12, right: 12,
+            width: 36, height: 36, borderRadius: 8,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            alignItems: 'center', justifyContent: 'center',
+          }}
+        >
+          <Ionicons
+            name={isFullscreen ? 'contract' : 'expand'}
+            size={20}
+            color="white"
+          />
+        </TouchableOpacity>
+      )}
+    </>
   );
-}
 
-// import { Ionicons } from "@expo/vector-icons";
-// import { useEffect, useState } from "react";
-// import { Dimensions, Text, TouchableOpacity, View } from "react-native";
-// import { VideoView, useVideoPlayer } from "expo-video";
+  const normalHeight = width * (9 / 16);
 
-// import Settings from "../../../../assets/icons/settings.svg";
-// import Caption from "../../../../assets/icons/caption.svg";
-// import Audio from "../../../../assets/icons/audio.svg";
-// import Full from "../../../../assets/icons/full.svg";
-// import Play from "../../../../assets/icons/Play.svg";
-// import Backward from "../../../../assets/icons/backward.svg";
-// import Forward from "../../../../assets/icons/forward.svg";
+  // ─── Normal Mode ──────────────────────────────────────────────────────
+  if (!isFullscreen) {
+    return (
+      <View>
+        <View style={{ width, height: normalHeight, backgroundColor: '#000' }}>
+          <VideoView
+            player={player}
+            style={{ width: '100%', height: '100%' }}
+            contentFit="contain"
+            nativeControls={false}
+          />
+          <PlaybackOverlay />
+        </View>
+        {/* Bottom controls sit BELOW video in normal mode */}
+        {bottomControls}
+      </View>
+    );
+  }
 
-// interface VideoPlayerProps {
-//     uri: string;
-//     onProgressUpdate: (progress: number, duration: number) => void;
-//     onSkipBackward: () => void;
-//     onSkipForward: () => void;
-//     playbackRate: number;
-//     onToggleFullscreen: () => void;
-//     isFullscreen: boolean;
-//     volume: number;
-//     isMuted: boolean;
-// }
+  // ─── Fullscreen Modal ─────────────────────────────────────────────────
+  // Video = 100% of screen
+  // bottomControls = absolute at bottom → floats over video
+  // showControls gates visibility so it auto-hides with other controls
+  return (
+    <>
+      {/* Keep layout space in parent while modal open */}
+      <View style={{ width, height: normalHeight, backgroundColor: '#000' }} />
 
-// const { width, height } = Dimensions.get("window");
+      <Modal
+        visible={isFullscreen}
+        animationType="fade"
+        statusBarTranslucent
+        supportedOrientations={['landscape']}
+        onRequestClose={onToggleFullscreen}
+      >
+        <StatusBar hidden />
 
-// export default function VideoPlayer({
-//     uri,
-//     onProgressUpdate,
-//     onSkipBackward,
-//     onSkipForward,
-//     playbackRate,
-//     onToggleFullscreen,
-//     isFullscreen,
-//     volume,
-//     isMuted,
-// }: VideoPlayerProps) {
-//     const [isPlaying, setIsPlaying] = useState(true);
-//     const [showControls, setShowControls] = useState(false);
+        {/* Root fills entire landscape screen */}
+        <View style={{ width: LS_WIDTH, height: LS_HEIGHT, backgroundColor: '#000' }}>
 
-//     const player = useVideoPlayer('https://lnkm-media-outputs.s3.eu-north-1.amazonaws.com/videos/6957032e3dc0ff9bce625684/1767559614065/index.m3u8');
+          {/* Video — 100% of modal */}
+          <VideoView
+            player={player}
+            style={{ width: '100%', height: '100%' }}
+            contentFit="contain"
+            nativeControls={false}
+          />
 
-//     // Apply playback settings when changed
-//     useEffect(() => {
-//         if (!player) return;
+          {/* Playback overlay (touch + center controls + expand btn) */}
+          <PlaybackOverlay />
 
-//         player.volume = isMuted ? 0 : volume;
-//         player.playbackRate = playbackRate;
-//     }, [player, volume, isMuted, playbackRate]);
+          {/* Bottom controls — absolute, floats over video at bottom */}
+          {showControls && (
+            <View style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              backgroundColor: 'rgba(0,0,0,0.6)',
+            }}>
+              {bottomControls}
+            </View>
+          )}
+        </View>
+      </Modal>
+    </>
+  );
+});
 
-//     // Auto play on mount
-//     useEffect(() => {
-//         if (!player) return;
-
-//         player.play();
-//     }, [player]);
-
-//     // Track progress
-//     useEffect(() => {
-//         const interval = setInterval(() => {
-//             if (!player) return;
-
-//             const current = player.currentTime ?? 0;
-//             const duration = player.duration ?? 0;
-
-//             onProgressUpdate(current, duration);
-//             setIsPlaying(player.playing);
-//         }, 500);
-
-//         return () => clearInterval(interval);
-//     }, [player]);
-
-//     const togglePlay = () => {
-//         if (!player) return;
-
-//         if (player.playing) {
-//             player.pause();
-//             setIsPlaying(false);
-//         } else {
-//             player.play();
-//             setIsPlaying(true);
-//         }
-//     };
-
-//     const skipBackward = () => {
-//         if (!player) return;
-
-//         player.currentTime = Math.max(0, player.currentTime - 10);
-//         onSkipBackward();
-//     };
-
-//     const skipForward = () => {
-//         if (!player) return;
-
-//         player.currentTime = player.currentTime + 10;
-//         onSkipForward();
-//     };
-
-//     const handleScreenTap = () => {
-//         setShowControls(!showControls);
-//         if (!showControls) {
-//             setTimeout(() => setShowControls(false), 3000);
-//         }
-//     };
-
-//     const videoHeight = isFullscreen ? height : width * (9 / 16);
-
-//     return (
-//         <View
-//             style={{
-//                 height: videoHeight,
-//                 width: isFullscreen ? height : width,
-//             }}
-//             className="bg-black"
-//         >
-//             {/* VIDEO */}
-//             <VideoView
-//                 player={player}
-//                 style={{ width: "100%", height: "100%" }}
-//                 contentFit="contain"
-//                 nativeControls={false}
-//             />
-
-//             {/* TOUCH OVERLAY */}
-//             <TouchableOpacity
-//                 activeOpacity={1}
-//                 onPress={handleScreenTap}
-//                 style={{
-//                     position: "absolute",
-//                     top: 0,
-//                     left: 0,
-//                     width: "100%",
-//                     height: "100%",
-//                 }}
-//             />
-
-//             {/* CONTROLS */}
-//             {(showControls || !isPlaying) && (
-//                 <View className="absolute inset-0 flex-row items-center justify-center gap-12 w-full">
-//                     <TouchableOpacity
-//                         onPress={skipBackward}
-//                         className="w-12 h-12 justify-center items-center"
-//                     >
-//                         <Backward width={40} height={40} />
-//                         <Text className="text-white text-[9px] font-bold absolute -bottom-0.5">
-//                             10
-//                         </Text>
-//                     </TouchableOpacity>
-
-//                     <TouchableOpacity
-//                         onPress={togglePlay}
-//                         className="w-16 h-16 bg-black/30 rounded-xl justify-center items-center"
-//                     >
-//                         {isPlaying ? (
-//                             <Ionicons name="pause" size={36} color="white" />
-//                         ) : (
-//                             <Play width={48} height={48} />
-//                         )}
-//                     </TouchableOpacity>
-
-//                     <TouchableOpacity
-//                         onPress={skipForward}
-//                         className="w-12 h-12 justify-center items-center"
-//                     >
-//                         <Forward width={40} height={40} />
-//                         <Text className="text-white text-[9px] font-bold absolute -bottom-0.5">
-//                             10
-//                         </Text>
-//                     </TouchableOpacity>
-//                 </View>
-//             )}
-//         </View>
-//     );
-// }
+export default VideoPlayer

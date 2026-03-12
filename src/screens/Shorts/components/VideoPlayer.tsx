@@ -13,6 +13,8 @@ interface VideoPlayerProps {
     videoRef: React.RefObject<Video>;
     onSkipBackward: () => void;
     onSkipForward: () => void;
+    showControls: boolean; // ← add this
+
 }
 
 const { width, height } = Dimensions.get('window');
@@ -23,10 +25,12 @@ export default function VideoPlayer({
     onProgressUpdate,
     videoRef,
     onSkipBackward,
-    onSkipForward
+    onSkipForward,
+    showControls
+
 }: VideoPlayerProps) {
     const [isPlaying, setIsPlaying] = useState(true);
-    const [showControls, setShowControls] = useState(false);
+    // const [showControls, setShowControls] = useState(false);
 
     const togglePlay = async () => {
         if (!videoRef.current) return;
@@ -42,10 +46,10 @@ export default function VideoPlayer({
         }
     };
 
-    const handleScreenTap = () => {
-        setShowControls(!showControls);
-        setTimeout(() => setShowControls(false), 3000);
-    };
+    // const handleScreenTap = () => {
+    //     setShowControls(!showControls);
+    //     setTimeout(() => setShowControls(false), 3000);
+    // };
 
     const handlePlaybackStatusUpdate = (status: AVPlaybackStatus) => {
         if (status.isLoaded) {
@@ -77,7 +81,7 @@ export default function VideoPlayer({
             />
 
             {/* Tap Area to Show/Hide Controls */}
-            <TouchableOpacity
+            {/* <TouchableOpacity
                 activeOpacity={1}
                 onPress={handleScreenTap}
                 style={{
@@ -87,16 +91,19 @@ export default function VideoPlayer({
                     width,
                     height,
                 }}
-            />
+            /> */}
 
             {/* Center Play/Pause Controls */}
             {(showControls || !isPlaying) && (
                 <View
                     className="absolute flex-row items-center justify-center gap-12"
                     style={{
-                        top: height / 2 - 30,
-                        left: width / 2 - 120,
-                        width: 240,
+                        position: 'absolute',
+                        top: 0, left: 0, right: 0, bottom: 0,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 48,
                     }}
                 >
                     {/* Skip Backward Button */}

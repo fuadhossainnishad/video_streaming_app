@@ -28,6 +28,8 @@ export default function TopCreator() {
             setError(null);
 
             const result = await getAllChannels()
+            console.log("Channel data fetched:", result);
+
             setChannels(result);
         } catch (err: any) {
             console.error('Error fetching channels:', err);
@@ -83,7 +85,7 @@ export default function TopCreator() {
         return (
             <>
                 {channels.map((channel) => (
-                    <Creator key={channel.id} channelData={channel} onPress={() => navigation.navigate('ChannelOverview', { channelId: channel.id })} />
+                    <Creator key={channel.id} channelData={channel} onPress={() => navigation.navigate('ChannelOverview', { channelId: channel.id! })} />
                 ))}
             </>
         );

@@ -32,7 +32,7 @@ export default function HomeStack() {
       <Stack.Screen name="Home" component={HomeScreen2} options={{ headerShown: false }} />
       <Stack.Screen
         name="Notification"
-        component={CreatorNotificationsScreen}
+        component={NotificationScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen name="Search" component={SearchScreen} options={{ headerShown: false }} />

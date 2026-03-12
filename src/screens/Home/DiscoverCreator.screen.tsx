@@ -1,8 +1,9 @@
 import AppHeader from '@/components/AppHeader';
 import CreatorCard from '@/components/CreatorCard';
-import { getAllChannels, getAllDiscoveryChannels } from '@/domain/video/api/channel.service';
+import CreatorCardWithFollow from '@/components/CreatorCardWithFollow';
+import { getAllDiscoveryChannels } from '@/domain/video/api/channel.service';
 import { HomeParamalist } from '@/navigation/HomeStack';
-import { ChannelData } from '@/shared/types/channel.types';
+import { DiscoveryChannelData } from '@/shared/types/channel.types';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -13,7 +14,7 @@ type Props = NativeStackNavigationProp<HomeParamalist, 'DiscoverCreator'>;
 
 export default function DiscoverCreatorScreen() {
   const navigation = useNavigation<Props>();
-  const [channels, setChannels] = useState<ChannelData[]>([]);
+  const [channels, setChannels] = useState<DiscoveryChannelData[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -28,7 +29,8 @@ export default function DiscoverCreatorScreen() {
       }
       setError(null);
 
-      const result = await getAllChannels()
+      const result = await getAllDiscoveryChannels()
+      console.log("discovery channel:", result)
       setChannels(result);
     } catch (err: any) {
       console.error('Error fetching channels:', err);
@@ -84,13 +86,10 @@ export default function DiscoverCreatorScreen() {
     return (
       <>
         {channels.map((channel) => (
-          <CreatorCard
+          <CreatorCardWithFollow
             key={channel.id}
-            channelId={channel.id}
-            avatar={channel.avatar}
-            name={channel.name}
-            followers={2000}
-            onFollow={() => console.log(`Follow ${channel.name}`)}
+            channel={channel}
+
           />))}
       </>
     );

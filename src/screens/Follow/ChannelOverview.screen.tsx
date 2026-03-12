@@ -98,7 +98,7 @@ export default function ChannelProfileScreen() {
       <TouchableOpacity
         onPress={toggleFollow}
         disabled={loading}
-        className={`px-6 py-2 rounded-full ${isFollowing ? 'bg-gray-700' : 'bg-[#9BD71B]'
+        className={`px-6 py-2 w-fit text-center rounded-full ${isFollowing ? 'bg-gray-700' : 'bg-[#9BD71B]'
           }`}
       >
         <Text className={`font-semibold ${isFollowing ? 'text-white' : 'text-black'

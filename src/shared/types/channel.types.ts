@@ -54,6 +54,14 @@ export interface ChannelData {
     avatar: string;
 }
 
+export interface DiscoveryChannelData {
+    id: string;
+    name: string;
+    avatar: string;
+    totalfollowers: number;
+}
+
+
 export interface ICreateChannelApi {
     channelName: string
     description: string

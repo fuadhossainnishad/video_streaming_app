@@ -12,10 +12,9 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Video } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
 import * as ScreenOrientation from 'expo-screen-orientation';
-import VideoPlayer from './components/VideoPlayer';
+import VideoPlayer, { VideoPlayerHandle } from './components/VideoPlayer';
 import SeekableProgressBar from './components/SeekableProgressBar';
 import SettingsModal from './components/SettingsModal';
 import CommentsModal from './components/CommentsModal';
@@ -64,7 +63,7 @@ export default function VideoPlayerScreen() {
   const navigation = useNavigation<Props>();
   const route = useRoute<any>();
   const { videoId } = route.params;
-  const videoRef = useRef<Video>(null);
+  const videoRef = useRef<VideoPlayerHandle>(null);
 
   // Video player state
   const [videoProgress, setVideoProgress] = useState(0);
@@ -88,23 +87,34 @@ export default function VideoPlayerScreen() {
   const channelFollowers = videos?.channelFollower!;
 
   const viewRecorded = useRef(false);
+  const fetchVideos = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const result = await getVideoById(videoId);
+
+      if (!viewRecorded.current) {
+        await increaseVideoView(videoId);
+        viewRecorded.current = true;
+      }
+
+      console.log("getVideoById:", result)
+      setVideos(result);
+      // setLikesCount(result.likes ?? 0);
+      // setDislikesCount(result.dislikes ?? 0);
+    } catch (err: any) {
+      console.error('Error fetching video:', err);
+      setError(err.message || 'Failed to load video');
+    } finally {
+      setLoading(false);
+    }
+  }, [videoId]);
 
   const followHook = useFollow(
     channelId ?? "",
-    channelFollowers
+    channelFollowers ?? 0
   );
-  const {
-    userReaction,
-    likesCount,
-    dislikesCount,
-    loading: reactionLoading,
-    toggleReaction,
-  } = useReaction(
-    videos?.id ?? "",
-    'Video',
-    videos?.likes ?? 0,
-    videos?.dislikes ?? 0
-  );
+
 
   const {
     isSaved,
@@ -134,32 +144,25 @@ export default function VideoPlayerScreen() {
   //   videos?.channelFollower!
   // );
 
-  const fetchVideos = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const result = await getVideoById(videoId);
 
-      if (!viewRecorded.current) {
-        await increaseVideoView(videoId);
-        viewRecorded.current = true;
-      }
-
-      console.log("getVideoById:", result)
-      setVideos(result);
-      // setLikesCount(result.likes ?? 0);
-      // setDislikesCount(result.dislikes ?? 0);
-    } catch (err: any) {
-      console.error('Error fetching video:', err);
-      setError(err.message || 'Failed to load video');
-    } finally {
-      setLoading(false);
-    }
-  }, [videoId]);
 
   useEffect(() => {
     fetchVideos();
   }, [fetchVideos]);
+
+  const {
+    userReaction,
+    likesCount,
+    dislikesCount,
+    loading: reactionLoading,
+    checking: reactionChecking,
+    toggleReaction,
+  } = useReaction(
+    videos?.id ?? "",
+    'Video',
+    videos?.likes ?? 0,
+    videos?.dislikes ?? 0
+  );
 
   const handleProgressUpdate = useCallback((progress: number, duration: number) => {
     setVideoProgress(progress);
@@ -201,24 +204,19 @@ export default function VideoPlayerScreen() {
     }
   };
 
-  const handleSeek = async (position: number) => {
-    if (videoRef.current) {
-      await videoRef.current.setPositionAsync(position * 1000);
-    }
+  const handleSeek = (position: number) => {
+    videoRef.current?.seek(position);
   };
 
-  const skipBackward = async () => {
-    if (videoRef.current) {
-      const newPosition = Math.max(0, videoProgress - 10);
-      await videoRef.current.setPositionAsync(newPosition * 1000);
-    }
+  const skipBackward = () => {
+    const newPosition = Math.max(0, videoProgress - 10);
+    videoRef.current?.seek(newPosition);
   };
 
-  const skipForward = async () => {
-    if (videoRef.current && videoDuration) {
-      const newPosition = Math.min(videoDuration, videoProgress + 10);
-      await videoRef.current.setPositionAsync(newPosition * 1000);
-    }
+  const skipForward = () => {
+    if (!videoDuration) return;
+    const newPosition = Math.min(videoDuration, videoProgress + 10);
+    videoRef.current?.seek(newPosition);
   };
 
   const toggleFullscreen = async () => {
@@ -231,18 +229,15 @@ export default function VideoPlayerScreen() {
     }
   };
 
-  const handleReplay = async () => {
-    if (videoRef.current) {
-      await videoRef.current.replayAsync();
-    }
+  const handleReplay = () => {
+    videoRef.current?.replay();
   };
 
-  const handlePlaybackRateChange = async (rate: number) => {
+  const handlePlaybackRateChange = (rate: number) => {
     setPlaybackRate(rate);
-    if (videoRef.current) {
-      await videoRef.current.setRateAsync(rate, true);
-    }
+    videoRef.current?.setRate(rate);
   };
+
 
   // const handleLike = () => {
   //   if (isLiked) {
@@ -270,6 +265,45 @@ export default function VideoPlayerScreen() {
     setShowComments(false);
     refreshComments(); // Refresh preview when modal closes
   }, [refreshComments]);
+
+  const BottomControls = (
+    <View className="bg-white/10">
+      <SeekableProgressBar
+        progress={videoProgress}
+        duration={videoDuration}
+        onSeek={handleSeek}
+      />
+      <View className="flex-row items-center justify-between p-4 px-6">
+        <Text className="rounded-xl bg-[#0000001A] p-3 text-xs font-medium text-white">
+          {formatTime(videoProgress)} / {formatTime(videoDuration)}
+        </Text>
+        <View className="flex-row items-center gap-2">
+          <TouchableOpacity onPress={handleReplay}>
+            <Ionicons name="refresh-outline" size={20} color="white" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setShowSettings(true)}>
+            <Settings height={32} width={32} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setShowSettings(true)}>
+            <Caption height={32} width={32} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            className='bg-black/10 p-1.5 rounded-lg'
+            onPress={() => setIsMuted(!isMuted)}>
+            <Ionicons
+              name={isMuted ? 'volume-mute-outline' : 'volume-high-outline'}
+              size={20}
+              color={isMuted ? '#ff4444' : 'white'}
+            />
+            {/* <Audio height={32} width={32} /> */}
+          </TouchableOpacity>
+          <TouchableOpacity onPress={toggleFullscreen}>
+            <Full height={32} width={32} />
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
 
   const renderContent = () => {
     if (loading) {
@@ -301,7 +335,7 @@ export default function VideoPlayerScreen() {
             <StatusBar hidden />
             <VideoPlayer
               uri={videos.videoUrl!}
-              videoRef={videoRef}
+              ref={videoRef}
               onProgressUpdate={handleProgressUpdate}
               onSkipBackward={skipBackward}
               onSkipForward={skipForward}
@@ -310,6 +344,8 @@ export default function VideoPlayerScreen() {
               isFullscreen={isFullscreen}
               volume={volume}
               isMuted={isMuted}
+              bottomControls={BottomControls}
+
             />
           </View>
           <View className="bg-white/10">
@@ -318,7 +354,7 @@ export default function VideoPlayerScreen() {
               duration={videoDuration}
               onSeek={handleSeek}
             />
-            <View className="flex-row items-center justify-between p-4 px-12">
+            {/* <View className="flex-row items-center justify-between p-4 px-12">
               <Text className="rounded-xl bg-[#0000001A] p-3 text-xs font-medium text-white">
                 {formatTime(videoProgress)} / {formatTime(videoDuration)}
               </Text>
@@ -339,7 +375,7 @@ export default function VideoPlayerScreen() {
                   <Full height={32} width={32} />
                 </TouchableOpacity>
               </View>
-            </View>
+            </View> */}
           </View>
         </View>
       );
@@ -369,17 +405,19 @@ export default function VideoPlayerScreen() {
               </View>
             </View>
             <TouchableOpacity
-              disabled={followHook.loading}
+              disabled={followHook.loading || followHook.checking}
               onPress={followHook.toggleFollow}
               className="w-28 rounded-2xl"
             >
               <GradientButton
                 text={
-                  followHook.loading
-                    ? "Loading..."
-                    : followHook.isFollowing
-                      ? "Following"
-                      : "Follow"
+                  followHook.checking
+                    ? 'Loading...'
+                    : followHook.loading
+                      ? 'Please wait...'
+                      : followHook.isFollowing
+                        ? 'Following'
+                        : 'Follow'
                 }
                 onPress={followHook.toggleFollow}
               />
@@ -390,7 +428,7 @@ export default function VideoPlayerScreen() {
           <View className="w-full overflow-hidden rounded-lg bg-black">
             <VideoPlayer
               uri={videos.videoUrl!}
-              videoRef={videoRef}
+              ref={videoRef}
               onProgressUpdate={handleProgressUpdate}
               onSkipBackward={skipBackward}
               onSkipForward={skipForward}
@@ -399,8 +437,9 @@ export default function VideoPlayerScreen() {
               isFullscreen={isFullscreen}
               volume={volume}
               isMuted={isMuted}
+              bottomControls={BottomControls}
             />
-            <View className="bg-white/10">
+            {/* <View className="bg-white/10">
               <SeekableProgressBar
                 progress={videoProgress}
                 duration={videoDuration}
@@ -428,7 +467,7 @@ export default function VideoPlayerScreen() {
                   </TouchableOpacity>
                 </View>
               </View>
-            </View>
+            </View> */}
           </View>
 
           {/* Video Info */}
@@ -466,7 +505,7 @@ export default function VideoPlayerScreen() {
                   count={likesCount?.toString()!}
                   isActive={userReaction === 'like'}
                   onPress={() => toggleReaction('like')}
-                  disabled={reactionLoading}
+                  disabled={reactionLoading || reactionChecking}
 
                 />
                 <ActionButton
@@ -474,7 +513,7 @@ export default function VideoPlayerScreen() {
                   count={dislikesCount?.toString()!}
                   isActive={userReaction === 'dislike'}
                   onPress={() => toggleReaction('dislike')}
-                  disabled={reactionLoading}
+                  disabled={reactionLoading || reactionChecking}
 
                 />
               </View>

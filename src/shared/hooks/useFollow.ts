@@ -1,86 +1,104 @@
 import { useState, useEffect, useCallback } from 'react';
-import {
-    toggleFollow,
-    checkFollowStatus,
-} from '@/domain/video/api/follow.service';
+import { toggleFollow, checkFollowStatus } from '@/domain/video/api/follow.service';
 
 export const useFollow = (
     channelId: string,
     initialFollowers: number
 ) => {
     const [isFollowing, setIsFollowing] = useState<boolean>(false);
-    const [followersCount, setFollowersCount] = useState<number>(initialFollowers);
-    const [initialLoading, setInitialLoading] = useState<boolean>(true);
+    const [followersCount, setFollowersCount] = useState<number>(initialFollowers ?? 0);
+    const [checking, setChecking] = useState<boolean>(false);
     const [toggling, setToggling] = useState<boolean>(false);
 
-    /**
-     * 1️⃣ Initial follow check
-     */
+    // ─── Sync followers count when video data loads ───────────────────────
     useEffect(() => {
+        setFollowersCount(initialFollowers ?? 0);
+    }, [channelId, initialFollowers]);
+
+    // ─── Check follow status on load ──────────────────────────────────────
+    useEffect(() => {
+        if (!channelId || channelId.trim() === '') return;
+
         let mounted = true;
 
-        const init = async () => {
+        const checkStatus = async () => {
             try {
-                const status = await checkFollowStatus(channelId);
+                setChecking(true);
 
-                if (!mounted) return;
+                const response = await checkFollowStatus(channelId);
 
-                setIsFollowing(status);
+                console.log('follow check raw:', JSON.stringify(response?.data));
+
+                // Handle both response.data and response.data.data
+                const data = response?.data?.data ?? response?.data ?? {};
+                const following = data?.isFollowing ?? false;
+
+                if (mounted) setIsFollowing(following);
+
             } catch {
-                if (!mounted) return;
-                setIsFollowing(false);
+                if (mounted) setIsFollowing(false);
             } finally {
-                if (mounted) {
-                    setInitialLoading(false);
-                }
+                if (mounted) setChecking(false);
             }
         };
 
-        init();
+        checkStatus();
 
-        return () => {
-            mounted = false;
-        };
+        return () => { mounted = false; };
     }, [channelId]);
 
-    /**
-     * 2️⃣ Toggle follow
-     */
+    // ─── Toggle follow with optimistic update ─────────────────────────────
     const handleToggle = useCallback(async () => {
-        if (toggling || initialLoading) return;
+        if (toggling || checking || !channelId) return;
 
+        // ── Snapshot for rollback ────────────────────────────────────────
+        const prevFollowing = isFollowing;
+        const prevCount = followersCount;
+
+        // ── Optimistic update ────────────────────────────────────────────
+        const newFollowing = !isFollowing;
+        setIsFollowing(newFollowing);
+        setFollowersCount(c => newFollowing
+            ? c + 1
+            : Math.max(0, c - 1)
+        );
+
+        // ── API call ─────────────────────────────────────────────────────
         try {
             setToggling(true);
-
             const response = await toggleFollow(channelId);
 
-            const newState = response.data.isFollowing;
+            console.log('toggle follow raw:', JSON.stringify(response?.data));
 
-            setIsFollowing((prevState) => {
-                // Update followers count based on state change
-                if (prevState !== newState) {
-                    setFollowersCount((prevCount) => {
-                        const updated =
-                            newState ? prevCount + 1 : prevCount - 1;
+            const data = response?.data?.data ?? response?.data ?? {};
+            const serverFollowing = data?.isFollowing ?? newFollowing;
 
-                        return updated < 0 ? 0 : updated;
-                    });
-                }
+            // Sync with server truth
+            setIsFollowing(serverFollowing);
 
-                return newState;
-            });
+            // If server state differs from optimistic — fix count
+            if (serverFollowing !== newFollowing) {
+                setFollowersCount(c => serverFollowing
+                    ? c + 1
+                    : Math.max(0, c - 1)
+                );
+            }
 
         } catch (error) {
-            console.log('Toggle follow failed:', error);
+            // ── Rollback on failure ──────────────────────────────────────
+            console.error('Toggle follow failed:', error);
+            setIsFollowing(prevFollowing);
+            setFollowersCount(prevCount);
         } finally {
             setToggling(false);
         }
-    }, [channelId, toggling, initialLoading]);
+    }, [channelId, isFollowing, followersCount, toggling, checking]);
 
     return {
         isFollowing,
         followersCount,
-        loading: initialLoading || toggling,
+        checking,
+        loading: toggling,
         toggleFollow: handleToggle,
     };
 };

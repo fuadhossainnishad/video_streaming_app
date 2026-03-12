@@ -72,3 +72,13 @@ export const getReactionStats = async (
 
     return response.data.data;
 };
+
+export const getUserReaction = async (
+    targetId: string,
+    targetType: string
+) => {
+    const response = await axiosClient.get(
+        `/v1/reactions/me/${targetType}/${targetId}`
+    );
+    return response.data;
+};

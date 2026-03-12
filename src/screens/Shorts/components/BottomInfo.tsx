@@ -2,7 +2,7 @@ import { useFollow } from '@/shared/hooks/useFollow';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, Text, TouchableOpacity, View } from 'react-native';
 
 interface BottomInfoProps {
   username: string;
@@ -12,8 +12,9 @@ interface BottomInfoProps {
   views: number;
   timeAgo: string;
   hashtags: string[];
-  channelId: string
+  channelId: string;
 }
+
 export default function BottomInfo({
   username,
   avatar,
@@ -25,70 +26,68 @@ export default function BottomInfo({
   channelId,
 }: BottomInfoProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  // FOLLOW
+
+  // ─── Follow ───────────────────────────────────────────────────────────
   const {
     isFollowing,
-    followersCount,
-    loading: followLoading,
+    checking,   // ← initial status check
+    loading,    // ← toggle in progress
     toggleFollow,
-  } = useFollow(
-    channelId!,
-    0
-  );
+  } = useFollow(channelId, 0);
 
   return (
-    <View className="">
-      {/* User Info */}
-      <View className="mb-3 flex-row items-center gap-2">
-        <Image source={{ uri: avatar! }} className="h-9 w-9 rounded-xl" />
-        <Text className="mr-2.5 text-base font-semibold text-white">{username}</Text>
+    <View>
 
+      {/* User Info Row */}
+      <View className="mb-3 flex-row items-center gap-2">
+        <Image source={{ uri: avatar }} className="h-9 w-9 rounded-xl" />
+        <Text className=" flex-1 text-base font-semibold text-white">
+          {username}
+        </Text>
+
+        {/* Follow Button */}
         <TouchableOpacity
-          disabled={followLoading}
+          disabled={loading || checking}
           onPress={toggleFollow}
           activeOpacity={0.8}
         >
           <LinearGradient
             colors={
               isFollowing
-                ? ['#4B5563', '#4B5563'] // gray when following
-                : ['#9BD71B', '#7CB518'] // green when not following
+                ? ['#4B5563', '#4B5563']
+                : ['#9BD71B', '#7CB518']
             }
             style={{
               borderRadius: 16,
               paddingHorizontal: 20,
               paddingVertical: 8,
+              minWidth: 90,
+              alignItems: 'center',
+              opacity: loading || checking ? 0.7 : 1,
             }}
           >
-            <Text className="text-sm font-semibold text-black">
-              {followLoading
-                ? "Loading..."
-                : isFollowing
-                  ? "Following"
-                  : "Follow"}
-            </Text>
+            {checking || loading ? (
+              <ActivityIndicator
+                size="small"
+                color={isFollowing ? '#9CA3AF' : '#000'}
+              />
+            ) : (
+              <Text className="text-sm font-semibold text-black">
+                {isFollowing ? 'Following' : 'Follow'}
+              </Text>
+            )}
           </LinearGradient>
         </TouchableOpacity>
-
-        {/* <LinearGradient
-          colors={['#9BD71B1A', '#9BD71B1A']}
-          style={{
-            borderWidth: 1,
-            borderColor: '#9BD71B',
-            borderRadius: 16,
-          }}
-          className="w-fit rounded-xl px-7 py-2">
-          <TouchableOpacity className="rounded-xl">
-            <Text className="text-xl font-normal text-white">Follow </Text>
-          </TouchableOpacity>
-        </LinearGradient> */}
       </View>
 
       {/* Title */}
       <Text className="mb-1.5 text-base font-bold text-white">{title}</Text>
 
       {/* Description */}
-      <Text className="mb-2 text-sm text-gray-200" numberOfLines={isExpanded ? undefined : 2}>
+      <Text
+        className="mb-2 text-sm text-gray-200"
+        numberOfLines={isExpanded ? undefined : 2}
+      >
         {description}
       </Text>
 
@@ -106,17 +105,23 @@ export default function BottomInfo({
           <Text className="ml-1 text-xs text-gray-400">{timeAgo}</Text>
         </View>
 
-        <Text className="mr-2 text-xs text-gray-400">•</Text>
-
-        <Text className="text-xs font-medium text-blue-400">{hashtags}</Text>
+        {hashtags?.length > 0 && (
+          <>
+            <Text className="mr-2 text-xs text-gray-400">•</Text>
+            <Text className="text-xs font-medium text-blue-400">
+              {hashtags.map(tag => `#${tag}`).join(' ')}
+            </Text>
+          </>
+        )}
       </View>
 
       {/* See More */}
-      {!isExpanded && description.length > 60 && (
+      {!isExpanded && description?.length > 60 && (
         <TouchableOpacity onPress={() => setIsExpanded(true)}>
           <Text className="text-xs font-semibold text-green-500">...See more</Text>
         </TouchableOpacity>
       )}
+
     </View>
   );
 }

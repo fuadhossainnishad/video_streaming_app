@@ -58,7 +58,7 @@ export const getFollowingChannels = async (
  * Toggle follow/unfollow a channel
  * POST /follows/toggle/:channelId
  */
-export const toggleFollow = async (channelId: string): Promise<ToggleFollowResponse> => {
+export const toggleFollow = async (channelId: string) => {
     try {
         const response = await axiosClient.post<ToggleFollowResponse>(
             FOLLOW_CHANNEL(channelId)
@@ -68,7 +68,7 @@ export const toggleFollow = async (channelId: string): Promise<ToggleFollowRespo
             throw new Error(response.data.message || 'Failed to toggle follow');
         }
 
-        return response.data;
+        return response;
     } catch (error: any) {
         console.error('Error toggling follow:', error);
         throw {
@@ -84,9 +84,9 @@ export const toggleFollow = async (channelId: string): Promise<ToggleFollowRespo
  */
 export const checkFollowStatus = async (
     channelId: string
-): Promise<boolean> => {
+) => {
     const response = await axiosClient.get(
-        `/follows/check/${channelId}`
+        `/v1/follows/check/${channelId}`
     );
 
     if (response.data.status !== 'success') {
@@ -95,5 +95,5 @@ export const checkFollowStatus = async (
         );
     }
 
-    return response.data.data.isFollowing;
+    return response
 };

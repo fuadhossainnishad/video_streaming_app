@@ -12,8 +12,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import NotificationItem from './components/NotificationItem';
 import { useNotifications } from '@/shared/hooks/useNotifications';
 import { Notification } from '@/shared/types/notification.types';
+import AppHeader from '@/components/AppHeader';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { CreatorHomeParamalist } from '@/navigation/creator/CreatorHomeStack';
+import { useNavigation } from '@react-navigation/native';
+
+type Props = NativeStackNavigationProp<CreatorHomeParamalist, 'Notifications'>;
+
 
 export default function CreatorNotificationsScreen() {
+  const navigation = useNavigation<Props>()
   const {
     notifications,
     unreadCount,
@@ -95,7 +103,8 @@ export default function CreatorNotificationsScreen() {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Text style={styles.headerTitle}>Notifications</Text>
+          {/* <Text style={styles.headerTitle}>Notifications</Text> */}
+          <AppHeader title='Notifications' onPress={() => navigation.goBack()} />
           {unreadCount > 0 && (
             <View style={styles.badge}>
               <Text style={styles.badgeText}>
@@ -154,8 +163,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: '#1F2937',
+
   },
   headerLeft: {
     flexDirection: 'row',
