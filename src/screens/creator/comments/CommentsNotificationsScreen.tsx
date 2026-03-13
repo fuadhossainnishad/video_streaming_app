@@ -60,7 +60,7 @@ export default function CommentsNotificationsScreen() {
         <SafeAreaView style={styles.container} edges={['top']}>
             <View style={styles.header}>
                 <View style={styles.headerLeft}>
-                    <Text style={styles.headerTitle}>Comments</Text>
+                    <Text className=" text-2xl font-bold text-white">Comments</Text>
                     {filteredUnreadCount > 0 && (
                         <View style={styles.badge}>
                             <Text style={styles.badgeText}>
@@ -116,8 +116,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 16,
         paddingVertical: 14,
-        borderBottomWidth: 1,
-        borderBottomColor: '#1F2937',
+        // borderBottomWidth: 1,
+        // borderBottomColor: '#1F2937',
     },
     headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
     headerTitle: { fontSize: 20, fontWeight: '700', color: '#FFFFFF' },

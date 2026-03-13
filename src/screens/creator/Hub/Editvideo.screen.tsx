@@ -9,6 +9,8 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -64,179 +66,188 @@ export default function EditVideoScreen() {
   const activeThumbnailUri = thumbnailPreviewUri || formData.existingThumbnailUrl;
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-          <BackIcon width={40} height={40} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Edit Video</Text>
-        <TouchableOpacity
-          onPress={confirmDelete}
-          disabled={deleting}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-          {deleting
-            ? <ActivityIndicator color="#EF4444" size="small" />
-            : <DeleteIcon width={24} height={24} />
-          }
-        </TouchableOpacity>      </View>
-
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-
-        {/* ── EDITABLE: Thumbnail ── */}
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Thumbnail</Text>
-          <TouchableOpacity onPress={pickThumbnail} activeOpacity={0.85}>
-            {activeThumbnailUri ? (
-              <View>
-                <Image
-                  source={{ uri: activeThumbnailUri }}
-                  style={styles.thumbnail}
-                  resizeMode="cover"
-                />
-                <View style={styles.thumbnailEditBadge}>
-                  <Text style={styles.thumbnailEditBadgeText}>Change</Text>
-                </View>
-              </View>
-            ) : (
-              <View style={styles.thumbnailPlaceholder}>
-                <Text style={styles.thumbnailPlaceholderText}>Tap to select thumbnail</Text>
-              </View>
-            )}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'android' ? 'height' : 'padding'}
+    // keyboardVerticalOffset={Platform.OS === "ios" ? 20 : 20}
+    >
+      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+            <BackIcon width={40} height={40} />
           </TouchableOpacity>
-          {errors.thumbnail ? <Text style={styles.errorText}>{errors.thumbnail}</Text> : null}
-        </View>
+          <Text style={styles.headerTitle}>Edit Video</Text>
+          <TouchableOpacity
+            onPress={confirmDelete}
+            disabled={deleting}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+            {deleting
+              ? <ActivityIndicator color="#EF4444" size="small" />
+              : <DeleteIcon width={24} height={24} />
+            }
+          </TouchableOpacity>      </View>
 
-        {/* ── EDITABLE: Title ── */}
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Video Title</Text>
-          <TextInput
-            style={[styles.input, errors.title && styles.inputError]}
-            placeholder="Enter video title"
-            placeholderTextColor="#6B7280"
-            value={formData.title}
-            onChangeText={(text) => updateField('title', text)}
-            maxLength={100}
-          />
-          {errors.title ? <Text style={styles.errorText}>{errors.title}</Text> : null}
-        </View>
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}>
 
-        {/* ── EDITABLE: Description ── */}
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Description</Text>
-          <TextInput
-            style={[styles.textArea, errors.description && styles.inputError]}
-            placeholder="Enter description"
-            placeholderTextColor="#6B7280"
-            value={formData.description}
-            onChangeText={(text) => updateField('description', text)}
-            multiline
-            numberOfLines={6}
-            maxLength={5000}
-            textAlignVertical="top"
-          />
-          {errors.description ? <Text style={styles.errorText}>{errors.description}</Text> : null}
-        </View>
-
-        {/* ── READ-ONLY: Hashtags ── */}
-        {videoDetail?.hashtags && videoDetail.hashtags.length > 0 && (
+          {/* ── EDITABLE: Thumbnail ── */}
           <View style={styles.fieldContainer}>
-            <Text style={styles.label}>Hashtags</Text>
-            <View style={styles.tagsRow}>
-              {videoDetail.hashtags.map((tag) => (
-                <View key={tag} style={styles.tag}>
-                  <Text style={styles.tagText}>{tag}</Text>
+            <Text style={styles.label}>Thumbnail</Text>
+            <TouchableOpacity onPress={pickThumbnail} activeOpacity={0.85}>
+              {activeThumbnailUri ? (
+                <View>
+                  <Image
+                    source={{ uri: activeThumbnailUri }}
+                    style={styles.thumbnail}
+                    resizeMode="cover"
+                  />
+                  <View style={styles.thumbnailEditBadge}>
+                    <Text style={styles.thumbnailEditBadgeText}>Change</Text>
+                  </View>
+                </View>
+              ) : (
+                <View style={styles.thumbnailPlaceholder}>
+                  <Text style={styles.thumbnailPlaceholderText}>Tap to select thumbnail</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+            {errors.thumbnail ? <Text style={styles.errorText}>{errors.thumbnail}</Text> : null}
+          </View>
+
+          {/* ── EDITABLE: Title ── */}
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>Video Title</Text>
+            <TextInput
+              style={[styles.input, errors.title && styles.inputError]}
+              placeholder="Enter video title"
+              placeholderTextColor="#6B7280"
+              value={formData.title}
+              onChangeText={(text) => updateField('title', text)}
+              maxLength={100}
+            />
+            {errors.title ? <Text style={styles.errorText}>{errors.title}</Text> : null}
+          </View>
+
+          {/* ── EDITABLE: Description ── */}
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>Description</Text>
+            <TextInput
+              style={[styles.textArea, errors.description && styles.inputError]}
+              placeholder="Enter description"
+              placeholderTextColor="#6B7280"
+              value={formData.description}
+              onChangeText={(text) => updateField('description', text)}
+              multiline
+              numberOfLines={6}
+              maxLength={5000}
+              textAlignVertical="top"
+            />
+            {errors.description ? <Text style={styles.errorText}>{errors.description}</Text> : null}
+          </View>
+
+          {/* ── READ-ONLY: Hashtags ── */}
+          {videoDetail?.hashtags && videoDetail.hashtags.length > 0 && (
+            <View style={styles.fieldContainer}>
+              <Text style={styles.label}>Hashtags</Text>
+              <View style={styles.tagsRow}>
+                {videoDetail.hashtags.map((tag) => (
+                  <View key={tag} style={styles.tag}>
+                    <Text style={styles.tagText}>{tag}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* ── READ-ONLY: Links ── */}
+          {videoDetail?.links && videoDetail.links.length > 0 && (
+            <View style={styles.fieldContainer}>
+              <Text style={styles.label}>Links</Text>
+              {videoDetail.links.map((link, index) => (
+                <View key={index} style={[styles.readOnlyField, index < videoDetail.links.length - 1 && styles.linkRowGap]}>
+                  <Text style={styles.readOnlyText} numberOfLines={1} ellipsizeMode="tail">
+                    {link}
+                  </Text>
                 </View>
               ))}
             </View>
-          </View>
-        )}
-
-        {/* ── READ-ONLY: Links ── */}
-        {videoDetail?.links && videoDetail.links.length > 0 && (
-          <View style={styles.fieldContainer}>
-            <Text style={styles.label}>Links</Text>
-            {videoDetail.links.map((link, index) => (
-              <View key={index} style={[styles.readOnlyField, index < videoDetail.links.length - 1 && styles.linkRowGap]}>
-                <Text style={styles.readOnlyText} numberOfLines={1} ellipsizeMode="tail">
-                  {link}
-                </Text>
-              </View>
-            ))}
-          </View>
-        )}
-
-        {/* ── READ-ONLY: Category + Language ── */}
-        <View style={styles.metaRow}>
-          <View style={[styles.fieldContainer, styles.metaField]}>
-            <Text style={styles.label}>Category</Text>
-            <View style={styles.readOnlyField}>
-              <Text style={styles.readOnlyText}>{videoDetail?.category ?? '—'}</Text>
-            </View>
-          </View>
-          <View style={[styles.fieldContainer, styles.metaField]}>
-            <Text style={styles.label}>Language</Text>
-            <View style={styles.readOnlyField}>
-              <Text style={styles.readOnlyText}>{videoDetail?.language ?? '—'}</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* ── READ-ONLY: Visibility ── */}
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Visibility</Text>
-          <View style={styles.readOnlyField}>
-            <Text style={styles.readOnlyText}>
-              {videoDetail?.visibility
-                ? videoDetail.visibility.charAt(0).toUpperCase() + videoDetail.visibility.slice(1)
-                : '—'}
-            </Text>
-          </View>
-        </View>
-
-        {/* ── READ-ONLY: Stats ── */}
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Stats</Text>
-          <View style={styles.statsGrid}>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>{videoDetail?.totalViews ?? 0}</Text>
-              <Text style={styles.statLabel}>Views</Text>
-            </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>{videoDetail?.likesCount ?? 0}</Text>
-              <Text style={styles.statLabel}>Likes</Text>
-            </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>{videoDetail?.commentsCount ?? 0}</Text>
-              <Text style={styles.statLabel}>Comments</Text>
-            </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>{videoDetail?.dislikesCount ?? 0}</Text>
-              <Text style={styles.statLabel}>Dislikes</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* ── Save Button ── */}
-        <TouchableOpacity
-          style={[styles.saveButton, uploading && styles.saveButtonDisabled]}
-          onPress={handleSubmit}
-          disabled={uploading}
-          activeOpacity={0.8}>
-          {uploading ? (
-            <View style={styles.row}>
-              <ActivityIndicator color="#000000" />
-              <Text style={styles.saveButtonText}>  Saving...</Text>
-            </View>
-          ) : (
-            <Text style={styles.saveButtonText}>Save Changes</Text>
           )}
-        </TouchableOpacity>
 
-      </ScrollView>
-    </SafeAreaView>
+          {/* ── READ-ONLY: Category + Language ── */}
+          <View style={styles.metaRow}>
+            <View style={[styles.fieldContainer, styles.metaField]}>
+              <Text style={styles.label}>Category</Text>
+              <View style={styles.readOnlyField}>
+                <Text style={styles.readOnlyText}>{videoDetail?.category ?? '—'}</Text>
+              </View>
+            </View>
+            <View style={[styles.fieldContainer, styles.metaField]}>
+              <Text style={styles.label}>Language</Text>
+              <View style={styles.readOnlyField}>
+                <Text style={styles.readOnlyText}>{videoDetail?.language ?? '—'}</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* ── READ-ONLY: Visibility ── */}
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>Visibility</Text>
+            <View style={styles.readOnlyField}>
+              <Text style={styles.readOnlyText}>
+                {videoDetail?.visibility
+                  ? videoDetail.visibility.charAt(0).toUpperCase() + videoDetail.visibility.slice(1)
+                  : '—'}
+              </Text>
+            </View>
+          </View>
+
+          {/* ── READ-ONLY: Stats ── */}
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>Stats</Text>
+            <View style={styles.statsGrid}>
+              <View style={styles.statCard}>
+                <Text style={styles.statValue}>{videoDetail?.totalViews ?? 0}</Text>
+                <Text style={styles.statLabel}>Views</Text>
+              </View>
+              <View style={styles.statCard}>
+                <Text style={styles.statValue}>{videoDetail?.likesCount ?? 0}</Text>
+                <Text style={styles.statLabel}>Likes</Text>
+              </View>
+              <View style={styles.statCard}>
+                <Text style={styles.statValue}>{videoDetail?.commentsCount ?? 0}</Text>
+                <Text style={styles.statLabel}>Comments</Text>
+              </View>
+              <View style={styles.statCard}>
+                <Text style={styles.statValue}>{videoDetail?.dislikesCount ?? 0}</Text>
+                <Text style={styles.statLabel}>Dislikes</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* ── Save Button ── */}
+          <TouchableOpacity
+            style={[styles.saveButton, uploading && styles.saveButtonDisabled]}
+            onPress={handleSubmit}
+            disabled={uploading}
+            activeOpacity={0.8}>
+            {uploading ? (
+              <View style={styles.row}>
+                <ActivityIndicator color="#000000" />
+                <Text style={styles.saveButtonText}>  Saving...</Text>
+              </View>
+            ) : (
+              <Text style={styles.saveButtonText}>Save Changes</Text>
+            )}
+          </TouchableOpacity>
+
+        </ScrollView>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }
 

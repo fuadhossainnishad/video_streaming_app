@@ -80,7 +80,9 @@ export default function EditShortScreen() {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === 'android' ? 'height' : 'padding'}>
+      behavior={Platform.OS === 'android' ? 'height' : 'padding'}
+    // keyboardVerticalOffset={Platform.OS === "ios" ? 20 : 20}
+    >
 
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
         {/* Header */}
@@ -233,10 +235,10 @@ export default function EditShortScreen() {
                 <Text style={styles.statValue}>{shortDetail?.commentsCount ?? 0}</Text>
                 <Text style={styles.statLabel}>Comments</Text>
               </View>
-              <View style={styles.statCard}>
+              {/* <View style={styles.statCard}>
                 <Text style={styles.statValue}>{shortDetail?.transcodeStatus ?? '—'}</Text>
                 <Text style={styles.statLabel}>Status</Text>
-              </View>
+              </View> */}
             </View>
           </View>
 

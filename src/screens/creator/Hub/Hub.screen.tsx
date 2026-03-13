@@ -10,7 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { HubParamalist } from '@/navigation/creator/HubStack';
 import CreatorVideoCompo from '../components/CreatorVideoCompo';
 import CreatorShortsCardComponent from '../components/CreatorShortsCompo';
-import CreatorPostCardComponent from '../components/CreatorPostCompo2';
+import CreatorPostCardComponent from '../components/CreatorPostCompo';
 
 type Props = NativeStackNavigationProp<HubParamalist, 'Hub'>;
 

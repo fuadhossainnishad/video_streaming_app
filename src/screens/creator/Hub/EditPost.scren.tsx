@@ -9,6 +9,8 @@ import {
     StyleSheet,
     ActivityIndicator,
     Alert,
+    KeyboardAvoidingView,
+    Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -86,126 +88,132 @@ export default function EditPostScreen() {
     }
 
     return (
-        <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-            {/* Header */}
-            <View style={styles.header}>
-                <TouchableOpacity
-                    onPress={() => navigation.goBack()}
-                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-                    <BackIcon width={40} height={40} />
-                </TouchableOpacity>
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'android' ? 'height' : 'padding'}
+        // keyboardVerticalOffset={Platform.OS === "ios" ? 20 : 20}
+        >
+            <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+                {/* Header */}
+                <View style={styles.header}>
+                    <TouchableOpacity
+                        onPress={() => navigation.goBack()}
+                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                        <BackIcon width={40} height={40} />
+                    </TouchableOpacity>
 
-                <Text style={styles.headerTitle}>Edit Post</Text>
+                    <Text style={styles.headerTitle}>Edit Post</Text>
 
-                <TouchableOpacity
-                    onPress={confirmDelete}
-                    disabled={deleting}
-                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-                    {deleting
-                        ? <ActivityIndicator color="#EF4444" size="small" />
-                        : <DeleteIcon width={24} height={24} />
-                    }
-                </TouchableOpacity>
-            </View>
-
-            {/* Form */}
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-                {/* Images */}
-                <View style={styles.fieldContainer}>
-                    <Text style={styles.label}>Images</Text>
-
-                    {/* Editable Image Grid */}
-                    <EditableImageGrid
-                        images={mediaFiles}
-                        onReplace={replaceImage}
-                        onRemove={removeImage}
-                    />
-
-                    {/* Add More Images Button */}
-                    {mediaFiles.length < 10 && (
-                        <TouchableOpacity
-                            style={[styles.addMoreButton, errors.media && styles.uploadBoxError]}
-                            onPress={pickImages}
-                            activeOpacity={0.7}>
-                            <UploadIcon width={30} height={30} />
-                            <Text style={styles.addMoreText}>
-                                Add more images ({mediaFiles.length}/10)
-                            </Text>
-                        </TouchableOpacity>
-                    )}
-
-                    {errors.media && <Text style={styles.errorText}>{errors.media}</Text>}
+                    <TouchableOpacity
+                        onPress={confirmDelete}
+                        disabled={deleting}
+                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                        {deleting
+                            ? <ActivityIndicator color="#EF4444" size="small" />
+                            : <DeleteIcon width={24} height={24} />
+                        }
+                    </TouchableOpacity>
                 </View>
 
-                {/* Description */}
-                <View style={styles.fieldContainer}>
-                    <Text style={styles.label}>Description</Text>
-                    <TextInput
-                        style={[styles.textArea, errors.description && styles.inputError]}
-                        placeholder="Share your thoughts..."
-                        placeholderTextColor="#6B7280"
-                        value={formData.description}
-                        onChangeText={(text) => updateField('description', text)}
-                        multiline
-                        numberOfLines={6}
-                        maxLength={5000}
-                        textAlignVertical="top"
-                    />
-                    {errors.description && <Text style={styles.errorText}>{errors.description}</Text>}
-                </View>
+                {/* Form */}
+                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+                    {/* Images */}
+                    <View style={styles.fieldContainer}>
+                        <Text style={styles.label}>Images</Text>
 
-                {/* Hashtags */}
-                <HashtagInput hashtags={formData.hashtags} onAdd={addHashtag} onRemove={removeHashtag} />
-
-                {/* Tag People */}
-                <View style={styles.fieldContainer}>
-                    <Text style={styles.label}>Tag People</Text>
-                    <View style={styles.tagPeopleInput}>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Search people..."
-                            placeholderTextColor="#6B7280"
-
-                        />
-                        <TouchableOpacity style={styles.tagSearchIcon}>
-                            <Text style={styles.tagSearchIconText}>🔍</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-                <View style={styles.fieldContainer}>
-                    <Text style={styles.label}>Links</Text>
-                    <View style={styles.tagPeopleInput}>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Enter link"
-                            placeholderTextColor="#6B7280"
-                            value={formData.links}
-                            onChangeText={(text) => updateField('links', text)}
+                        {/* Editable Image Grid */}
+                        <EditableImageGrid
+                            images={mediaFiles}
+                            onReplace={replaceImage}
+                            onRemove={removeImage}
                         />
 
+                        {/* Add More Images Button */}
+                        {mediaFiles.length < 10 && (
+                            <TouchableOpacity
+                                style={[styles.addMoreButton, errors.media && styles.uploadBoxError]}
+                                onPress={pickImages}
+                                activeOpacity={0.7}>
+                                <UploadIcon width={30} height={30} />
+                                <Text style={styles.addMoreText}>
+                                    Add more images ({mediaFiles.length}/10)
+                                </Text>
+                            </TouchableOpacity>
+                        )}
+
+                        {errors.media && <Text style={styles.errorText}>{errors.media}</Text>}
                     </View>
-                </View>
 
-                {/* Links */}
-                {/* <LinkInput links={formData.links} onAdd={addLink} onRemove={removeLink} /> */}
+                    {/* Description */}
+                    <View style={styles.fieldContainer}>
+                        <Text style={styles.label}>Description</Text>
+                        <TextInput
+                            style={[styles.textArea, errors.description && styles.inputError]}
+                            placeholder="Share your thoughts..."
+                            placeholderTextColor="#6B7280"
+                            value={formData.description}
+                            onChangeText={(text) => updateField('description', text)}
+                            multiline
+                            numberOfLines={6}
+                            maxLength={5000}
+                            textAlignVertical="top"
+                        />
+                        {errors.description && <Text style={styles.errorText}>{errors.description}</Text>}
+                    </View>
 
-                {/* Update Button */}
-                <TouchableOpacity
-                    style={[styles.updateButton, updating && styles.updateButtonDisabled]}
-                    onPress={handleUpdate}
-                    disabled={updating}
-                    activeOpacity={0.8}>
-                    {updating ? (
-                        <View style={styles.updatingState}>
-                            <ActivityIndicator color="#000000" />
-                            <Text style={styles.updateButtonText}>Updating {uploadProgress}%</Text>
+                    {/* Hashtags */}
+                    <HashtagInput hashtags={formData.hashtags} onAdd={addHashtag} onRemove={removeHashtag} />
+
+                    {/* Tag People */}
+                    <View style={styles.fieldContainer}>
+                        <Text style={styles.label}>Tag People</Text>
+                        <View style={styles.tagPeopleInput}>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Search people..."
+                                placeholderTextColor="#6B7280"
+
+                            />
+                            <TouchableOpacity style={styles.tagSearchIcon}>
+                                <Text style={styles.tagSearchIconText}>🔍</Text>
+                            </TouchableOpacity>
                         </View>
-                    ) : (
-                        <Text style={styles.updateButtonText}>Save Changes</Text>
-                    )}
-                </TouchableOpacity>
-            </ScrollView>
-        </SafeAreaView>
+                    </View>
+                    <View style={styles.fieldContainer}>
+                        <Text style={styles.label}>Links</Text>
+                        <View style={styles.tagPeopleInput}>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Enter link"
+                                placeholderTextColor="#6B7280"
+                                value={formData.links}
+                                onChangeText={(text) => updateField('links', text)}
+                            />
+
+                        </View>
+                    </View>
+
+                    {/* Links */}
+                    {/* <LinkInput links={formData.links} onAdd={addLink} onRemove={removeLink} /> */}
+
+                    {/* Update Button */}
+                    <TouchableOpacity
+                        style={[styles.updateButton, updating && styles.updateButtonDisabled]}
+                        onPress={handleUpdate}
+                        disabled={updating}
+                        activeOpacity={0.8}>
+                        {updating ? (
+                            <View style={styles.updatingState}>
+                                <ActivityIndicator color="#000000" />
+                                <Text style={styles.updateButtonText}>Updating {uploadProgress}%</Text>
+                            </View>
+                        ) : (
+                            <Text style={styles.updateButtonText}>Save Changes</Text>
+                        )}
+                    </TouchableOpacity>
+                </ScrollView>
+            </SafeAreaView>
+        </KeyboardAvoidingView>
     );
 }
 

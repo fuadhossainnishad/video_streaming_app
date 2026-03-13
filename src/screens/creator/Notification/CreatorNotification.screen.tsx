@@ -17,7 +17,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { CreatorHomeParamalist } from '@/navigation/creator/CreatorHomeStack';
 import { useNavigation } from '@react-navigation/native';
 
-type Props = NativeStackNavigationProp<CreatorHomeParamalist, 'Notifications'>;
+type Props = NativeStackNavigationProp<CreatorHomeParamalist, 'CreatorNotification'>;
 
 
 export default function CreatorNotificationsScreen() {
