@@ -10,6 +10,8 @@ import {
   Alert,
   Modal,
   FlatList,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -76,217 +78,228 @@ export default function EditShortScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-          <BackIcon width={40} height={40} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Edit Short</Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'android' ? 'height' : 'padding'}>
 
-        <TouchableOpacity
-          onPress={confirmDelete}
-          disabled={deleting}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-          {deleting
-            ? <ActivityIndicator color="#EF4444" size="small" />
-            : <DeleteIcon width={24} height={24} />
-          }
-        </TouchableOpacity>      </View>
-
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-
-        {/* ── READ-ONLY: Video URL ── */}
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Video</Text>
-          <View style={styles.readOnlyField}>
-            <Text style={styles.readOnlyText} numberOfLines={1} ellipsizeMode="middle">
-              {shortDetail?.streamingUrl || shortDetail?.videoUrl || '—'}
-            </Text>
-          </View>
-        </View>
-
-        {/* ── EDITABLE: Title ── */}
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Title</Text>
-          <TextInput
-            style={[styles.input, errors.title && styles.inputError]}
-            placeholder="Enter short title"
-            placeholderTextColor="#6B7280"
-            value={formData.title}
-            onChangeText={(text) => updateField('title', text)}
-            maxLength={100}
-          />
-          {errors.title ? <Text style={styles.errorText}>{errors.title}</Text> : null}
-        </View>
-
-        {/* ── EDITABLE: Description ── */}
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Description</Text>
-          <TextInput
-            style={[styles.textArea, errors.description && styles.inputError]}
-            placeholder="Enter description"
-            placeholderTextColor="#6B7280"
-            value={formData.description}
-            onChangeText={(text) => updateField('description', text)}
-            multiline
-            numberOfLines={6}
-            maxLength={5000}
-            textAlignVertical="top"
-          />
-          {errors.description ? <Text style={styles.errorText}>{errors.description}</Text> : null}
-        </View>
-
-        {/* ── EDITABLE: Hashtags ── */}
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Hashtags</Text>
-          <View style={styles.hashtagInputRow}>
-            <TextInput
-              style={[styles.input, styles.hashtagInput]}
-              placeholder="Add hashtag..."
-              placeholderTextColor="#6B7280"
-              value={hashtagInput}
-              onChangeText={setHashtagInput}
-              onSubmitEditing={handleAddHashtag}
-              returnKeyType="done"
-            />
-            <TouchableOpacity style={styles.addButton} onPress={handleAddHashtag}>
-              <Text style={styles.addButtonText}>Add</Text>
-            </TouchableOpacity>
-          </View>
-          {formData.hashtags.length > 0 && (
-            <View style={styles.tagsRow}>
-              {formData.hashtags.map((tag, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={styles.tag}
-                  onPress={() => removeHashtag(index)}>
-                  <Text style={styles.tagText}>{tag}</Text>
-                  <Text style={styles.tagRemove}>  ✕</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
-        </View>
-
-        {/* ── EDITABLE: Category ── */}
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Category</Text>
+      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+        {/* Header */}
+        <View style={styles.header}>
           <TouchableOpacity
-            style={styles.pickerButton}
-            onPress={() => setCategoryModalVisible(true)}>
-            <Text style={styles.pickerButtonText}>{formData.category}</Text>
-            <Text style={styles.pickerChevron}>▾</Text>
+            onPress={() => navigation.goBack()}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+            <BackIcon width={40} height={40} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Edit Short</Text>
+
+          <TouchableOpacity
+            onPress={confirmDelete}
+            disabled={deleting}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+            {deleting
+              ? <ActivityIndicator color="#EF4444" size="small" />
+              : <DeleteIcon width={24} height={24} />
+            }
           </TouchableOpacity>
         </View>
 
-        {/* ── EDITABLE: Visibility ── */}
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Visibility</Text>
-          <View style={styles.visibilityOptions}>
-            {VISIBILITY_OPTIONS.map((option) => (
-              <TouchableOpacity
-                key={option}
-                style={[
-                  styles.visibilityOption,
-                  formData.visibility === option && styles.visibilityOptionActive,
-                ]}
-                onPress={() => updateField('visibility', option)}>
-                <Text
-                  style={[
-                    styles.visibilityOptionText,
-                    formData.visibility === option && styles.visibilityOptionTextActive,
-                  ]}>
-                  {option.charAt(0).toUpperCase() + option.slice(1)}
-                </Text>
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+        >
+
+          {/* ── READ-ONLY: Video URL ── */}
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>Video</Text>
+            <View style={styles.readOnlyField}>
+              <Text style={styles.readOnlyText} numberOfLines={1} ellipsizeMode="middle">
+                {shortDetail?.streamingUrl || shortDetail?.videoUrl || '—'}
+              </Text>
+            </View>
+          </View>
+
+          {/* ── EDITABLE: Title ── */}
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>Title</Text>
+            <TextInput
+              style={[styles.input, errors.title && styles.inputError]}
+              placeholder="Enter short title"
+              placeholderTextColor="#6B7280"
+              value={formData.title}
+              onChangeText={(text) => updateField('title', text)}
+              maxLength={100}
+            />
+            {errors.title ? <Text style={styles.errorText}>{errors.title}</Text> : null}
+          </View>
+
+          {/* ── EDITABLE: Description ── */}
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>Description</Text>
+            <TextInput
+              style={[styles.textArea, errors.description && styles.inputError]}
+              placeholder="Enter description"
+              placeholderTextColor="#6B7280"
+              value={formData.description}
+              onChangeText={(text) => updateField('description', text)}
+              multiline
+              numberOfLines={6}
+              maxLength={5000}
+              textAlignVertical="top"
+            />
+            {errors.description ? <Text style={styles.errorText}>{errors.description}</Text> : null}
+          </View>
+
+          {/* ── EDITABLE: Hashtags ── */}
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>Hashtags</Text>
+            <View style={styles.hashtagInputRow}>
+              <TextInput
+                style={[styles.input, styles.hashtagInput]}
+                placeholder="Add hashtag..."
+                placeholderTextColor="#6B7280"
+                value={hashtagInput}
+                onChangeText={setHashtagInput}
+                onSubmitEditing={handleAddHashtag}
+                returnKeyType="done"
+              />
+              <TouchableOpacity style={styles.addButton} onPress={handleAddHashtag}>
+                <Text style={styles.addButtonText}>Add</Text>
               </TouchableOpacity>
-            ))}
+            </View>
+            {formData.hashtags.length > 0 && (
+              <View style={styles.tagsRow}>
+                {formData.hashtags.map((tag, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.tag}
+                    onPress={() => removeHashtag(index)}>
+                    <Text style={styles.tagText}>{tag}</Text>
+                    <Text style={styles.tagRemove}>  ✕</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
           </View>
-        </View>
 
-        {/* ── READ-ONLY: Stats ── */}
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Stats</Text>
-          <View style={styles.statsGrid}>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>{shortDetail?.totalViews ?? 0}</Text>
-              <Text style={styles.statLabel}>Views</Text>
-            </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>{shortDetail?.likesCount ?? 0}</Text>
-              <Text style={styles.statLabel}>Likes</Text>
-            </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>{shortDetail?.commentsCount ?? 0}</Text>
-              <Text style={styles.statLabel}>Comments</Text>
-            </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>{shortDetail?.transcodeStatus ?? '—'}</Text>
-              <Text style={styles.statLabel}>Status</Text>
-            </View>
+          {/* ── EDITABLE: Category ── */}
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>Category</Text>
+            <TouchableOpacity
+              style={styles.pickerButton}
+              onPress={() => setCategoryModalVisible(true)}>
+              <Text style={styles.pickerButtonText}>{formData.category}</Text>
+              <Text style={styles.pickerChevron}>▾</Text>
+            </TouchableOpacity>
           </View>
-        </View>
 
-        {/* ── Save Button ── */}
-        <TouchableOpacity
-          style={[styles.saveButton, uploading && styles.saveButtonDisabled]}
-          onPress={handleSubmit}
-          disabled={uploading}
-          activeOpacity={0.8}>
-          {uploading ? (
-            <View style={styles.row}>
-              <ActivityIndicator color="#000000" />
-              <Text style={styles.saveButtonText}>  Saving...</Text>
-            </View>
-          ) : (
-            <Text style={styles.saveButtonText}>Save Changes</Text>
-          )}
-        </TouchableOpacity>
-
-      </ScrollView>
-
-      {/* Category Modal */}
-      <Modal
-        visible={categoryModalVisible}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setCategoryModalVisible(false)}>
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={() => setCategoryModalVisible(false)}>
-          <View style={styles.modalSheet}>
-            <Text style={styles.modalTitle}>Select Category</Text>
-            <FlatList
-              data={CATEGORIES}
-              keyExtractor={(item) => item}
-              renderItem={({ item }) => (
+          {/* ── EDITABLE: Visibility ── */}
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>Visibility</Text>
+            <View style={styles.visibilityOptions}>
+              {VISIBILITY_OPTIONS.map((option) => (
                 <TouchableOpacity
+                  key={option}
                   style={[
-                    styles.modalOption,
-                    formData.category === item && styles.modalOptionActive,
+                    styles.visibilityOption,
+                    formData.visibility === option && styles.visibilityOptionActive,
                   ]}
-                  onPress={() => {
-                    updateField('category', item);
-                    setCategoryModalVisible(false);
-                  }}>
+                  onPress={() => updateField('visibility', option)}>
                   <Text
                     style={[
-                      styles.modalOptionText,
-                      formData.category === item && styles.modalOptionTextActive,
+                      styles.visibilityOptionText,
+                      formData.visibility === option && styles.visibilityOptionTextActive,
                     ]}>
-                    {item}
+                    {option.charAt(0).toUpperCase() + option.slice(1)}
                   </Text>
                 </TouchableOpacity>
-              )}
-            />
+              ))}
+            </View>
           </View>
-        </TouchableOpacity>
-      </Modal>
 
-    </SafeAreaView>
+          {/* ── READ-ONLY: Stats ── */}
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>Stats</Text>
+            <View style={styles.statsGrid}>
+              <View style={styles.statCard}>
+                <Text style={styles.statValue}>{shortDetail?.totalViews ?? 0}</Text>
+                <Text style={styles.statLabel}>Views</Text>
+              </View>
+              <View style={styles.statCard}>
+                <Text style={styles.statValue}>{shortDetail?.likesCount ?? 0}</Text>
+                <Text style={styles.statLabel}>Likes</Text>
+              </View>
+              <View style={styles.statCard}>
+                <Text style={styles.statValue}>{shortDetail?.commentsCount ?? 0}</Text>
+                <Text style={styles.statLabel}>Comments</Text>
+              </View>
+              <View style={styles.statCard}>
+                <Text style={styles.statValue}>{shortDetail?.transcodeStatus ?? '—'}</Text>
+                <Text style={styles.statLabel}>Status</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* ── Save Button ── */}
+          <TouchableOpacity
+            style={[styles.saveButton, uploading && styles.saveButtonDisabled]}
+            onPress={handleSubmit}
+            disabled={uploading}
+            activeOpacity={0.8}>
+            {uploading ? (
+              <View style={styles.row}>
+                <ActivityIndicator color="#000000" />
+                <Text style={styles.saveButtonText}>  Saving...</Text>
+              </View>
+            ) : (
+              <Text style={styles.saveButtonText}>Save Changes</Text>
+            )}
+          </TouchableOpacity>
+
+        </ScrollView>
+
+        {/* Category Modal */}
+        <Modal
+          visible={categoryModalVisible}
+          transparent
+          animationType="slide"
+          onRequestClose={() => setCategoryModalVisible(false)}>
+          <TouchableOpacity
+            style={styles.modalOverlay}
+            activeOpacity={1}
+            onPress={() => setCategoryModalVisible(false)}>
+            <View style={styles.modalSheet}>
+              <Text style={styles.modalTitle}>Select Category</Text>
+              <FlatList
+                data={CATEGORIES}
+                keyExtractor={(item) => item}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={[
+                      styles.modalOption,
+                      formData.category === item && styles.modalOptionActive,
+                    ]}
+                    onPress={() => {
+                      updateField('category', item);
+                      setCategoryModalVisible(false);
+                    }}>
+                    <Text
+                      style={[
+                        styles.modalOptionText,
+                        formData.category === item && styles.modalOptionTextActive,
+                      ]}>
+                      {item}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              />
+            </View>
+          </TouchableOpacity>
+        </Modal>
+
+      </SafeAreaView>
+    </KeyboardAvoidingView >
+
   );
 }
 

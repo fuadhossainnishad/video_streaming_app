@@ -1,55 +1,36 @@
-import { ActivityIndicator, Dimensions, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useCallback, useEffect, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
 import { getAllPostsByChannel } from "@/domain/video/api/post.service";
 import { PostUI } from "@/shared/types/post.types";
 import CreatorPostCard from "./CreatorPostCard";
-import { HubParamalist } from "@/navigation/creator/HubStack";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useAuth } from "@/shared/hooks/useauth";
+import { HubParamalist } from "@/navigation/creator/HubStack";
+import { useNavigation } from "@react-navigation/native";
 
 type Props = NativeStackNavigationProp<HubParamalist, 'Hub'>;
+
 export default function CreatorPostCardComponent() {
-    const screenWidth = Dimensions.get('window').width;
-    const itemWidth = (screenWidth - 48);
+    // const screenWidth = Dimensions.get('window').width;
     const navigation = useNavigation<Props>();
-    const [post, setPost] = useState<PostUI[]>([])
+    const [posts, setPosts] = useState<PostUI[]>([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const { channel, mychannel } = useAuth()
 
-    console.log("post:", post)
-    const handleLike = useCallback((postId: string) => {
-        console.log('Like post:', postId);
-        // TODO: Implement like API call
-    }, []);
-
-    const handleComment = useCallback((postId: string) => {
-        console.log('Comment on post:', postId);
-        // TODO: Navigate to comments or open modal
-    }, []);
-
-    const handleMenu = useCallback((postId: string) => {
-        navigation.navigate('EditPost', { postId: postId })
-        console.log('Menu for post:', postId);
-        // TODO: Show options menu
-    }, []);
-    const fetchShorts = useCallback(async (isRefresh = false) => {
+    // ─── Fetch posts ──────────────────────────────────────────────────────
+    const fetchPosts = useCallback(async (isRefresh = false) => {
         try {
             if (isRefresh) {
                 setRefreshing(true);
             } else {
                 setLoading(true);
-            }
-            setError(null);
-            await mychannel()
+            } setError(null);
             const result = await getAllPostsByChannel(1, 10);
-            console.log("fetched post:", result)
-            setPost(result.posts);
+            console.log("fetchPosts:", result)
+            setPosts(result.posts);
         } catch (err: any) {
-            console.error('Error fetching post:', err);
-            setError(err.message || 'Failed to load post');
+            console.error('Error fetching posts:', err);
+            setError(err.message || 'Failed to load posts');
         } finally {
             setLoading(false);
             setRefreshing(false);
@@ -57,96 +38,84 @@ export default function CreatorPostCardComponent() {
     }, []);
 
     useEffect(() => {
-        fetchShorts();
-    }, [fetchShorts]);
+        fetchPosts(true);
+    }, [fetchPosts]);
 
-    const handleRefresh = useCallback(() => {
-        fetchShorts(true);
-    }, [fetchShorts]);
+    const handleEdit = useCallback((postId: string) => {
+        navigation.navigate('EditPost', { postId: postId })
+        console.log('Menu for post:', postId);
+        // TODO: Show options menu
+    }, []);
 
-    const renderContent = () => {
-        if (loading) {
-            return (
-                <View className="flex-1 justify-center items-center py-20">
-                    <ActivityIndicator size="large" color="#9BD71B" />
-                    <Text className="text-gray-400 mt-4">Loading shorts...</Text>
-                </View>
-            );
-        }
-
-        if (error) {
-            return (
-                <View className="flex-1 justify-center items-center py-20">
-                    <Text className="text-red-400 text-center mb-4">{error}</Text>
-                    <TouchableOpacity
-                        onPress={() => fetchShorts()}
-                        className="bg-[#9BD71B] px-6 py-3 rounded-xl"
-                    >
-                        <Text className="text-black font-semibold">Retry</Text>
-                    </TouchableOpacity>
-                </View>
-            );
-        }
-
-        if (post.length === 0) {
-            return (
-                <View className="flex-1 justify-center items-center py-20">
-                    <Text className="text-gray-400 text-center">
-                        No post available at the moment
-                    </Text>
-                </View>
-            );
-        }
-
+    // ─── Render ───────────────────────────────────────────────────────────
+    if (loading) {
         return (
-            <>
-
-
-                <ScrollView
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={styles.postScrollContainer}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={refreshing}
-                            onRefresh={handleRefresh}
-                            tintColor="#9BD71B"
-                            colors={['#9BD71B']}
-                        />
-                    }
-                >
-                    <View style={{ width: itemWidth }}>
-                        {post.map((post, ind) => (
-                            <CreatorPostCard
-                                key={post.id || ind}
-                                userName={post.userName}
-                                userAvatar={post.userAvatar}
-                                postImages={post.postImages}
-                                likes={post.likes}
-                                comments={post.comments}
-                                caption={post.caption}
-                                date={post.date}
-                                onLike={() => handleLike(post.id)}
-                                onComment={() => handleComment(post.id)}
-                                onMenu={() => handleMenu(post.id)}
-                            />
-                        ))}
-
-                    </View>
-                </ScrollView>
-            </>
+            <View className="flex-1 items-center justify-center py-20">
+                <ActivityIndicator size="large" color="#9BD71B" />
+                <Text className="mt-4 text-gray-400">Loading posts...</Text>
+            </View>
         );
-    };
+    }
+
+    if (error) {
+        return (
+            <View className="flex-1 items-center justify-center py-20">
+                <Text className="mb-4 text-center text-red-400">{error}</Text>
+                <TouchableOpacity
+                    onPress={() => fetchPosts()}
+                    className="rounded-xl bg-[#9BD71B] px-6 py-3"
+                >
+                    <Text className="font-semibold text-black">Retry</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
+
+    if (posts.length === 0) {
+        return (
+            <View className="flex-1 items-center justify-center py-20">
+                <Text className="text-center text-gray-400">
+                    No posts available at the moment
+                </Text>
+            </View>
+        );
+    }
 
     return (
-        <>
-            {renderContent()}
-        </>
-    )
+        <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.container}
+            refreshControl={
+                <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={() => fetchPosts(true)}
+                    tintColor="#9BD71B"
+                    colors={['#9BD71B']}
+                />
+            }
+        >
+            {posts.map((post, index) => (
+                <CreatorPostCard
+                    key={post.id ?? index}
+                    postId={post.id}
+                    initialLikes={post.likes ?? 0}
+                    initialDislikes={post.dislikes ?? 0}
+                    userName={post.userName}
+                    userAvatar={post.userAvatar}
+                    postImages={post.postImages}
+                    comments={post.comments}
+                    caption={post.caption}
+                    date={post.date}
+                    onComment={() => console.log('Comment on post:', post.id)}
+                    onMenu={() => handleEdit(post.id)}
+                />
+            ))}
+        </ScrollView>
+    );
 }
 
 const styles = StyleSheet.create({
-
-    postScrollContainer: {
+    container: {
         paddingBottom: 24,
         gap: 16,
     },

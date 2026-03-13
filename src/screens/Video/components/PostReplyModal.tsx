@@ -18,7 +18,7 @@ import {
     postReply,
     getCommentUserReaction,
     getCommentStats,
-} from '@/domain/video/api/shortComments.service';
+} from '@/domain/video/api/postComments.service';
 
 interface ReplyFetchedState {
     reaction: 'like' | 'dislike' | null;
@@ -39,7 +39,7 @@ export default function PostReplyModal({
     onClose,
     parentComment,
     targetId,
-    targetType = 'Video',
+    targetType = 'Post',
 }: ReplyModalProps) {
     const [replies, setReplies] = useState<CommentUI[]>([]);
     const [loading, setLoading] = useState(true);

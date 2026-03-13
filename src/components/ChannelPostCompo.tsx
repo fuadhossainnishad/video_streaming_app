@@ -1,6 +1,6 @@
 import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useCallback, useEffect, useState } from "react";
-import { getAllPostsByChannel } from "@/domain/video/api/post.service";
+import { getAllPosts, getAllPostsByChannel } from "@/domain/video/api/post.service";
 import PostCard from "./PostCard";
 import { PostUI } from "@/shared/types/post.types";
 
@@ -19,8 +19,8 @@ export default function ChannelPostCardComponent() {
             } else {
                 setLoading(true);
             } setError(null);
-            const result = await getAllPostsByChannel(1, 10);
-            console.log("fetchPosts:",result)
+            const result = await getAllPosts(1, 10);
+            console.log("fetchPosts:", result)
             setPosts(result.posts);
         } catch (err: any) {
             console.error('Error fetching posts:', err);

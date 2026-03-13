@@ -393,9 +393,10 @@ export default function VideoPlayerScreen() {
           edges={['top', 'bottom']}
           style={{ flex: 1 }}
           className="flex-1 bg-[#17191A] p-4">
-            
+
           <StatusBar barStyle="light-content" />
-          <ScrollView showsVerticalScrollIndicator={false}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}>
             {/* Header */}
             <View className="mb-4 w-full flex-row items-center justify-between">
               <TouchableOpacity onPress={() => navigation.goBack()} className="items-center">

@@ -85,7 +85,11 @@ export default function TopCreator() {
         return (
             <>
                 {channels.map((channel) => (
-                    <Creator key={channel.id} channelData={channel} onPress={() => navigation.navigate('ChannelOverview', { channelId: channel.id! })} />
+                    <Creator
+                        key={channel.id}
+                        channelData={channel}
+                    // onPress={() => navigation.navigate('ChannelOverview', { channel: channel })}
+                    />
                 ))}
             </>
         );

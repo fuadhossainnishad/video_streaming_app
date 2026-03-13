@@ -213,7 +213,10 @@ export default function ShortsViewScreen() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView
+      style={{ flex: 1 }}
+      pointerEvents="box-none"
+    >
       <View className="flex-1 bg-black">
         <StatusBar barStyle="light-content" hidden />
 
@@ -236,6 +239,7 @@ export default function ShortsViewScreen() {
 
         {overlayVisible && (
           <Animated.View
+            // pointerEvents="box-none"
             pointerEvents={overlayVisible ? 'box-none' : 'none'}
             style={{
               position: 'absolute',
@@ -244,7 +248,12 @@ export default function ShortsViewScreen() {
             }}
           >
             {/* Top Bar */}
-            <SafeAreaView edges={['top']} className="absolute left-0 right-0 top-0">
+            <SafeAreaView
+              edges={['top']}
+              // pointerEvents="box-none"
+              className="absolute left-0 right-0 top-0"
+              style={{ zIndex: 200 }}
+            >
               <View className="flex-row items-center justify-between px-4">
                 <TouchableOpacity
                   onPress={() => navigation.goBack()}

@@ -18,6 +18,7 @@ export const GET_POST_BY_CHANNEL = `/post/my-posts`
 
 export const GET_ALL_COMMENTS = (videoId: string) => `/v1/comments/Video/${videoId}`
 export const GET_ALL_SHORT_COMMENTS = (shortid: string) => `/v1/comments/Short/${shortid}`
+export const GET_ALL_POST_COMMENTS = (postId: string) => `/v1/comments/Post/${postId}`
 
 export const POST_COMMENTS = '/v1/comments'
 export const POST_COMMENTS_REACTION = 'v1/comment-reactions/user/${}'

@@ -64,7 +64,7 @@ export default function ChannelProfileScreen() {
       <View className='bg-[#9BD71B]/10 rounded-2xl px-4 my-4'>
         <View style={styles.profileSection}>
           <Image
-            source={require('../../../assets/poster/profile.jpg')}
+            source={{ uri: channel.avatar }}
             style={styles.profileImage}
             resizeMode="cover"
           />

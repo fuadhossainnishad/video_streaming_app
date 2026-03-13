@@ -7,6 +7,7 @@ import DiscoverCreatorScreen from '@/screens/Home/DiscoverCreator.screen';
 import VideoPlayerScreen from '@/screens/Video/VideoPlayer.screen';
 import ChannelProfileScreen from '@/screens/Follow/ChannelOverview.screen';
 import CreatorNotificationsScreen from '@/screens/creator/Notification/CreatorNotification.screen';
+import { ChannelData } from '@/shared/types/channel.types';
 // import OnboardingScreen from '../screens/Onboarding/onboarding.screen';
 // import AuthScreen from '@/screens/Auth/login.screen';
 // import VerifyOtpScreen from '@/screens/Auth/verifyOtp.screen';
@@ -21,7 +22,7 @@ export type HomeParamalist = {
   Search: undefined;
   DiscoverCreator: undefined;
   VideoPlayer: { videoId: string };
-  ChannelOverview: { channelId: string };
+  ChannelOverview: { channel: ChannelData };
 };
 export default function HomeStack() {
   return (

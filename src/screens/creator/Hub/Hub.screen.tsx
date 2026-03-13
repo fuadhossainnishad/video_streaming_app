@@ -10,7 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { HubParamalist } from '@/navigation/creator/HubStack';
 import CreatorVideoCompo from '../components/CreatorVideoCompo';
 import CreatorShortsCardComponent from '../components/CreatorShortsCompo';
-import CreatorPostCardComponent from '../components/CreatorPostCompo';
+import CreatorPostCardComponent from '../components/CreatorPostCompo2';
 
 type Props = NativeStackNavigationProp<HubParamalist, 'Hub'>;
 
@@ -42,6 +42,7 @@ export default function HubScreen() {
   };
 
   return (
+
     <SafeAreaView edges={['top', 'bottom']} style={styles.container}>
       {/* Header */}
 
@@ -114,6 +115,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+    paddingBottom: 60,
     backgroundColor: '#17191A',
   },
   profileSection: {

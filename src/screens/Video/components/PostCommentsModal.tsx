@@ -8,8 +8,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Camera from '../../../../assets/icons/camera2.svg';
 import CommentItem from './CommentItem';
 import { CommentUI } from '@/shared/types/comments.type';
-import VideoReplyModal from './VideoReplyModal';
-import { getCommentStats, getCommentUserReaction, getVideoComments, postComment } from '@/domain/video/api/videoComments.service';
+import { getCommentStats, getCommentUserReaction, getVideoComments, postComment } from '@/domain/video/api/postComments.service';
+import PostReplyModal from './PostReplyModal';
 
 
 interface CommentFetchedState {
@@ -29,7 +29,7 @@ export default function PostCommentsModal({
   visible,
   onClose,
   videoId,
-  targetType = 'Video',
+  targetType = 'Post',
 }: CommentsModalProps) {
   const [comments, setComments] = useState<CommentUI[]>([]);
   const [loading, setLoading] = useState(true);
@@ -195,7 +195,7 @@ export default function PostCommentsModal({
       </Modal>
 
       {selectedComment && (
-        <VideoReplyModal
+        <PostReplyModal
           visible={showReplyModal}
           onClose={handleCloseReply}
           parentComment={selectedComment}

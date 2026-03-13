@@ -2,14 +2,21 @@ import React, { useRef, useState } from 'react';
 import {
   View, Text, Image, TouchableOpacity,
   Dimensions, NativeSyntheticEvent, NativeScrollEvent, ScrollView,
+  Alert,
+  Platform,
 } from 'react-native';
-import MoreIcon from '../../assets/icons/threeDot.svg';
-import LikeIcon from '../../assets/icons/like.svg';
+import ShareIcon from '../../assets/icons/share.svg';
+import LikeIcon from '../../assets/icons/like3.svg';
 import LikeActiveIcon from '../../assets/icons/like2.svg';
 import DislikeIcon from '../../assets/icons/dislike2.svg';
 import DislikeActiveIcon from '../../assets/icons/dislike3.svg';
 import CommentIcon from '../../assets/icons/comment.svg';
 import { useReaction } from '@/shared/hooks/useReaction';
+import Share, { ShareOptions } from 'react-native-share';
+import * as FileSystem from 'expo-file-system/legacy';
+import PostCommentsModal from '@/screens/Video/components/PostCommentsModal';
+
+
 
 interface PostCardProps {
   postId: string;         // ← needed for reaction
@@ -39,6 +46,7 @@ export default function PostCard({
   onMenu,
 }: PostCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showComments, setShowComments] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
   const screenWidth = Dimensions.get('window').width;
@@ -64,128 +72,167 @@ export default function PostCard({
     setCurrentImageIndex(Math.round(offsetX / screenWidth));
   };
 
+  const handleShare = async () => {
+    if (!postId) return;
+
+    const message = `Check out this post on ${userName}!\n\n${caption}`;
+
+    try {
+      let shareUrl = postImages[0];
+
+      // Download thumbnail locally to show as preview
+      if (postImages[0]) {
+        const fileUri = `${FileSystem.cacheDirectory}${postId}_thumbnail.jpg`;
+        const { uri } = await FileSystem.downloadAsync(shareUrl, fileUri);
+        shareUrl = uri; // local file path for sharing
+      }
+
+      const shareOptions: ShareOptions = {
+        title: caption,
+        message: Platform.OS === 'android' ? `${message}\n\nWatch here: ${shareUrl}` : message,
+        url: shareUrl,
+        failOnCancel: false,
+      };
+
+      const result = await Share.open(shareOptions);
+
+      if (result.success) {
+        console.log('Video shared successfully!', result);
+      } else {
+        console.log('Share dismissed', result);
+      }
+    } catch (error: any) {
+      console.error('Error sharing video:', error.message);
+      Alert.alert('Share failed', 'Could not share the video. Please try again later.');
+    }
+  };
+
   return (
-    <View className="mb-4 w-full overflow-hidden border-b-2 border-white/20">
+    <>
+      <View className="mb-4 w-full overflow-hidden border-b-2 border-white/20">
 
-      {/* Header */}
-      <View className="flex-row items-center gap-2 py-3">
-        <Image source={{ uri: userAvatar }} className="h-10 w-10 rounded-xl" />
-        <Text className="ml-3 flex-1 font-medium text-white">{userName}</Text>
-        <TouchableOpacity
-          onPress={onMenu}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <MoreIcon width={42} height={42} />
-        </TouchableOpacity>
-      </View>
-
-      {/* Image Carousel */}
-      {postImages.length > 0 && (
-        <View>
-          <ScrollView
-            ref={scrollViewRef}
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            onScroll={handleScroll}
-            scrollEventThrottle={16}
+        {/* Header */}
+        <View className="flex-row items-center gap-2 py-3">
+          <Image source={{ uri: userAvatar }} className="h-10 w-10 rounded-xl" />
+          <Text className="ml-3 flex-1 font-medium text-white">{userName}</Text>
+          <TouchableOpacity
+            onPress={handleShare}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            {postImages.map((uri, index) => (
-              <Image
-                key={index}
-                source={{ uri }}
-                style={{ width: screenWidth, height: 320 }}
-                resizeMode="cover"
-              />
-            ))}
-          </ScrollView>
+            <ShareIcon width={42} height={42} />
+          </TouchableOpacity>
+        </View>
 
-          {/* Pagination dots */}
-          {postImages.length > 1 && (
-            <View className="flex-row justify-center gap-1 py-2">
-              {postImages.map((_, index) => (
-                <View
+        {/* Image Carousel */}
+        {postImages.length > 0 && (
+          <View>
+            <ScrollView
+              ref={scrollViewRef}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              onScroll={handleScroll}
+              scrollEventThrottle={16}
+            >
+              {postImages.map((uri, index) => (
+                <Image
                   key={index}
-                  className={`h-2 w-2 rounded-full ${
-                    index === currentImageIndex ? 'bg-white' : 'bg-white/40'
-                  }`}
+                  source={{ uri }}
+                  style={{ width: screenWidth, height: 320 }}
+                  resizeMode="cover"
                 />
               ))}
-            </View>
-          )}
-        </View>
-      )}
+            </ScrollView>
 
-      {/* Actions */}
-      <View className="flex-row items-center gap-6 py-2">
+            {/* Pagination dots */}
+            {postImages.length > 1 && (
+              <View className="flex-row justify-center gap-1 py-2">
+                {postImages.map((_, index) => (
+                  <View
+                    key={index}
+                    className={`h-2 w-2 rounded-full ${index === currentImageIndex ? 'bg-white' : 'bg-white/40'
+                      }`}
+                  />
+                ))}
+              </View>
+            )}
+          </View>
+        )}
 
-        {/* Like */}
-        <TouchableOpacity
-          onPress={() => toggleReaction('like')}
-          disabled={reactionLoading || reactionChecking}
-          className={`flex-row items-center gap-2 ${
-            reactionLoading || reactionChecking ? 'opacity-50' : ''
-          }`}
-        >
-          {userReaction === 'like'
-            ? <LikeActiveIcon width={18} height={18} />
-            : <LikeIcon width={18} height={18} />
-          }
-          <Text className={`text-sm font-semibold ${
-            userReaction === 'like' ? 'text-[#9BD71B]' : 'text-white'
-          }`}>
-            {likesCount}
-          </Text>
-        </TouchableOpacity>
+        {/* Actions */}
+        <View className="flex-row items-center gap-6 py-2">
 
-        {/* Dislike */}
-        <TouchableOpacity
-          onPress={() => toggleReaction('dislike')}
-          disabled={reactionLoading || reactionChecking}
-          className={`flex-row items-center gap-2 ${
-            reactionLoading || reactionChecking ? 'opacity-50' : ''
-          }`}
-        >
-          {userReaction === 'dislike'
-            ? <DislikeActiveIcon width={18} height={18} />
-            : <DislikeIcon width={18} height={18} />
-          }
-          <Text className={`text-sm font-semibold ${
-            userReaction === 'dislike' ? 'text-[#9BD71B]' : 'text-white'
-          }`}>
-            {dislikesCount}
-          </Text>
-        </TouchableOpacity>
-
-        {/* Comment */}
-        <TouchableOpacity
-          onPress={onComment}
-          className="flex-row items-center gap-2"
-        >
-          <CommentIcon width={18} height={18} />
-          <Text className="text-sm text-white">{comments}</Text>
-        </TouchableOpacity>
-
-      </View>
-
-      {/* Caption */}
-      <View className="py-2">
-        <Text className="text-sm font-normal leading-5 text-white">
-          {isExpanded ? caption : caption.slice(0, 100)}
-          {!isExpanded && caption.length > 100 && (
-            <Text
-              className="text-sm text-white/60"
-              onPress={() => setIsExpanded(true)}
-            >
-              {' '}...See more
+          {/* Like */}
+          <TouchableOpacity
+            onPress={() => toggleReaction('like')}
+            disabled={reactionLoading || reactionChecking}
+            className={`flex-row items-center gap-2 ${reactionLoading || reactionChecking ? 'opacity-50' : ''
+              }`}
+          >
+            {userReaction === 'like'
+              ? <LikeActiveIcon width={18} height={18} />
+              : <LikeIcon width={18} height={18} />
+            }
+            <Text className={`text-sm font-semibold ${userReaction === 'like' ? 'text-[#9BD71B]' : 'text-white'
+              }`}>
+              {likesCount}
             </Text>
-          )}
-        </Text>
+          </TouchableOpacity>
+
+          {/* Dislike */}
+          <TouchableOpacity
+            onPress={() => toggleReaction('dislike')}
+            disabled={reactionLoading || reactionChecking}
+            className={`flex-row items-center gap-2 ${reactionLoading || reactionChecking ? 'opacity-50' : ''
+              }`}
+          >
+            {userReaction === 'dislike'
+              ? <DislikeActiveIcon width={18} height={18} />
+              : <DislikeIcon width={18} height={18} />
+            }
+            <Text className={`text-sm font-semibold ${userReaction === 'dislike' ? 'text-[#9BD71B]' : 'text-white'
+              }`}>
+              {dislikesCount}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Comment */}
+          <TouchableOpacity
+            onPress={() => setShowComments(true)}
+            className="flex-row items-center gap-2"
+          >
+            <CommentIcon width={18} height={18} />
+            <Text className="text-sm text-white">{comments}</Text>
+          </TouchableOpacity>
+
+        </View>
+
+        {/* Caption */}
+        <View className="py-2">
+          <Text className="text-sm font-normal leading-5 text-white">
+            {isExpanded ? caption : caption.slice(0, 100)}
+            {!isExpanded && caption.length > 100 && (
+              <Text
+                className="text-sm text-white/60"
+                onPress={() => setIsExpanded(true)}
+              >
+                {' '}...See more
+              </Text>
+            )}
+          </Text>
+        </View>
+
+        {/* Date */}
+        <Text className="pb-3 text-xs text-white/50">{date}</Text>
+
       </View>
-
-      {/* Date */}
-      <Text className="pb-3 text-xs text-white/50">{date}</Text>
-
-    </View>
+      {showComments && (
+        <PostCommentsModal
+          visible={showComments}
+          onClose={() => setShowComments(false)}
+          videoId={postId!}
+          targetType="Post" />
+      )}
+    </>
   );
 }
