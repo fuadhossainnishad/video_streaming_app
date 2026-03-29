@@ -1,10 +1,11 @@
 // components/VideoRender.tsx
 import React from 'react';
-import { Image, Text, View, TouchableOpacity } from 'react-native';
+import { Image, Text, View, TouchableOpacity, ActivityIndicator } from 'react-native';
 import ViewIcon from '../../assets/icons/view.svg';
 import TimeIcon from '../../assets/icons/time.svg';
 import ThreeDotIcon from '../../assets/icons/threeDot.svg';
 import { VideoData } from '../shared/types/video.types';
+import { useVideoDuration } from '@/shared/hooks/useVideoDuration';
 
 export interface VideoRenderProps {
   onPress: () => void;
@@ -13,13 +14,18 @@ export interface VideoRenderProps {
 }
 
 export default function VideoRender({ onPress, videoData, onMenuPress }: VideoRenderProps) {
-  if (!videoData) {
-    return null;
-  }
+  const { duration, isLoading } = useVideoDuration(videoData?.videoUrl ?? '');
 
+  if (!videoData) return null;
+
+  // Priority: live progress > extracted duration > API fallback > placeholder
   const displayDuration = videoData.currentTime
-    ? `${videoData.currentTime} / ${videoData.duration}`
-    : videoData.duration;
+    ? `${videoData.currentTime} / ${duration ?? videoData.duration}`
+    : (duration ?? videoData.duration ?? null);
+
+  // const displayDuration = videoData.currentTime
+  //   ? `${videoData.currentTime} / ${videoData.duration}`
+  //   : videoData.duration;
 
   // const handleMenuPress = (e: any) => {
   //   e.stopPropagation();
@@ -38,9 +44,18 @@ export default function VideoRender({ onPress, videoData, onMenuPress }: VideoRe
           />
 
           {/* Duration Badge */}
-          <View className="absolute bottom-2 right-2 rounded-xl bg-black/60 px-2 py-1.5">
-            <Text className="text-sm font-semibold text-white">{displayDuration}</Text>
+          <View className="absolute bottom-2 right-2 min-w-[48px] items-center rounded-xl bg-black/60 px-2 py-1.5">
+            {isLoading && !displayDuration ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text className="text-sm font-semibold text-white">
+                {displayDuration ?? '--:--'}
+              </Text>
+            )}
           </View>
+          {/* <View className="absolute bottom-2 right-2 rounded-xl bg-black/60 px-2 py-1.5">
+            <Text className="text-sm font-semibold text-white">{displayDuration}</Text>
+          </View> */}
 
           {/* Three Dot Menu */}
           {/* <View className="absolute right-2 top-3">

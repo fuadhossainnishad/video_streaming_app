@@ -1,6 +1,6 @@
 // domain/auth/api/auth.service.ts
 import { axiosClient } from '@/shared/config/axios.config';
-import { CHANGE_PASSWORD, DELETE_ACCOUNT, SIGN_UP, SOCIAL_LOGIN } from '@/shared/constants/api.constants';
+import { CHANGE_PASSWORD, DELETE_ACCOUNT, LOGIN, SIGN_UP, SOCIAL_LOGIN } from '@/shared/constants/api.constants';
 import {
   SignupRequest,
   LoginRequest,
@@ -22,26 +22,38 @@ const USER_KEY = '@user_data';
 /**
  * Sign up a new user
  */
-export const signupUser = async (data: SignupRequest): Promise<AuthResponse> => {
+export const signupUser = async (data: SignupRequest) => {
   try {
     console.log("signup api:", SIGN_UP)
 
-    const response = await axiosClient.post<AuthResponse>(SIGN_UP, {
+    const response = await axiosClient.post(SIGN_UP, {
       username: data.username,
       email: data.email,
       password: data.password,
     });
+    const isSuccess =
+      response.data.status === 'success' ||
+      typeof response.data.message === 'string';
 
-    if (response.data.status !== 'success') {
+    if (!isSuccess) {
       throw new Error('Signup failed');
     }
+
+    // Signup only creates the account — no tokens yet (OTP pending)
+    // Only save auth data if tokens actually exist in the response
+    await AsyncStorage.setItem('@signup_email', data.email);
+
+
+    // if (response.data.status !== 'success') {
+    //   throw new Error('Signup failed');
+    // }
     console.log("signup api:", SIGN_UP)
 
     console.log("signup response:", response.data)
 
 
     // Save tokens and user data
-    await saveAuthData(response.data);
+    // await saveAuthData(response.data);
 
     return response.data;
   } catch (error: any) {
@@ -58,10 +70,12 @@ export const signupUser = async (data: SignupRequest): Promise<AuthResponse> => 
  */
 export const loginUser = async (data: LoginRequest): Promise<AuthResponse> => {
   try {
-    const response = await axiosClient.post<AuthResponse>(SOCIAL_LOGIN, {
+
+    console.log("loginUser:", data)
+    const response = await axiosClient.post<AuthResponse>(LOGIN, {
       email: data.email,
-      name: data.password,
-      photo: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+      password: data.password,
+      // photo: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
     });
     console.log("signup response:", response.data)
 

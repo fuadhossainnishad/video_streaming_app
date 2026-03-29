@@ -11,6 +11,7 @@ export const axiosClient = axios.create({
     timeout: 100000,
     headers: {
         'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true',
     },
 });
 

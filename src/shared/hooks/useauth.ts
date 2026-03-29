@@ -23,14 +23,14 @@ export const useAuth = () => {
         try {
             setLoading(true);
             setError(null);
-
+            console.log("SignupRequest:", data)
             const response = await signupUser(data);
 
-            setUser({
-                id: response.data._id,
-                username: response.data.username,
-                email: response.data.email,
-            });
+            // setUser({
+            //     id: response.data._id,
+            //     username: response.data.username,
+            //     email: response.data.email,
+            // });
 
             return { success: true, data: response };
         } catch (err: any) {
@@ -97,8 +97,11 @@ export const useAuth = () => {
 
             return { success: true, data: response };
         } catch (err: any) {
-            const errorMessage = err.message || 'Signup failed';
-            setError(errorMessage);
+            if (err.statusCode === 404) {
+                setChannel(null);
+                return { success: false, error: 'no_channel' };
+            }
+            const errorMessage = err.message || 'Failed to get channel'; setError(errorMessage);
             return { success: false, error: errorMessage };
         } finally {
             setLoading(false);

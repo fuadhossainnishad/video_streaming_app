@@ -24,6 +24,8 @@ export interface AuthResponse {
     _id: string;
     username: string;
     email: string;
+    password:string
+    isVerified:boolean
   };
   access_token: string;
   refresh_token: string;

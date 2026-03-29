@@ -7,14 +7,15 @@ import { ApiProfile } from '@/shared/types/profile.types';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ProfileParamalist } from '@/navigation/ProfileStack';
+import { useAuth } from '@/context/AuthProvider';
 
 export interface IAction {
-    viewChannel: (channel: string) => void;
+    viewChannel: (channelId: string | undefined) => void;
 }
 
 export default function EditProfileComponent({ viewChannel }: IAction) {
     const navigation = useNavigation<NativeStackNavigationProp<ProfileParamalist>>();
-
+    const { channel } = useAuth();
     const handleEdit = () => {
         if (profile) {
             navigation.navigate('EditProfile', {
@@ -58,7 +59,10 @@ export default function EditProfileComponent({ viewChannel }: IAction) {
         fetchVideos(true);
     }, [fetchVideos]);
 
-
+    const handleViewChannel = () => {
+        // channel comes from useAuth — may be null if user has no channel
+        viewChannel(channel?._id ?? channel?.id);
+    };
 
 
     const renderContent = () => {
@@ -112,7 +116,7 @@ export default function EditProfileComponent({ viewChannel }: IAction) {
                         <Text className="text-base font-semibold text-white">{profile?.username}</Text>
                         <Text className="text-sm font-normal text-white">{profile?.email}</Text>
                         <TouchableOpacity
-                            onPress={viewChannel}
+                            onPress={handleViewChannel}
                             className='self-end flex-row items-center gap-4'>
                             <Text className="text-sm font-normal text-[#9BD71B]">View channel</Text>
                             <ArrowIcon height={12} />

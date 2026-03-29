@@ -107,18 +107,21 @@ export const verifySignupOtp = async (
             }
         );
         console.log("signup response:", response)
-        if (!response.data.success) {
-            throw new Error(response.data.message || 'Invalid OTP');
-        }
+        // if (!response.data.success) {
+        //     throw new Error(response.data.message || 'Invalid OTP');
+        // }
 
         return response.data;
     } catch (error: any) {
-        console.error('Error verifying signup OTP:', error);
-        throw {
-            message: error.message || 'Invalid OTP',
-            statusCode: error.statusCode || 500,
-        };
+        const backendMessage =
+            error.response?.data?.message ||
+            error.message ||
+            'OTP verification failed';
+
+        console.error('Error verifying signup OTP:', backendMessage);
+        throw { message: backendMessage, statusCode: error.response?.status || 500 };
     }
+
 };
 
 /**

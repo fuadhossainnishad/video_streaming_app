@@ -16,7 +16,7 @@ import Time from '../../../../assets/icons/time.svg';
 import Like from '../../../../assets/icons/like2.svg';
 import Dislike from '../../../../assets/icons/dislike3.svg';
 import Comment from '../../../../assets/icons/comment3.svg';
-import Camera from '../../../../assets/icons/camera2.svg';
+import Camera from '../../../../assets/icons/share.svg';
 import { CommentUI } from '@/shared/types/comments.type';
 import {
   dislikeComment,

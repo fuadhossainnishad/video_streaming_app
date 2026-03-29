@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import EditProfileComponent from './components/EditProfile.component';
@@ -17,7 +17,19 @@ type Props = NativeStackNavigationProp<ProfileParamalist, 'Profile'>;
 export default function ProfileScreen() {
   const navigation = useNavigation<Props>();
   const [id, setId] = useState<string | null>(null)
-  const { logout, loading } = useAuth();
+  const { logout, loading, mychannel, channel } = useAuth();
+
+  useEffect(() => {
+    mychannel();
+  }, [mychannel]);
+
+  const handleViewChannel = (channelId: string | undefined) => {
+    if (!channelId) {
+      Alert.alert('Error', 'Channel not found');
+      return;
+    }
+    navigation.navigate('ChannelOverview', { channelId });
+  };
 
   const handleLogout = () => {
     Alert.alert('Logout', 'Are you sure you want to logout?', [
@@ -72,10 +84,7 @@ export default function ProfileScreen() {
                     />
                 </View> */}
         <EditProfileComponent
-          viewChannel={(channel) => {
-            setId(channel)
-            navigation.navigate('ChannelOverview', { channelId: '123' })
-          }}
+          viewChannel={handleViewChannel}
         />
         <View className="gap-2">
           <View className="flex-row items-center justify-between">
